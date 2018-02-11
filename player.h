@@ -6,6 +6,7 @@ class PlayerBehaviourComponent : public Component
 	ObjectPool<Rocket> * rockets_pool;
 
 	bool movingHorizontally = true;
+	bool leftFacing = true;
 
 public:
 	virtual ~PlayerBehaviourComponent() {}
@@ -31,10 +32,12 @@ public:
 		if (keys.right) {
 			Move(dt * PLAYER_SPEED);
 			movingHorizontally = true;
+			leftFacing = false;
 		}
 		if (keys.left) {
 			Move(-dt * PLAYER_SPEED);
 			movingHorizontally = true;
+			leftFacing = true;
 		}	
 		if (keys.up) {
 			Move(-dt * PLAYER_SPEED);
@@ -52,7 +55,7 @@ public:
 				Rocket * rocket = rockets_pool->FirstAvailable();
 				if (rocket != NULL)	// rocket is NULL is the object pool can not provide an object
 				{
-					rocket->Init(go->horizontalPosition);
+					rocket->Init(go->horizontalPosition, leftFacing);
 					game_objects->insert(rocket);
 				}
 			}
