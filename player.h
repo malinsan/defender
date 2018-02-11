@@ -55,7 +55,8 @@ public:
 				Rocket * rocket = rockets_pool->FirstAvailable();
 				if (rocket != NULL)	// rocket is NULL is the object pool can not provide an object
 				{
-					rocket->Init(go->horizontalPosition, go->verticalPosition, leftFacing);
+					int x = leftFacing ? -PLAYER_WIDTH : PLAYER_WIDTH; //offset from player so rockets doesn't start from middle of player
+					rocket->Init(go->horizontalPosition + x, go->verticalPosition, leftFacing);
 					game_objects->insert(rocket);
 				}
 			}
