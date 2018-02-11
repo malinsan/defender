@@ -5,6 +5,8 @@ class PlayerBehaviourComponent : public Component
 	float time_fire_pressed;	// time from the last time the fire button was pressed
 	ObjectPool<Rocket> * rockets_pool;
 
+	bool movingHorizontally = true;
+
 public:
 	virtual ~PlayerBehaviourComponent() {}
 
@@ -26,15 +28,23 @@ public:
 	{
 		AvancezLib::KeyStatus keys;
 		system->getKeyStatus(keys);
-		if (keys.right)
+		if (keys.right) {
 			Move(dt * PLAYER_SPEED);
-		else if (keys.left)
+			movingHorizontally = true;
+		}
+		if (keys.left) {
 			Move(-dt * PLAYER_SPEED);
-		else if (keys.up)
-			Move(-dt * PLAYER_SPEED);		
-		else if (keys.left)
+			movingHorizontally = true;
+		}	
+		if (keys.up) {
 			Move(-dt * PLAYER_SPEED);
-		else if (keys.fire)
+			movingHorizontally = false;
+		}
+		if (keys.down) {
+			Move(dt * PLAYER_SPEED);
+			movingHorizontally = false;
+		}
+		if (keys.fire)
 		{
 			if (CanFire())
 			{
@@ -54,13 +64,19 @@ public:
 	// param move depends on the time, so the player moves always at the same speed on any computer
 	void Move(float move)
 	{
-		go->horizontalPosition += move;
 
-		if (go->horizontalPosition > (640 - 32))
-			go->horizontalPosition = 640 - 32;
-			
-		if (go->horizontalPosition < 0)
-			go->horizontalPosition = 0;
+		if (movingHorizontally) {
+			go->horizontalPosition += move;
+
+			if (go->horizontalPosition > (WIDTH - 32))
+				go->horizontalPosition = WIDTH - 32;
+
+			if (go->horizontalPosition < 0)
+				go->horizontalPosition = 0;
+		}
+		else {
+			go->verticalPosition += move;
+		}
 	}
 
 	// return true if enough time has passed from the previous rocket
