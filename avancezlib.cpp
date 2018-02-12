@@ -95,6 +95,12 @@ bool AvancezLib::update()
 			case SDLK_RIGHT:
 				key.right = true;
 				break;
+			case SDLK_UP:
+				key.up = true;
+				break;
+			case SDLK_DOWN:
+				key.down = true;
+				break;
 			}
 		}
 
