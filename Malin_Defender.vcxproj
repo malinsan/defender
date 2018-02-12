@@ -26,6 +26,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="avancezlib.h" />
+    <ClInclude Include="background.h" />
     <ClInclude Include="box.h" />
     <ClInclude Include="component.h" />
     <ClInclude Include="game.h" />

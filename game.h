@@ -14,8 +14,10 @@ class Game : public GameObject
 	int32 velocityIterations = 6;
 	int32 positionIterations = 2;
 
+	//background 
+	Background * background;
 
-	//player
+	//player & rockets
 	Player * player;
 	ObjectPool<Rocket> rockets_pool;	// used to instantiate rockets
 
@@ -32,6 +34,16 @@ public:
 		SDL_Log("Game::Create");
 
 		this->system = system;
+
+		background = new Background();
+		RenderComponent * background_render = new RenderComponent();
+		background_render->Create(system, background, &game_objects, "data/background.bmp");
+
+		background->Create();
+		background->AddComponent(background_render);
+		game_objects.insert(background);
+
+
 
 		player = new Player();
 		PlayerBehaviourComponent * player_behaviour = new PlayerBehaviourComponent();
