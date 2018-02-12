@@ -39,6 +39,7 @@ float game_speed = 1.f;
 
 //game objects to include
 
+#include "background.h"
 #include "rocket.h"
 #include "player.h"
 #include "box.h"
