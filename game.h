@@ -37,6 +37,8 @@ public:
 
 		this->system = system;
 		this->soundSystem = soundSystem;
+
+		StartMusic();
 		
 		background = new Background();
 		RenderComponent* background_render = new RenderComponent();
@@ -92,6 +94,8 @@ public:
 	{
 		if (IsGameOver())
 			dt = 0.f;
+
+		soundSystem->update();
 
 		//first component should be background
 		background->Update(dt);
