@@ -12,6 +12,22 @@ void Component::Create(AvancezLib * system, GameObject * go, std::set<GameObject
 	this->game_objects = game_objects;
 }
 
+void Component::AddReceiver(Component * comp)
+{
+	receivers.push_back(comp);
+}
+
+void Component::Send(Message m)
+{
+	for (auto i = 0; i < receivers.size(); i++)
+	{
+		if (!(receivers[i]->go->enabled))
+			continue;
+
+		receivers[i]->Receive(m);
+	}
+}
+
 void RenderComponent::Create(AvancezLib * system, GameObject * go, std::set<GameObject*>* game_objects, const char * sprite_name)
 {
 	Component::Create(system, go, game_objects);
@@ -62,18 +78,4 @@ void CollideComponent::Update(float dt)
 	}
 }
 
-void SoundComponent::Create(AvancezLib* system, GameObject * go, std::set<GameObject*> * game_objects, FMOD::Studio::EventInstance* soundEvent)
-{
-	Component::Create(system, go, game_objects);
-	this->soundEvent = soundEvent;
-}
 
-void SoundComponent::Update(float dt) 
-{
-	
-}
-
-void SoundComponent::Trigger() 
-{
-	soundEvent->start();
-}

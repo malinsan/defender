@@ -13,6 +13,9 @@ class Game : public GameObject
 	int32 velocityIterations = 6;
 	int32 positionIterations = 2;
 
+	//soundmaker
+	SoundMaker* soundMaker;
+
 	//background 
 	Background * background;
 
@@ -38,6 +41,13 @@ public:
 
 		StartMusic();
 		
+		//create soundmaker
+		soundMaker = new SoundMaker();
+		SoundComponent * sound_component = new SoundComponent();
+		sound_component->Create(system, soundMaker, &game_objects, soundSystem);
+		//should listen to player
+		
+		
 		background = new Background();
 		RenderComponent* background_render = new RenderComponent();
 		background_render->Create(system, background, &game_objects, "data/background.bmp");
@@ -50,20 +60,14 @@ public:
 		player = new Player();
 		PlayerBehaviourComponent * player_behaviour = new PlayerBehaviourComponent();
 		player_behaviour->Create(system, player, &game_objects, &rockets_pool);
+		player_behaviour->AddReceiver(sound_component);
 		RenderComponent * player_render = new RenderComponent();
 		player_render->Create(system, player, &game_objects, "data/player.bmp");
-		//player sound
-		FMOD::Studio::EventDescription* shootDescription = NULL;
-		soundSystem->getEvent("event:/shoot", &shootDescription);
-		FMOD::Studio::EventInstance* shoot = NULL;
-		shootDescription->createInstance(&shoot);
-		PlayerSoundComponent * player_shoot = new PlayerSoundComponent();
-		player_shoot->Create(system, player, &game_objects, shoot);
-
+		
 		player->Create();
 		player->AddComponent(player_behaviour);
 		player->AddComponent(player_render);
-		player->AddComponent(player_shoot);
+		//player->AddComponent(player_shoot);
 		player->AddReceiver(this);
 		game_objects.insert(player);
 
@@ -85,6 +89,9 @@ public:
 
 	virtual void Init()
 	{
+
+		//init soundmaker
+		soundMaker->Init();
 
 		//init background
 		background->Init();
@@ -160,6 +167,7 @@ public:
 		FMOD::Studio::EventInstance* music = NULL;
 		musicDescription->createInstance(&music);
 
+		music->setParameterValue("intensity", 0.6f);
 		music->start();
 
 	}

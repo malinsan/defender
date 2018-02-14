@@ -4,6 +4,7 @@
 #include "SDL.h"
 #include "SDL_ttf.h"
 
+
 class Sprite
 {
 	SDL_Renderer * renderer;

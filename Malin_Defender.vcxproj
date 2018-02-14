@@ -34,6 +34,7 @@
     <ClInclude Include="object_pool.h" />
     <ClInclude Include="player.h" />
     <ClInclude Include="rocket.h" />
+    <ClInclude Include="soundmaker.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

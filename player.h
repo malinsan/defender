@@ -35,29 +35,6 @@ public:
 	}
 };
 
-class PlayerSoundComponent : public SoundComponent {
-
-public:
-	virtual ~PlayerSoundComponent(){}
-
-	virtual void Create(AvancezLib* system, GameObject * go, std::set<GameObject*> * game_objects, FMOD::Studio::EventInstance* soundEvent)
-	{
-		SoundComponent::Create(system, go, game_objects, soundEvent);
-	}
-
-	virtual void Update(float dt) 
-	
-	{
-		Player * player = (Player*)go;
-
-		if (player->shooting) {
-			SoundComponent::Trigger();
-			player->shooting = false;
-		}
-	}
-
-};
-
 
 class PlayerBehaviourComponent : public Component
 {
@@ -120,8 +97,7 @@ public:
 					game_objects->insert(rocket);
 				}
 
-				Player * player = (Player*)go;
-				player->shooting = true;
+				Send(SHOOT);
 				
 			}
 		}

@@ -2,6 +2,7 @@
 #include "object_pool.h"
 #include "fmod.hpp"
 #include "fmod_studio.hpp"
+#include "game_object.h"
 
 class GameObject;
 class AvancezLib;
@@ -14,6 +15,9 @@ protected:
 	GameObject * go;		// the game object this component is part of
 	std::set<GameObject*> * game_objects;	// the global container of game objects
 
+	std::vector<Component*> receivers;
+
+
 public:
 	virtual ~Component() {}
 
@@ -21,7 +25,9 @@ public:
 
 	virtual void Init() {}
 	virtual void Update(float dt) = 0;
-	virtual void Receive(int message) {}
+	virtual void AddReceiver(Component *comp);
+	virtual void Receive(Message m) {}
+	virtual void Send(Message m);
 	virtual void Destroy() {}
 };
 
@@ -49,13 +55,5 @@ public:
 	virtual void Update(float dt);
 };
 
-class SoundComponent : public Component 
-{
-	FMOD::Studio::EventInstance* soundEvent;
 
-public:
-	virtual void Create(AvancezLib* system, GameObject * go, std::set<GameObject*> * game_objects, FMOD::Studio::EventInstance* soundEvent);
-	virtual void Update(float dt);
-	virtual void Trigger();
-};
 
