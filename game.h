@@ -7,8 +7,6 @@ class Game : public GameObject
 	AvancezLib* system;
 	FMOD::Studio::System* soundSystem;
 
-	//b2World * world;
-
 
 	//define the timestep
 	float32 timeStep = 1.0f / 60.0f;
@@ -54,10 +52,18 @@ public:
 		player_behaviour->Create(system, player, &game_objects, &rockets_pool);
 		RenderComponent * player_render = new RenderComponent();
 		player_render->Create(system, player, &game_objects, "data/player.bmp");
-		
+		//player sound
+		FMOD::Studio::EventDescription* shootDescription = NULL;
+		soundSystem->getEvent("event:/shoot", &shootDescription);
+		FMOD::Studio::EventInstance* shoot = NULL;
+		shootDescription->createInstance(&shoot);
+		PlayerSoundComponent * player_shoot = new PlayerSoundComponent();
+		player_shoot->Create(system, player, &game_objects, shoot);
+
 		player->Create();
 		player->AddComponent(player_behaviour);
 		player->AddComponent(player_render);
+		player->AddComponent(player_shoot);
 		player->AddReceiver(this);
 		game_objects.insert(player);
 
@@ -95,6 +101,7 @@ public:
 		if (IsGameOver())
 			dt = 0.f;
 
+		//update the sound
 		soundSystem->update();
 
 		//first component should be background

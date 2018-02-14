@@ -49,7 +49,7 @@ public:
 			go->horizontalPosition += ROCKET_SPEED * dt;
 		}
 		
-		if (go->verticalPosition < 0) // When the rocket reaches the top of the screen, it disappears.
+		if (go->horizontalPosition < 0) // When the rocket reaches the top of the screen, it disappears.
 			go->enabled = false;
 	}
 };

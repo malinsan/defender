@@ -1,5 +1,7 @@
 #include <set>
 #include "object_pool.h"
+#include "fmod.hpp"
+#include "fmod_studio.hpp"
 
 class GameObject;
 class AvancezLib;
@@ -45,5 +47,15 @@ class CollideComponent : public Component
 public:
 	virtual void Create(AvancezLib* system, GameObject * go, std::set<GameObject*> * game_objects, ObjectPool<GameObject> * coll_objects);
 	virtual void Update(float dt);
+};
+
+class SoundComponent : public Component 
+{
+	FMOD::Studio::EventInstance* soundEvent;
+
+public:
+	virtual void Create(AvancezLib* system, GameObject * go, std::set<GameObject*> * game_objects, FMOD::Studio::EventInstance* soundEvent);
+	virtual void Update(float dt);
+	virtual void Trigger();
 };
 

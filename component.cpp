@@ -1,3 +1,6 @@
+#include "fmod.hpp"
+#include "fmod_studio.hpp"
+
 #include "component.h"
 #include "game_object.h"
 #include "avancezlib.h"
@@ -57,4 +60,20 @@ void CollideComponent::Update(float dt)
 			}
 		}
 	}
+}
+
+void SoundComponent::Create(AvancezLib* system, GameObject * go, std::set<GameObject*> * game_objects, FMOD::Studio::EventInstance* soundEvent)
+{
+	Component::Create(system, go, game_objects);
+	this->soundEvent = soundEvent;
+}
+
+void SoundComponent::Update(float dt) 
+{
+	
+}
+
+void SoundComponent::Trigger() 
+{
+	soundEvent->start();
 }
