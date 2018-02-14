@@ -12,10 +12,20 @@ public:
 
 	}
 
+	virtual void Receive(Message m) {
+
+
+
+	}
+
 
 };
 
 class BackgroundBehaviour : public Component
 {
+public:
+	void Update(float dt) 
+	{
 
+	}
 };

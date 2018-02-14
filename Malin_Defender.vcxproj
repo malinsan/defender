@@ -121,13 +121,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\Malin\Documents\Programmering\TDA572\dev\SDL2_ttf-2.0.14\include;C:\Users\Malin\Documents\Programmering\TDA572\dev\SDL2-2.0.7\include;C:\Users\Malin\Documents\Programmering\TDA572\dev\Malin_Defender\libs</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Malin\Documents\Programmering\TDA572\dev\FMOD\inc;C:\Users\Malin\Documents\Programmering\TDA572\dev\SDL2_ttf-2.0.14\include;C:\Users\Malin\Documents\Programmering\TDA572\dev\SDL2-2.0.7\include;C:\Users\Malin\Documents\Programmering\TDA572\dev\Malin_Defender\libs</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Users\Malin\Documents\Programmering\TDA572\dev\Malin_Defender\libs\Build\vs2017\bin\Debug;C:\Users\Malin\Documents\Programmering\TDA572\dev\SDL2-2.0.7\lib\x64;C:\Users\Malin\Documents\Programmering\TDA572\dev\SDL2_ttf-2.0.14\lib\x64</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Box2D.lib;SDL2_ttf.lib;SDL2.lib;SDL2main.lib;SDL2test.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Users\Malin\Documents\Programmering\TDA572\dev\FMOD\lib;C:\Users\Malin\Documents\Programmering\TDA572\dev\Malin_Defender\libs\Build\vs2017\bin\Debug;C:\Users\Malin\Documents\Programmering\TDA572\dev\SDL2-2.0.7\lib\x64;C:\Users\Malin\Documents\Programmering\TDA572\dev\SDL2_ttf-2.0.14\lib\x64</AdditionalLibraryDirectories>
+      <AdditionalDependencies>fmodL64_vc.lib;fmodstudioL64_vc.lib;Box2D.lib;SDL2_ttf.lib;SDL2.lib;SDL2main.lib;SDL2test.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

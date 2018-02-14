@@ -5,6 +5,7 @@ class Game : public GameObject
 	std::set<GameObject*> game_objects;	// http://www.cplusplus.com/reference/set/set/
 
 	AvancezLib* system;
+	FMOD::Studio::System* soundSystem;
 
 	//b2World * world;
 
@@ -29,12 +30,14 @@ class Game : public GameObject
 
 public:
 
-	virtual void Create(AvancezLib* system)
+	virtual void Create(AvancezLib* system, FMOD::Studio::System* soundSystem)
 	{
 		SDL_Log("Game::Create");
 
 		this->system = system;
+		this->soundSystem = soundSystem;
 
+		
 		background = new Background();
 		RenderComponent * background_render = new RenderComponent();
 		background_render->Create(system, background, &game_objects, "data/background.bmp");
@@ -69,6 +72,10 @@ public:
 			(*rocket)->AddComponent(render);
 		}
 
+		//start music
+		StartMusic();
+
+
 		score = 0;
 	}
 
@@ -83,6 +90,8 @@ public:
 
 	virtual void Update(float dt)
 	{
+		//soundSystem->update();
+
 		if (IsGameOver())
 			dt = 0.f;
 
@@ -128,5 +137,15 @@ public:
 			(*go)->Destroy();
 
 		
+	}
+
+	void StartMusic() {
+		FMOD::Studio::EventDescription* musicDescription = NULL;
+		soundSystem->getEvent("event:/music", &musicDescription);
+		FMOD::Studio::EventInstance* music = NULL;
+		musicDescription->createInstance(&music);
+
+		music->start();
+
 	}
 };
