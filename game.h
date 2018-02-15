@@ -5,8 +5,7 @@ class Game : public GameObject
 	std::set<GameObject*> game_objects;	// http://www.cplusplus.com/reference/set/set/
 
 	AvancezLib* system;
-	FMOD::Studio::System* soundSystem;
-
+	
 
 	//define the timestep
 	float32 timeStep = 1.0f / 60.0f;
@@ -32,20 +31,19 @@ class Game : public GameObject
 
 public:
 
-	virtual void Create(AvancezLib* system, FMOD::Studio::System* soundSystem)
+	virtual void Create(AvancezLib* system)
 	{
 		SDL_Log("Game::Create");
 
 		this->system = system;
-		this->soundSystem = soundSystem;
-
-		StartMusic();
+		
 		
 		//create soundmaker
 		soundMaker = new SoundMaker();
 		SoundComponent * sound_component = new SoundComponent();
-		sound_component->Create(system, soundMaker, &game_objects, soundSystem);
-		//should listen to player
+		sound_component->Create(system, soundMaker, &game_objects);
+		soundMaker->AddComponent(sound_component);
+		game_objects.insert(soundMaker);
 		
 		
 		background = new Background();
@@ -108,9 +106,6 @@ public:
 		if (IsGameOver())
 			dt = 0.f;
 
-		//update the sound
-		soundSystem->update();
-
 		//first component should be background
 		background->Update(dt);
 
@@ -161,16 +156,6 @@ public:
 		
 	}
 
-	void StartMusic() {
-		FMOD::Studio::EventDescription* musicDescription = NULL;
-		soundSystem->getEvent("event:/music", &musicDescription);
-		FMOD::Studio::EventInstance* music = NULL;
-		musicDescription->createInstance(&music);
-
-		music->setParameterValue("intensity", 0.6f);
-		music->start();
-
-	}
 
 
 };

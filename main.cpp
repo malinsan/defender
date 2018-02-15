@@ -53,33 +53,12 @@ float game_speed = 1.f;
 int main(int argc, char** argv)
 {
 
-	//init soundsystem
-	FMOD::System* lowlevelSystem = NULL;
-	FMOD::Studio::System* fmodSystem = NULL;
-
-	//init fmod system
-	FMOD::Studio::System::create(&fmodSystem);
-
-	//init to 5.1 sound
-	fmodSystem->getLowLevelSystem(&lowlevelSystem);
-	lowlevelSystem->setSoftwareFormat(0, FMOD_SPEAKERMODE_5POINT1, 0);
-
-	fmodSystem->initialize(1024, FMOD_STUDIO_INIT_NORMAL, FMOD_INIT_NORMAL, 0);
-
-	FMOD::Studio::Bank* masterBank = NULL;
-	fmodSystem->loadBankFile("data/Sound/invaders.bank", FMOD_STUDIO_LOAD_BANK_NORMAL, &masterBank);
-
-	FMOD::Studio::Bank* stringsBank = NULL;
-	fmodSystem->loadBankFile("data/Sound/invaders.strings.bank", FMOD_STUDIO_LOAD_BANK_NORMAL, &stringsBank);
-	//sound inited
-
-
 	AvancezLib system;
 
 	system.init(WIDTH, HEIGHT);
 
 	Game game;
-	game.Create(&system, fmodSystem);
+	game.Create(&system);
 	game.Init();
 
 	float lastTime = system.getElapsedTime();
