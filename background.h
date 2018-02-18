@@ -21,11 +21,25 @@ public:
 
 };
 
-class BackgroundBehaviour : public Component
+class BackgroundBehaviourComponent : public Component
 {
 public:
-	void Update(float dt) 
+
+	bool moveBackground = false;
+
+	virtual void Receive(Message m) {
+		if (m == EDGE_REACHED) {
+
+			moveBackground = true;
+		}
+	}
+
+	virtual void Update(float dt) 
 	{
+		if (moveBackground) {
+			moveBackground = false;
+			go->horizontalPosition += dt * PLAYER_SPEED;
+		}
 
 	}
 };

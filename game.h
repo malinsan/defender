@@ -49,16 +49,22 @@ public:
 		background = new Background();
 		RenderComponent* background_render = new RenderComponent();
 		background_render->Create(system, background, &game_objects, "data/background.bmp");
+		BackgroundBehaviourComponent * background_component = new BackgroundBehaviourComponent();
+		background_component->Create(system, background, &game_objects);
 
 		background->Create();
 		background->AddComponent(background_render);
+		background->AddComponent(background_component);
 		//game_objects.insert(background);
 
 
 		player = new Player();
 		PlayerBehaviourComponent * player_behaviour = new PlayerBehaviourComponent();
 		player_behaviour->Create(system, player, &game_objects, &rockets_pool);
+		//sound component listens to players actions
 		player_behaviour->AddReceiver(sound_component);
+		//background listens to player movement
+		player_behaviour->AddReceiver(background_component);
 		RenderComponent * player_render = new RenderComponent();
 		player_render->Create(system, player, &game_objects, "data/player.bmp");
 		
@@ -87,7 +93,6 @@ public:
 
 	virtual void Init()
 	{
-
 		//init background
 		background->Init();
 
@@ -104,7 +109,7 @@ public:
 			dt = 0.f;
 
 		//first component should be background
-		background->Update(dt);
+		background->Update(dt); //doesn't run?
 
 		for (auto go = game_objects.begin(); go != game_objects.end(); go++) {
 			//except for background 

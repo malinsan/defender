@@ -118,11 +118,15 @@ public:
 			
 			go->horizontalPosition += move;
 
-			if (go->horizontalPosition > (WIDTH - 32))
-				go->horizontalPosition = WIDTH - 32;
+			if (go->horizontalPosition > (WIDTH - (32*5))) {
+				go->horizontalPosition = WIDTH - (32*5);
+				Send(EDGE_REACHED);
+			}
 
-			if (go->horizontalPosition < 0)
-				go->horizontalPosition = 0;
+			if (go->horizontalPosition < (0 + (32*5))) {
+				go->horizontalPosition = 0 + (32*5);
+				Send(EDGE_REACHED);
+			}
 		}
 		else {
 			go->verticalPosition += move;
