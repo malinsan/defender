@@ -48,7 +48,7 @@ public:
 		
 		background = new Background();
 		RenderComponent* background_render = new RenderComponent();
-		background_render->Create(system, background, &game_objects, "data/background.bmp");
+		background_render->Create(system, background, &game_objects, "data/bakgrund_test.bmp");
 		BackgroundBehaviourComponent * background_component = new BackgroundBehaviourComponent();
 		background_component->Create(system, background, &game_objects);
 
@@ -121,7 +121,7 @@ public:
 	virtual void Draw()
 	{
 		char msg[1024];
-		sprintf_s(msg, "physics demo");
+		sprintf_s(msg, "Defender Time");
 		system->drawText(300, 32, msg);
 
 		if (IsGameOver())

@@ -7,7 +7,10 @@ public:
 
 		GameObject::Init();
 
-		horizontalPosition = -3000; //offset so we draw it in the middle
+		//width = 2400
+		//middle = 1200
+		//screen width 1200, /2 = 600
+		horizontalPosition = -600; //offset so we draw it in the middle
 		verticalPosition = 0;
 
 	}
@@ -27,6 +30,8 @@ public:
 
 	bool moveBG = false;
 	bool moveLeft = false;
+	//wrapspot should be halfway into the other image 
+	int wrapSpot = -1800;
 
 	virtual void Receive(Message m) {
 		if (m == L_EDGE_REACHED) {
@@ -43,11 +48,26 @@ public:
 		if (moveLeft) {
 			moveBG = false;
 			moveLeft = false;
-			go->horizontalPosition += dt * PLAYER_SPEED;
+			Move(dt * PLAYER_SPEED);
 		}
 		else if (moveBG && !moveLeft) {
 			moveBG = false;
-			go->horizontalPosition -= dt * PLAYER_SPEED;
+			Move(- dt * PLAYER_SPEED);
+		}
+
+	}
+
+	void Move(float move) {
+
+		go->horizontalPosition += move;
+		
+		//going right wraparound
+		if (go->horizontalPosition < -1200) {
+			go->horizontalPosition = 0;
+		}
+		//left wraparound
+		if (go->horizontalPosition > 0) {
+			go->horizontalPosition = -1200;
 		}
 
 	}
