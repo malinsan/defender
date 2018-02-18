@@ -44,7 +44,7 @@ class PlayerBehaviourComponent : public Component
 
 	bool movingHorizontally = true;
 	bool leftFacing = true;
-
+	
 public:
 	virtual ~PlayerBehaviourComponent() {}
 
@@ -66,23 +66,28 @@ public:
 	{
 		AvancezLib::KeyStatus keys;
 		system->getKeyStatus(keys);
-		if (keys.right) {
+		
+
+		
+		if (keys.down) {
+			movingHorizontally = false;
 			Move(dt * PLAYER_SPEED);
+		}
+
+		if (keys.up) {
+			movingHorizontally = false;
+			Move(-dt * PLAYER_SPEED);
+		}
+		if (keys.right) {
 			movingHorizontally = true;
 			leftFacing = false;
+			Move(dt * PLAYER_SPEED);
 		}
+
 		if (keys.left) {
-			Move(-dt * PLAYER_SPEED);
 			movingHorizontally = true;
 			leftFacing = true;
-		}	
-		if (keys.up) {
 			Move(-dt * PLAYER_SPEED);
-			movingHorizontally = false;
-		}
-		if (keys.down) {
-			Move(dt * PLAYER_SPEED);
-			movingHorizontally = false;
 		}
 		if (keys.fire)
 		{
@@ -97,7 +102,7 @@ public:
 					game_objects->insert(rocket);
 				}
 
-				Send(SHOOT);
+				Send(SHOOT); //for playing sound
 				
 			}
 		}
@@ -110,6 +115,7 @@ public:
 	{
 
 		if (movingHorizontally) {
+			
 			go->horizontalPosition += move;
 
 			if (go->horizontalPosition > (WIDTH - 32))
