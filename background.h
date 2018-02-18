@@ -30,8 +30,8 @@ public:
 
 	bool moveBG = false;
 	bool moveLeft = false;
-	//wrapspot should be halfway into the other image 
-	int wrapSpot = -1800;
+	//wrapspot is the corner of 'last' window 
+	int wrapSpot = -1200;
 
 	virtual void Receive(Message m) {
 		if (m == L_EDGE_REACHED) {
@@ -62,12 +62,12 @@ public:
 		go->horizontalPosition += move;
 		
 		//going right wraparound
-		if (go->horizontalPosition < -1200) {
+		if (go->horizontalPosition < wrapSpot) {
 			go->horizontalPosition = 0;
 		}
 		//left wraparound
 		if (go->horizontalPosition > 0) {
-			go->horizontalPosition = -1200;
+			go->horizontalPosition = wrapSpot;
 		}
 
 	}
