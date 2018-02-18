@@ -88,9 +88,6 @@ public:
 	virtual void Init()
 	{
 
-		//init soundmaker
-		soundMaker->Init();
-
 		//init background
 		background->Init();
 
