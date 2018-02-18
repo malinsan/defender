@@ -120,12 +120,12 @@ public:
 
 			if (go->horizontalPosition > (WIDTH - (32*5))) {
 				go->horizontalPosition = WIDTH - (32*5);
-				Send(EDGE_REACHED);
+				Send(R_EDGE_REACHED);
 			}
 
 			if (go->horizontalPosition < (0 + (32*5))) {
 				go->horizontalPosition = 0 + (32*5);
-				Send(EDGE_REACHED);
+				Send(L_EDGE_REACHED);
 			}
 		}
 		else {

@@ -3,7 +3,7 @@
 #include <vector>
 
 
-enum Message { EDGE_REACHED, SHOOT, HIT, ALIEN_HIT, GAME_OVER, LEVEL_WIN, NO_MSG };
+enum Message { R_EDGE_REACHED, L_EDGE_REACHED, SHOOT, HIT, ALIEN_HIT, GAME_OVER, LEVEL_WIN, NO_MSG };
 
 class Component;
 

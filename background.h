@@ -25,20 +25,29 @@ class BackgroundBehaviourComponent : public Component
 {
 public:
 
-	bool moveBackground = false;
+	bool moveBG = false;
+	bool moveLeft = false;
 
 	virtual void Receive(Message m) {
-		if (m == EDGE_REACHED) {
-
-			moveBackground = true;
+		if (m == L_EDGE_REACHED) {
+			moveBG = true;
+			moveLeft = true;
+		}
+		if (m == R_EDGE_REACHED) {
+			moveBG = true;
 		}
 	}
 
 	virtual void Update(float dt) 
 	{
-		if (moveBackground) {
-			moveBackground = false;
+		if (moveLeft) {
+			moveBG = false;
+			moveLeft = false;
 			go->horizontalPosition += dt * PLAYER_SPEED;
+		}
+		else if (moveBG && !moveLeft) {
+			moveBG = false;
+			go->horizontalPosition -= dt * PLAYER_SPEED;
 		}
 
 	}
