@@ -8,6 +8,9 @@
 
 #include "object_pool.h"
 
+#include "fmod.hpp"
+#include "fmod_studio.hpp"
+
 
 
 using namespace std;
@@ -34,11 +37,13 @@ float game_speed = 1.f;
 
 
 
-#include "component.h"
 #include "game_object.h"
+#include "component.h"
 
 //game objects to include
 
+#include "background.h"
+#include "soundmaker.h"
 #include "rocket.h"
 #include "player.h"
 #include "box.h"
@@ -47,6 +52,7 @@ float game_speed = 1.f;
 
 int main(int argc, char** argv)
 {
+
 	AvancezLib system;
 
 	system.init(WIDTH, HEIGHT);
@@ -58,6 +64,8 @@ int main(int argc, char** argv)
 	float lastTime = system.getElapsedTime();
 	while (system.update())
 	{
+		//fmodSystem->update();
+
 		float newTime = system.getElapsedTime();
 		float dt = newTime - lastTime;
 		dt = dt * game_speed;

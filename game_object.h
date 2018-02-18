@@ -1,7 +1,9 @@
+#pragma once
 // GameObject represents objects which moves are drawn
 #include <vector>
 
-enum Message { HIT, ALIEN_HIT, GAME_OVER, LEVEL_WIN, NO_MSG };
+
+enum Message { SHOOT, HIT, ALIEN_HIT, GAME_OVER, LEVEL_WIN, NO_MSG };
 
 class Component;
 

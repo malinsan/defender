@@ -1,7 +1,44 @@
+// the main player
+class Player : public GameObject
+{
+public:
+
+	int lives;	// it's game over when goes below zero 
+	bool shooting; //for sound component
+
+	virtual ~Player() { SDL_Log("Player::~Player"); }
+
+	virtual void Init()
+	{
+		SDL_Log("Player::Init");
+		GameObject::Init();
+		lives = NUM_LIVES;
+		shooting = false;
+	}
+
+	virtual void Receive(Message m)
+	{
+		if (m == HIT)
+		{
+			SDL_Log("Player::Hit!");
+			RemoveLife();
+
+			if (lives < 0)
+				Send(GAME_OVER);
+		}
+	}
+
+	void RemoveLife()
+	{
+		lives--;
+		SDL_Log("remaining lives %d", lives);
+	}
+};
 
 
 class PlayerBehaviourComponent : public Component
 {
+
 	float time_fire_pressed;	// time from the last time the fire button was pressed
 	ObjectPool<Rocket> * rockets_pool;
 
@@ -59,6 +96,9 @@ public:
 					rocket->Init(go->horizontalPosition + x, go->verticalPosition, leftFacing);
 					game_objects->insert(rocket);
 				}
+
+				Send(SHOOT);
+				
 			}
 		}
 	}
@@ -98,37 +138,3 @@ public:
 };
 
 
-// the main player
-class Player : public GameObject
-{
-public:
-
-	int lives;	// it's game over when goes below zero 
-
-	virtual ~Player()	{		SDL_Log("Player::~Player");	}
-
-	virtual void Init()
-	{
-		SDL_Log("Player::Init");
-		GameObject::Init();
-		lives = NUM_LIVES;
-	}
-
-	virtual void Receive(Message m) 
-	{
-		if (m == HIT)
-		{ 
-			SDL_Log("Player::Hit!");
-			RemoveLife();
-
-			if (lives < 0)
-				Send(GAME_OVER);
-		}
-	}
-
-	void RemoveLife()
-	{
-		lives--;
-		SDL_Log("remaining lives %d", lives);
-	}
-};

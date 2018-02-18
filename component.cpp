@@ -1,3 +1,6 @@
+#include "fmod.hpp"
+#include "fmod_studio.hpp"
+
 #include "component.h"
 #include "game_object.h"
 #include "avancezlib.h"
@@ -7,6 +10,22 @@ void Component::Create(AvancezLib * system, GameObject * go, std::set<GameObject
 	this->go = go;
 	this->system = system;
 	this->game_objects = game_objects;
+}
+
+void Component::AddReceiver(Component * comp)
+{
+	receivers.push_back(comp);
+}
+
+void Component::Send(Message m)
+{
+	for (auto i = 0; i < receivers.size(); i++)
+	{
+		if (!(receivers[i]->go->enabled))
+			continue;
+
+		receivers[i]->Receive(m);
+	}
 }
 
 void RenderComponent::Create(AvancezLib * system, GameObject * go, std::set<GameObject*>* game_objects, const char * sprite_name)
@@ -58,3 +77,5 @@ void CollideComponent::Update(float dt)
 		}
 	}
 }
+
+

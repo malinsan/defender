@@ -5,22 +5,26 @@ class Game : public GameObject
 	std::set<GameObject*> game_objects;	// http://www.cplusplus.com/reference/set/set/
 
 	AvancezLib* system;
-
-	//b2World * world;
-
+	
 
 	//define the timestep
 	float32 timeStep = 1.0f / 60.0f;
 	int32 velocityIterations = 6;
 	int32 positionIterations = 2;
 
+	//soundmaker
+	SoundMaker* soundMaker;
 
-	//player
+	//background 
+	Background * background;
+
+	//player & rockets
 	Player * player;
 	ObjectPool<Rocket> rockets_pool;	// used to instantiate rockets
 
 
-
+	//background
+	
 	bool game_over;
 
 	unsigned int score = 0;
@@ -32,16 +36,36 @@ public:
 		SDL_Log("Game::Create");
 
 		this->system = system;
+		
+		
+		//create soundmaker
+		soundMaker = new SoundMaker();
+		SoundComponent * sound_component = new SoundComponent();
+		sound_component->Create(system, soundMaker, &game_objects);
+		soundMaker->AddComponent(sound_component);
+		game_objects.insert(soundMaker);
+		
+		
+		background = new Background();
+		RenderComponent* background_render = new RenderComponent();
+		background_render->Create(system, background, &game_objects, "data/background.bmp");
+
+		background->Create();
+		background->AddComponent(background_render);
+		//game_objects.insert(background);
+
 
 		player = new Player();
 		PlayerBehaviourComponent * player_behaviour = new PlayerBehaviourComponent();
 		player_behaviour->Create(system, player, &game_objects, &rockets_pool);
+		player_behaviour->AddReceiver(sound_component);
 		RenderComponent * player_render = new RenderComponent();
 		player_render->Create(system, player, &game_objects, "data/player.bmp");
 		
 		player->Create();
 		player->AddComponent(player_behaviour);
 		player->AddComponent(player_render);
+		//player->AddComponent(player_shoot);
 		player->AddReceiver(this);
 		game_objects.insert(player);
 
@@ -57,11 +81,16 @@ public:
 			(*rocket)->AddComponent(render);
 		}
 
+
 		score = 0;
 	}
 
 	virtual void Init()
 	{
+
+		//init background
+		background->Init();
+
 		for (auto go = game_objects.begin(); go != game_objects.end(); go++)
 			(*go)->Init();
 
@@ -74,8 +103,14 @@ public:
 		if (IsGameOver())
 			dt = 0.f;
 
-		for (auto go = game_objects.begin(); go != game_objects.end(); go++)
+		//first component should be background
+		background->Update(dt);
+
+		for (auto go = game_objects.begin(); go != game_objects.end(); go++) {
+			//except for background 
 			(*go)->Update(dt);
+			
+		}
 	}
 
 	virtual void Draw()
@@ -117,4 +152,7 @@ public:
 
 		
 	}
+
+
+
 };
