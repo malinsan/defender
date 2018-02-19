@@ -48,7 +48,7 @@ public:
 		if (moveLeft) {
 			moveBG = false;
 			moveLeft = false;
-			Move(dt * PLAYER_SPEED);
+			Move(dt * PLAYER_SPEED );
 		}
 		else if (moveBG && !moveLeft) {
 			moveBG = false;

@@ -66,7 +66,7 @@ public:
 		//background listens to player movement
 		player_behaviour->AddReceiver(background_component);
 		RenderComponent * player_render = new RenderComponent();
-		player_render->Create(system, player, &game_objects, "data/player.bmp");
+		player_render->Create(system, player, &game_objects, "data/ship.bmp");
 		
 		player->Create();
 		player->AddComponent(player_behaviour);

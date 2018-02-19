@@ -113,6 +113,7 @@ public:
 	// param move depends on the time, so the player moves always at the same speed on any computer
 	void Move(float move)
 	{
+		bool left = false;
 
 		if (movingHorizontally) {
 			
@@ -122,7 +123,7 @@ public:
 				Send(R_EDGE_REACHED);
 			}
 			else if (go->horizontalPosition <= 400 && !leftFacing) {
-				go->horizontalPosition += move;
+				Send(R_EDGE_REACHED);
 			}
 
 			//going to the left
@@ -131,8 +132,7 @@ public:
 				Send(L_EDGE_REACHED);
 			}
 			else if(go->horizontalPosition >= 800 && leftFacing){
-				go->horizontalPosition += move;
-
+				Send(L_EDGE_REACHED);
 			}
 		}
 		else {
