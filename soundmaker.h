@@ -78,6 +78,7 @@ public:
 		music->setParameterValue("intensity", 0.6f);
 		music->start();
 
+		SDL_Log("Music");
 	}
 
 

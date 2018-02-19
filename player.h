@@ -116,16 +116,23 @@ public:
 
 		if (movingHorizontally) {
 			
-			go->horizontalPosition += move;
-
-			if (go->horizontalPosition > (WIDTH - (32*5))) {
-				go->horizontalPosition = WIDTH - (32*5);
+			//going to the right
+			if (go->horizontalPosition > 400 && !leftFacing) {
+				go->horizontalPosition -= move;
 				Send(R_EDGE_REACHED);
 			}
+			else if (go->horizontalPosition <= 400 && !leftFacing) {
+				go->horizontalPosition += move;
+			}
 
-			if (go->horizontalPosition < (0 + (32*5))) {
-				go->horizontalPosition = 0 + (32*5);
+			//going to the left
+			if (go->horizontalPosition < 800 && leftFacing) {
+				go->horizontalPosition -= move;
 				Send(L_EDGE_REACHED);
+			}
+			else if(go->horizontalPosition >= 800 && leftFacing){
+				go->horizontalPosition += move;
+
 			}
 		}
 		else {
