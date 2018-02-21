@@ -81,12 +81,14 @@ public:
 		if (keys.right) {
 			movingHorizontally = true;
 			leftFacing = false;
+			Send(GOING_RIGHT);
 			Move(dt * PLAYER_SPEED);
 		}
 
 		if (keys.left) {
 			movingHorizontally = true;
 			leftFacing = true;
+			Send(GOING_LEFT);
 			Move(-dt * PLAYER_SPEED);
 		}
 		if (keys.fire)
@@ -113,8 +115,6 @@ public:
 	// param move depends on the time, so the player moves always at the same speed on any computer
 	void Move(float move)
 	{
-		bool left = false;
-
 		if (movingHorizontally) {
 			
 			//going to the right
@@ -152,6 +152,53 @@ public:
 		SDL_Log("fire!");
 		return true;
 	}
+};
+
+
+class PlayerRenderComponent : public Component 
+{
+	Sprite* leftSprite;
+	Sprite* rightSprite;
+	Sprite * currentSprite;
+
+public:
+	virtual ~PlayerRenderComponent() {}
+
+
+	virtual void Create(AvancezLib * system, GameObject * go, std::set<GameObject*>* game_objects, const char * left_sprite_name, const char * right_sprite_name)
+	{
+		Component::Create(system, go, game_objects);
+
+		leftSprite = system->createSprite(left_sprite_name);
+		rightSprite = system->createSprite(right_sprite_name);
+		currentSprite = leftSprite;
+	}
+
+	virtual void Update(float dt) {
+		if (!go->enabled)
+			return;
+
+		if (currentSprite)
+			currentSprite->draw(int(go->horizontalPosition), int(go->verticalPosition), go->angle);
+
+	}
+	virtual void Destroy() {
+		if (currentSprite != NULL)
+			currentSprite->destroy();
+		currentSprite = NULL;
+
+	}
+
+	virtual void Receive(Message m) {
+		if (m == GOING_LEFT) {
+			currentSprite = leftSprite;
+		}
+		if (m == GOING_RIGHT) {
+			currentSprite = rightSprite;
+		}
+	}
+
+
 };
 
 
