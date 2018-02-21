@@ -26,7 +26,7 @@ class AIStateMachine : public Component
 		{
 			state_machine.current_state = this;
 
-			state_machine.lander->horizontalVelocity = 1.0f;
+			//state_machine.lander->horizontalVelocity = 1.0f;
 		}
 		virtual void Update(AIStateMachine& state_machine) {
 			state_machine.state_idle->Enter(state_machine);

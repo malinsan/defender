@@ -95,6 +95,8 @@ public:
 		lander = new Lander();
 		LanderBehaviourComponent* lander_behaviour = new LanderBehaviourComponent();
 		lander_behaviour->Create(system, lander, &game_objects, 400, 400);
+		//listen to player behaviour
+		player_behaviour->AddReceiver(lander_behaviour);
 		AIStateMachine * landerAI = new AIStateMachine();
 		landerAI->Create(system, lander, &game_objects);
 		RenderComponent * landerRender = new RenderComponent();

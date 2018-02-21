@@ -18,6 +18,8 @@ class LanderBehaviourComponent : public Component
 {
 	float xPos, yPos;
 	float moveX, moveY;
+	bool moveLeft;
+	bool moveRight;
 
 public:
 
@@ -32,6 +34,8 @@ public:
 
 	virtual void Init()
 	{
+		moveLeft = false;
+		moveRight = false;
 		go->horizontalPosition = xPos;
 		go->verticalPosition = yPos;
 
@@ -39,8 +43,29 @@ public:
 
 	virtual void Update(float dt) 
 	{
-		go->horizontalPosition += go->horizontalVelocity * dt;
-		go->verticalPosition += go->verticalVelocity * dt;
+		if (moveLeft) {
+			moveLeft = false;
+			Move(dt * PLAYER_SPEED);
+		}
+		if (moveRight) {
+			moveRight = false;
+			Move(-dt * PLAYER_SPEED);
+		}
+
+	}
+
+	void Move(float move) {
+		go->horizontalPosition += move;
+	}
+
+	virtual void Receive(Message m) {
+		//move left if the player is moving left 
+		if (m == GOING_LEFT) {
+			moveLeft = true;
+		}
+		if (m == GOING_RIGHT) {
+			moveRight = true;
+		}
 	}
 
 };

@@ -28,30 +28,28 @@ class BackgroundBehaviourComponent : public Component
 {
 public:
 
-	bool moveBG = false;
 	bool moveLeft = false;
+	bool moveRight = false;
 	//wrapspot is the corner of 'last' window 
 	int wrapSpot = -1200;
 
 	virtual void Receive(Message m) {
 		if (m == GOING_LEFT) {
-			moveBG = true;
 			moveLeft = true;
 		}
 		if (m == GOING_RIGHT) {
-			moveBG = true;
+			moveRight = true;
 		}
 	}
 
 	virtual void Update(float dt) 
 	{
 		if (moveLeft) {
-			moveBG = false;
 			moveLeft = false;
 			Move(dt * PLAYER_SPEED );
 		}
-		else if (moveBG && !moveLeft) {
-			moveBG = false;
+		if (moveRight) {
+			moveRight = false;
 			Move(- dt * PLAYER_SPEED);
 		}
 
