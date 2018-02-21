@@ -35,6 +35,9 @@ public:
 
 class RocketBehaviourComponent : public Component
 {
+
+	bool goingLeft = true;
+
 public:
 
 	void Update(float dt)
@@ -42,14 +45,15 @@ public:
 
 		Rocket* rocket = (Rocket*)go;
 
-		if (rocket->leftFacing) {
-			go->horizontalPosition -= ROCKET_SPEED * dt; // rocket_speed * time
+		if (rocket->leftFacing) { //rocket going left
+			go->horizontalPosition -= ROCKET_SPEED * dt; 
 		}
-		else {
+		else { // rocket going right
 			go->horizontalPosition += ROCKET_SPEED * dt;
 		}
 		
 		if (go->horizontalPosition < 0) // When the rocket reaches the top of the screen, it disappears.
 			go->enabled = false;
 	}
+
 };
