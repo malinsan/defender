@@ -81,7 +81,7 @@ public:
 		if (keys.right) {
 			movingHorizontally = true;
 			leftFacing = false;
-			Send(GOING_RIGHT);
+			Send(GOING_RIGHT); //tell rendering to change sprite
 			Move(dt * PLAYER_SPEED);
 		}
 
@@ -111,24 +111,26 @@ public:
 	}
 
 
-	// move the player left or right
+	// move the player left or right, up or down
 	// param move depends on the time, so the player moves always at the same speed on any computer
 	void Move(float move)
 	{
 		if (movingHorizontally) {
 			
 			//going to the right
+			//move the ship backwards and the background forwards
 			if (go->horizontalPosition > 400 && !leftFacing) {
-				go->horizontalPosition -= move;
+				go->horizontalPosition -= move * 2; // *2 to offset the background moving the other way 
 				Send(R_EDGE_REACHED);
 			}
+			//just move the background
 			else if (go->horizontalPosition <= 400 && !leftFacing) {
 				Send(R_EDGE_REACHED);
 			}
 
 			//going to the left
 			if (go->horizontalPosition < 800 && leftFacing) {
-				go->horizontalPosition -= move;
+				go->horizontalPosition -= move * 2;
 				Send(L_EDGE_REACHED);
 			}
 			else if(go->horizontalPosition >= 800 && leftFacing){
@@ -137,6 +139,12 @@ public:
 		}
 		else {
 			go->verticalPosition += move;
+			if (go->verticalPosition < 0) {
+				go->verticalPosition = 0 + PLAYER_HEIGHT;
+			}
+			if (go->verticalPosition > 670) {
+				go->verticalPosition = 670 - PLAYER_HEIGHT;
+			}
 		}
 	}
 
@@ -155,6 +163,8 @@ public:
 };
 
 
+
+//could become the new render component instead actually 
 class PlayerRenderComponent : public Component 
 {
 	Sprite* leftSprite;

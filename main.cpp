@@ -20,7 +20,8 @@ const unsigned int HEIGHT = 670;
 const unsigned int LEVEL_CHUNKS = 7;
 const unsigned int	MAX_NUM_GAME_OBJECTS = 10000;
 const unsigned int	NUM_LIVES = 2;
-int PLAYER_WIDTH = 32;
+int PLAYER_WIDTH = 64;
+int PLAYER_HEIGHT = 25;
 
 const unsigned int	MAX_NUM_ROCKETS = 32;
 const unsigned int	MAX_NUM_BOMBS = 32;
