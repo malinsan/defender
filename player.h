@@ -121,20 +121,20 @@ public:
 			//move the ship backwards and the background forwards
 			if (go->horizontalPosition > 400 && !leftFacing) {
 				go->horizontalPosition -= move * 2; // *2 to offset the background moving the other way 
-				Send(R_EDGE_REACHED);
+				Send(GOING_RIGHT);
 			}
 			//just move the background
 			else if (go->horizontalPosition <= 400 && !leftFacing) {
-				Send(R_EDGE_REACHED);
+				Send(GOING_RIGHT);
 			}
 
 			//going to the left
 			if (go->horizontalPosition < 800 && leftFacing) {
 				go->horizontalPosition -= move * 2;
-				Send(L_EDGE_REACHED);
+				Send(GOING_LEFT);
 			}
 			else if(go->horizontalPosition >= 800 && leftFacing){
-				Send(L_EDGE_REACHED);
+				Send(GOING_LEFT);
 			}
 		}
 		else {

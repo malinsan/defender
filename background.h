@@ -34,11 +34,11 @@ public:
 	int wrapSpot = -1200;
 
 	virtual void Receive(Message m) {
-		if (m == L_EDGE_REACHED) {
+		if (m == GOING_LEFT) {
 			moveBG = true;
 			moveLeft = true;
 		}
-		if (m == R_EDGE_REACHED) {
+		if (m == GOING_RIGHT) {
 			moveBG = true;
 		}
 	}
