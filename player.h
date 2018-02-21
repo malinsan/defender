@@ -58,6 +58,8 @@ public:
 	{
 		go->horizontalPosition = 320;
 		go->verticalPosition = 480 - 32;
+		go->horizontalVelocity = 0.0f;
+		go->verticalVelocity = 0.0f;
 
 		time_fire_pressed = -10000.f;
 	}

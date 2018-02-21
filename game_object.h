@@ -16,6 +16,8 @@ protected:
 public:
 	double horizontalPosition;
 	double verticalPosition;
+	double horizontalVelocity, verticalVelocity; //"physics"
+
 	float angle; // angle of rotation in degrees
 	bool enabled;
 

@@ -25,12 +25,14 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ai_state_machine.h" />
     <ClInclude Include="avancezlib.h" />
     <ClInclude Include="background.h" />
     <ClInclude Include="box.h" />
     <ClInclude Include="component.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="game_object.h" />
+    <ClInclude Include="lander.h" />
     <ClInclude Include="object_pool.h" />
     <ClInclude Include="player.h" />
     <ClInclude Include="rocket.h" />

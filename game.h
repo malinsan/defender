@@ -22,6 +22,8 @@ class Game : public GameObject
 	Player * player;
 	ObjectPool<Rocket> rockets_pool;	// used to instantiate rockets
 
+	//enemy
+	Lander * lander;
 
 	//background
 	
@@ -88,6 +90,21 @@ public:
 			(*rocket)->AddComponent(render);
 		}
 
+
+		//create an enemy
+		lander = new Lander();
+		LanderBehaviourComponent* lander_behaviour = new LanderBehaviourComponent();
+		lander_behaviour->Create(system, lander, &game_objects, 400, 400);
+		AIStateMachine * landerAI = new AIStateMachine();
+		landerAI->Create(system, lander, &game_objects);
+		RenderComponent * landerRender = new RenderComponent();
+		landerRender->Create(system, lander, &game_objects, "data/enemy_1.bmp");
+
+		lander->Create();
+		lander->AddComponent(lander_behaviour);
+		lander->AddComponent(landerAI);
+		lander->AddComponent(landerRender);
+		game_objects.insert(lander);
 
 		score = 0;
 	}
