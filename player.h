@@ -44,7 +44,7 @@ class PlayerBehaviourComponent : public Component
 
 	bool movingHorizontally = true;
 	bool leftFacing = true;
-
+	
 public:
 	virtual ~PlayerBehaviourComponent() {}
 
@@ -66,23 +66,30 @@ public:
 	{
 		AvancezLib::KeyStatus keys;
 		system->getKeyStatus(keys);
-		if (keys.right) {
+		
+
+		
+		if (keys.down) {
+			movingHorizontally = false;
 			Move(dt * PLAYER_SPEED);
+		}
+
+		if (keys.up) {
+			movingHorizontally = false;
+			Move(-dt * PLAYER_SPEED);
+		}
+		if (keys.right) {
 			movingHorizontally = true;
 			leftFacing = false;
+			Send(GOING_RIGHT); //tell rendering to change sprite
+			Move(dt * PLAYER_SPEED);
 		}
+
 		if (keys.left) {
-			Move(-dt * PLAYER_SPEED);
 			movingHorizontally = true;
 			leftFacing = true;
-		}	
-		if (keys.up) {
+			Send(GOING_LEFT);
 			Move(-dt * PLAYER_SPEED);
-			movingHorizontally = false;
-		}
-		if (keys.down) {
-			Move(dt * PLAYER_SPEED);
-			movingHorizontally = false;
 		}
 		if (keys.fire)
 		{
@@ -97,29 +104,47 @@ public:
 					game_objects->insert(rocket);
 				}
 
-				Send(SHOOT);
+				Send(SHOOT); //for playing sound
 				
 			}
 		}
 	}
 
 
-	// move the player left or right
+	// move the player left or right, up or down
 	// param move depends on the time, so the player moves always at the same speed on any computer
 	void Move(float move)
 	{
-
 		if (movingHorizontally) {
-			go->horizontalPosition += move;
+			
+			//going to the right
+			//move the ship backwards and the background forwards
+			if (go->horizontalPosition > 400 && !leftFacing) {
+				go->horizontalPosition -= move * 2; // *2 to offset the background moving the other way 
+				Send(R_EDGE_REACHED);
+			}
+			//just move the background
+			else if (go->horizontalPosition <= 400 && !leftFacing) {
+				Send(R_EDGE_REACHED);
+			}
 
-			if (go->horizontalPosition > (WIDTH - 32))
-				go->horizontalPosition = WIDTH - 32;
-
-			if (go->horizontalPosition < 0)
-				go->horizontalPosition = 0;
+			//going to the left
+			if (go->horizontalPosition < 800 && leftFacing) {
+				go->horizontalPosition -= move * 2;
+				Send(L_EDGE_REACHED);
+			}
+			else if(go->horizontalPosition >= 800 && leftFacing){
+				Send(L_EDGE_REACHED);
+			}
 		}
 		else {
 			go->verticalPosition += move;
+			if (go->verticalPosition < 0) {
+				go->verticalPosition = 0 + PLAYER_HEIGHT;
+			}
+			if (go->verticalPosition > 670) {
+				go->verticalPosition = 670 - PLAYER_HEIGHT;
+			}
 		}
 	}
 
@@ -135,6 +160,55 @@ public:
 		SDL_Log("fire!");
 		return true;
 	}
+};
+
+
+
+//could become the new render component instead actually 
+class PlayerRenderComponent : public Component 
+{
+	Sprite* leftSprite;
+	Sprite* rightSprite;
+	Sprite * currentSprite;
+
+public:
+	virtual ~PlayerRenderComponent() {}
+
+
+	virtual void Create(AvancezLib * system, GameObject * go, std::set<GameObject*>* game_objects, const char * left_sprite_name, const char * right_sprite_name)
+	{
+		Component::Create(system, go, game_objects);
+
+		leftSprite = system->createSprite(left_sprite_name);
+		rightSprite = system->createSprite(right_sprite_name);
+		currentSprite = leftSprite;
+	}
+
+	virtual void Update(float dt) {
+		if (!go->enabled)
+			return;
+
+		if (currentSprite)
+			currentSprite->draw(int(go->horizontalPosition), int(go->verticalPosition), go->angle);
+
+	}
+	virtual void Destroy() {
+		if (currentSprite != NULL)
+			currentSprite->destroy();
+		currentSprite = NULL;
+
+	}
+
+	virtual void Receive(Message m) {
+		if (m == GOING_LEFT) {
+			currentSprite = leftSprite;
+		}
+		if (m == GOING_RIGHT) {
+			currentSprite = rightSprite;
+		}
+	}
+
+
 };
 
 
