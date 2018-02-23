@@ -16,11 +16,11 @@ class Lander : public GameObject
 
 class LanderBehaviourComponent : public Component 
 {
-	float xPos, yPos;
-	float moveX, moveY;
-	bool moveLeft;
-	bool moveRight;
-
+	float xPos, yPos; //remove??
+	float moveX, moveY; //remove??
+	bool moveLeft = false;
+	bool moveRight = false;
+	
 public:
 
 	virtual void Create(AvancezLib* system, GameObject * go, std::set<GameObject*> * game_objects, float xPos, float yPos)
@@ -34,8 +34,6 @@ public:
 
 	virtual void Init()
 	{
-		moveLeft = false;
-		moveRight = false;
 		go->horizontalPosition = xPos;
 		go->verticalPosition = yPos;
 
@@ -56,6 +54,16 @@ public:
 
 	void Move(float move) {
 		go->horizontalPosition += move;
+
+		//going right wraparound
+		if (go->horizontalPosition >= WORLD_WIDTH) {
+			go->horizontalPosition = 0;
+		}
+		//left wraparound
+		if(go->horizontalPosition < 0){
+			go->horizontalPosition = WORLD_WIDTH;
+		}
+		
 	}
 
 	virtual void Receive(Message m) {
@@ -63,6 +71,8 @@ public:
 		if (m == GOING_LEFT) {
 			moveLeft = true;
 		}
+
+		//move right if player going right
 		if (m == GOING_RIGHT) {
 			moveRight = true;
 		}

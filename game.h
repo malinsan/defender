@@ -83,6 +83,7 @@ public:
 		{
 			RocketBehaviourComponent * behaviour = new RocketBehaviourComponent();
 			behaviour->Create(system, *rocket, &game_objects);
+			player_behaviour->AddReceiver(behaviour);
 			RenderComponent * render = new RenderComponent();
 			render->Create(system, *rocket, &game_objects, "data/rocket.bmp");
 			(*rocket)->Create();

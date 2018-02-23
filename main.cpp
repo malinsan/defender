@@ -15,6 +15,7 @@
 
 using namespace std;
 
+const int WORLD_WIDTH = 1200;
 const unsigned int WIDTH = 1200;
 const unsigned int HEIGHT = 670;
 const unsigned int LEVEL_CHUNKS = 7;

@@ -60,12 +60,12 @@ public:
 		go->horizontalPosition += move;
 		
 		//going right wraparound
-		if (go->horizontalPosition < wrapSpot) {
+		if (go->horizontalPosition < - WORLD_WIDTH) {
 			go->horizontalPosition = 0;
 		}
 		//left wraparound
 		if (go->horizontalPosition > 0) {
-			go->horizontalPosition = wrapSpot;
+			go->horizontalPosition = - WORLD_WIDTH;
 		}
 
 	}

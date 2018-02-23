@@ -37,6 +37,7 @@ class RocketBehaviourComponent : public Component
 {
 
 	bool goingLeft = true;
+	bool goingBack = false;
 
 public:
 
@@ -44,16 +45,26 @@ public:
 	{
 
 		Rocket* rocket = (Rocket*)go;
+		float mult = goingBack ? 2 : 1;
+		goingBack = false;
+
 
 		if (rocket->leftFacing) { //rocket going left
-			go->horizontalPosition -= ROCKET_SPEED * dt; 
+			go->horizontalPosition -= ROCKET_SPEED * dt * mult; 
 		}
 		else { // rocket going right
-			go->horizontalPosition += ROCKET_SPEED * dt;
+			go->horizontalPosition += ROCKET_SPEED * dt * mult;
 		}
 		
-		if (go->horizontalPosition < 0) // When the rocket reaches the top of the screen, it disappears.
+		if (go->horizontalPosition < 0) // When the rocket reaches the ends of the screen, it disappears.
 			go->enabled = false;
+	}
+
+	void Receive(Message m) {
+		if (m == GOING_BACK) {
+			goingBack = true;
+		}
+
 	}
 
 };
