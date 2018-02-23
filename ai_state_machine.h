@@ -11,11 +11,14 @@ class AIStateMachine : public Component
 	public:
 		virtual ~State() {}
 		virtual void Enter(AIStateMachine& state_machine) {}
-		virtual void Update(AIStateMachine& state_machine) {}
+		virtual void Update(AIStateMachine& state_machine, float dt) {}
 	};
 
 	class IdleState : public State 
 	{
+		float startTime;
+		float changeDirectionTime = 3.0f;
+		bool goingRight = true; 
 	public:
 		IdleState(AvancezLib* system) 
 		{
@@ -25,11 +28,20 @@ class AIStateMachine : public Component
 		virtual void Enter(AIStateMachine &state_machine) 
 		{
 			state_machine.current_state = this;
-
-			//state_machine.lander->horizontalVelocity = 1.0f;
+			startTime = system->getElapsedTime();
 		}
-		virtual void Update(AIStateMachine& state_machine) {
-			state_machine.state_idle->Enter(state_machine);
+		virtual void Update(AIStateMachine& state_machine, float dt) {
+
+			//when idle move side to side 
+			float movement = goingRight ? LANDER_SPEED * dt : -LANDER_SPEED * dt;
+			state_machine.lander->horizontalPosition += movement;
+
+			if ((system->getElapsedTime() - startTime) >= changeDirectionTime) {
+				goingRight = (goingRight == false); //flip bool
+				startTime = system->getElapsedTime();
+			}
+
+//			state_machine.state_idle->Enter(state_machine);
 		}
 	};
 
@@ -96,6 +108,6 @@ public:
 	virtual void Update(float dt)
 	{
 		// No need for input
-		current_state->Update(*this);
+		current_state->Update(*this, dt);
 	}
 };

@@ -30,9 +30,16 @@ public:
 
 	bool moveLeft = false;
 	bool moveRight = false;
-	//wrapspot is the corner of 'last' window 
-	int wrapSpot = -1200;
 
+	virtual void Create(AvancezLib* system, GameObject * go, std::set<GameObject*> * game_objects, float xPos, float yPos)
+	{
+		Component::Create(system, go, game_objects);
+		go->horizontalPosition = xPos;
+		go->verticalPosition = yPos;
+
+	}
+
+	
 	virtual void Receive(Message m) {
 		if (m == GOING_LEFT) {
 			moveLeft = true;

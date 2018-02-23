@@ -52,7 +52,7 @@ public:
 		RenderComponent* background_render = new RenderComponent();
 		background_render->Create(system, background, &game_objects, "data/bakgrund_test.bmp");
 		BackgroundBehaviourComponent * background_component = new BackgroundBehaviourComponent();
-		background_component->Create(system, background, &game_objects);
+		background_component->Create(system, background, &game_objects, -600, 0);
 
 		background->Create();
 		background->AddComponent(background_render);
@@ -94,12 +94,15 @@ public:
 
 		//create an enemy
 		lander = new Lander();
+		//movement according to player
 		LanderBehaviourComponent* lander_behaviour = new LanderBehaviourComponent();
 		lander_behaviour->Create(system, lander, &game_objects, 400, 400);
 		//listen to player behaviour
 		player_behaviour->AddReceiver(lander_behaviour);
+		//AI behaviour
 		AIStateMachine * landerAI = new AIStateMachine();
 		landerAI->Create(system, lander, &game_objects);
+		//render component
 		RenderComponent * landerRender = new RenderComponent();
 		landerRender->Create(system, lander, &game_objects, "data/enemy_1.bmp");
 

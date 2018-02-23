@@ -45,7 +45,7 @@ public:
 	{
 
 		Rocket* rocket = (Rocket*)go;
-		float mult = goingBack ? 2 : 1;
+		float mult = goingBack ? 2.0f : 1.0f;
 		goingBack = false;
 
 
