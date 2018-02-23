@@ -12,6 +12,37 @@ class AIStateMachine : public Component
 		virtual ~State() {}
 		virtual void Enter(AIStateMachine& state_machine) {}
 		virtual void Update(AIStateMachine& state_machine, float dt) {}
+
+		//parameter chance is the 1/5000 percent chance of getting a true
+		bool Chance(int chance) 
+		{
+			//0-4999
+			return rand() % 5000 <= chance;
+		}
+
+		//proximity to player or humans, parameter isPlayerTarget should be true if checking proximity to player and false otherwise
+		bool InProximityTo(AIStateMachine& state_machine, bool isPlayerTarget, float range) {
+			//where are we?
+			float posX = state_machine.lander->horizontalPosition;
+			float posY = state_machine.lander->verticalPosition;
+
+			GameObject* target = isPlayerTarget ? state_machine.player : state_machine.player; //TODO: change latter to human
+				
+			//where is actor?
+			float targetPosX = target->horizontalPosition;
+			float targetPosY = target->verticalPosition;
+
+			return Distance(posX, posY, targetPosX, targetPosY) <= range;
+
+		}
+
+		//returns distance between point a and b using pythagorean theorem
+		float Distance(float posX, float posY, float targetX, float targetY) {
+			float lengthA = (float)pow(abs(posX - targetX), 2);
+			float lengthB = (float)pow(abs(posY - targetY), 2);
+			float distance = (float)sqrt(lengthA + lengthB);
+			return distance;
+		}
 	};
 
 	class IdleState : public State 
@@ -38,41 +69,151 @@ class AIStateMachine : public Component
 
 			if ((system->getElapsedTime() - startTime) >= changeDirectionTime) {
 				goingRight = (goingRight == false); //flip bool
-				startTime = system->getElapsedTime();
+				startTime = system->getElapsedTime(); //reset time
 			}
 
-//			state_machine.state_idle->Enter(state_machine);
+			//have chance of going to active state 
+			if (Chance(1)) {
+				state_machine.state_aggressive->Enter(state_machine);
+			}
+
+
+			//if player is close go to aggressive mode
+			/*if (InProximityTo(state_machine, true, 200)) {
+				state_machine.state_aggressive->Enter(state_machine);
+			}*/
+
+			//have chance of going for a human
+
 		}
 	};
 
 	class AggressiveState : public State 
 	{
+	public:
+		AggressiveState(AvancezLib* system)
+		{
+			this->system = system;
+		}
 
-	};
+		virtual void Enter(AIStateMachine &state_machine)
+		{
+			state_machine.current_state = this;
+			//have chance of going back to idle
+			if (Chance(2000)) {
+				state_machine.state_idle->Enter(state_machine);
+			}
+		}
+		virtual void Update(AIStateMachine& state_machine, float dt) 
+		{
+			//if far away from player approach them
+			if (!(InProximityTo(state_machine, true, 200))) {
+				state_machine.state_approach->Enter(state_machine, true);
+			}
+			else {
+				state_machine.state_attack->Enter(state_machine);
+			}
 
-	class AbductorState : public State
-	{
+			//TODO: if close attack player!!!
 
-	};
 
-	class AttackState : public State
-	{
+		}
 
 	};
 
 	class ApproachState : public State
 	{
+		bool isAggressive; //abducting or aggressive?
+		float range;
+		State* cameFromState;
+		GameObject* target;
+	public:
+		ApproachState(AvancezLib* system)
+		{
+			this->system = system;
+		}
+
+		virtual void Enter(AIStateMachine &state_machine, bool isAggressive)
+		{
+			state_machine.current_state = this;
+			this->isAggressive = isAggressive;
+
+			if (isAggressive) {
+				range = state_machine.PLAYER_RANGE; //shoot player
+				cameFromState = state_machine.state_aggressive;
+				target = state_machine.player;
+			}
+			else {
+				range = state_machine.HUMAN_RANGE; //pickup humans
+				cameFromState = state_machine.state_abductor;
+				target = state_machine.player;
+			}
+		}
+
+		virtual void Update(AIStateMachine& state_machine, float dt) {
+			//move towards target
+			float horizontalMovement = target->horizontalPosition > state_machine.lander->horizontalPosition ? dt * LANDER_SPEED : -dt * LANDER_SPEED;
+			float verticalMovement = target->verticalPosition > state_machine.lander->verticalPosition ? dt * LANDER_SPEED : -dt * LANDER_SPEED;
+			
+			state_machine.lander->horizontalPosition += horizontalMovement;
+			state_machine.lander->verticalPosition += verticalMovement;
+
+
+			if (InProximityTo(state_machine, isAggressive, range)) {
+				//if we are in range go back to the state we came from to either shoot at the player or abduct a human
+				cameFromState->Enter(state_machine);
+			}
+
+		}
+
 
 	};
+
+	class AbductorState : public State
+	{
+	public:
+		virtual void Enter(AIStateMachine &state_machine)
+		{
+			//state_machine.current_state = this;
+		//	startTime = system->getElapsedTime();
+		}
+		virtual void Update(AIStateMachine& state_machine, float dt) {
+		}
+
+
+	};
+
+	class AttackState : public State
+	{
+	public:
+		AttackState(AvancezLib* system)
+		{
+			this->system = system;
+		}
+
+		virtual void Enter(AIStateMachine &state_machine)
+		{
+			//state_machine.current_state = this;
+			//	startTime = system->getElapsedTime();
+		}
+		virtual void Update(AIStateMachine& state_machine, float dt) {
+		}
+
+
+	};
+
 
 public:
 	float last_attack_time = 0.0f;
 
 	const float	ATTACK_TIME = 0.2f;
 	const float	ATTACK_COOLDOWN_TIME = 0.05f;
+	const float PLAYER_RANGE = 200.0f;
+	const float HUMAN_RANGE = 10.0f;
 
 	Lander		* lander;
 	AvancezLib  * system;
+	Player		* player;
 
 	State *				current_state;
 	IdleState *			state_idle;
@@ -86,20 +227,21 @@ public:
 	
 	virtual ~AIStateMachine() {}
 
-	virtual void Create(AvancezLib* system, GameObject * go, std::set<GameObject*> * game_objects)
+	virtual void Create(AvancezLib* system, GameObject * go, std::set<GameObject*> * game_objects, Player* player)
 	{
 		Component::Create(system, go, game_objects);
 
 		this->system = system;
 		lander = (Lander*)go;
+		this->player = player;
 	}
 
 	virtual void Init()
 	{
 		state_idle = new IdleState(system);
-		//state_attack = new AttackState(system);
-		//state_aggressive = new AggressiveState(system);
-		//state_approach = new ApproachState(system);
+		state_attack = new AttackState(system);
+		state_aggressive = new AggressiveState(system);
+		state_approach = new ApproachState(system);
 		
 		current_state = state_idle;
 	}
