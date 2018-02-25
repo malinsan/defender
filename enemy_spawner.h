@@ -1,7 +1,7 @@
 #pragma once
-class EnemySpawner : public GameObject 
+class Spawner : public GameObject 
 {
-	virtual ~EnemySpawner() {}
+	virtual ~Spawner() {}
 
 	virtual void Init() 
 	{
@@ -9,27 +9,38 @@ class EnemySpawner : public GameObject
 	}
 };
 
-class SpawnEnemiesComponent : public Component 
+class SpawnerComponent : public Component 
 {
 	float startTime;
-	float spawnTime = 1.0f; //time between spawning of new enemies
+	float humanStartTime;
+	float spawnTime; //time between spawning of new enemies
+	float humanSpawnTime = 0.05f;
 	ObjectPool<Lander> * lander_pool;
+	ObjectPool<Human> * human_pool;
+	int numberOfHumansSpawned = 0;
 
 public:
-	virtual ~SpawnEnemiesComponent() {}
+	virtual ~SpawnerComponent() {}
 
-	virtual void Create(AvancezLib* system, GameObject * go, std::set<GameObject*> * game_objects, ObjectPool<Lander>* lander_pool){
+	virtual void Create(AvancezLib* system, GameObject * go, std::set<GameObject*> * game_objects, ObjectPool<Lander>* lander_pool, ObjectPool<Human>* human_pool){
 		Component::Create(system, go, game_objects);
 		this->lander_pool = lander_pool;
+		this->human_pool = human_pool;
 	}
 
 	virtual void Init() 
 	{
 		startTime = system->getElapsedTime();
+		humanStartTime = system->getElapsedTime();
 	}
 
 	virtual void Update(float dt) 
 	{
+		SpawnHuman();
+		SpawnLander();
+	}
+
+	void SpawnLander() {
 		//varying spawntime
 		spawnTime = rand() % 30 + 1;
 
@@ -38,11 +49,24 @@ public:
 		if (lander != NULL && (system->getElapsedTime() - startTime) > spawnTime) {
 			//random location
 			float xPos = rand() % WORLD_WIDTH;
-			float yPos = rand() % HEIGHT;
+			float yPos = rand() % HEIGHT + 32;
 
 			lander->Init(xPos, yPos);
 			game_objects->insert(lander);
 			startTime = system->getElapsedTime();
+		}
+
+	}
+
+	void SpawnHuman() {
+		//spawn all humans
+		Human * human = human_pool->FirstAvailable();
+		if (human != NULL) {
+			int xPos = 10 + (WORLD_WIDTH / 10) * numberOfHumansSpawned;
+			human->Init((float)xPos);
+			game_objects->insert(human);
+			numberOfHumansSpawned++;
+			humanStartTime = system->getElapsedTime();
 		}
 	}
 };

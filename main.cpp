@@ -36,6 +36,7 @@ const float			ROCKET_SPEED = 600.0f;
 const float			ALIEN_SPEED = 40.0f;
 const float			LANDER_SPEED = 40.0f;
 const float			BOMB_SPEED = 120.0f;
+const float			HUMAN_SPEED = 40.0f;
 
 float game_speed = 1.f;
 
@@ -53,8 +54,10 @@ float game_speed = 1.f;
 #include "player.h"
 #include "box.h"
 #include "lander.h"
+#include "human.h"
 #include "ai_state_machine.h"
 #include "enemy_spawner.h"
+#include "human_spawner.h"
 
 #include "game.h"
 

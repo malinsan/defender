@@ -23,10 +23,14 @@ class Game : public GameObject
 	ObjectPool<Rocket> rockets_pool;	// used to instantiate rockets
 
 	//enemy
-	EnemySpawner * enemy_spawner;
+	Spawner * enemy_spawner;
 	ObjectPool<Lander> lander_pool;
 	//Lander * lander;
 	ObjectPool<Bomb> bomb_pool;
+
+
+	ObjectPool<Human> human_pool;
+
 
 	bool game_over;
 
@@ -96,14 +100,34 @@ public:
 			(*rocket)->AddComponent(render);
 		}
 
+		//HUMANS
+		human_pool.Create(10);
+		for (auto human = human_pool.pool.begin(); human != human_pool.pool.end(); human ++) 
+		{
+			MoveAccordingToPlayerComponent * main_move_behaviour = new MoveAccordingToPlayerComponent();
+			main_move_behaviour->Create(system, *human, &game_objects, 0, 0, true);
+			player_behaviour->AddReceiver(main_move_behaviour);
+
+			HumanBehaviourComponent * behaviour = new HumanBehaviourComponent();
+			behaviour->Create(system, *human, &game_objects);
+
+			RenderComponent * render = new RenderComponent();
+			render->Create(system, *human, &game_objects, "data/human.bmp");
+
+			(*human)->Create();
+			(*human)->AddComponent(main_move_behaviour);
+			(*human)->AddComponent(behaviour);
+			(*human)->AddComponent(render);
+		}
+
 		//#################################################//
 		//						ENEMIES					   //
 		//#################################################//
 
 		//enemy spawner
-		enemy_spawner = new EnemySpawner();
-		SpawnEnemiesComponent * spawn_enemies_component = new SpawnEnemiesComponent();
-		spawn_enemies_component->Create(system, enemy_spawner, &game_objects, &lander_pool);
+		enemy_spawner = new Spawner();
+		SpawnerComponent * spawn_enemies_component = new SpawnerComponent();
+		spawn_enemies_component->Create(system, enemy_spawner, &game_objects, &lander_pool, &human_pool);
 		enemy_spawner->Create();
 		enemy_spawner->AddComponent(spawn_enemies_component);
 		game_objects.insert(enemy_spawner);
