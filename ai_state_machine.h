@@ -196,7 +196,7 @@ class AIStateMachine : public Component
 			Bomb * bomb = state_machine.bomb_pool->FirstAvailable();
 			if (bomb != NULL)	// rocket is NULL if the object pool can not provide an object
 			{
-				//int x = leftFacing ? -PLAYER_WIDTH : PLAYER_WIDTH; //offset from player so rockets doesn't start from middle of player
+				state_machine.last_attack_time = system->getElapsedTime();
 				int x = 10;
 				bool shootLeft = state_machine.player->horizontalPosition < state_machine.lander->horizontalPosition ? true : false;
 				bomb->Init(state_machine.lander->horizontalPosition + x, state_machine.lander->verticalPosition, shootLeft);

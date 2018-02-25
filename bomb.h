@@ -35,25 +35,31 @@ public:
 
 class BombBehaviourComponent : public Component
 {
-
-	bool goingLeft = true;
-	bool goingBack = false;
-
-	bool playerGoingLeft = false;
-	bool playerGoingRight = false;
-
+	float startTime;
 public:
+
+	virtual void Init() {
+		startTime = system->getElapsedTime();
+	}
 
 	void Update(float dt)
 	{
-		
+	
 		Bomb* bomb = (Bomb*)go;
-		
-		if (bomb->leftFacing) { //rocket going left
+		if (bomb->leftFacing) { //bomb going left
 			go->horizontalPosition -= BOMB_SPEED * dt;
 		}
 		else { // rocket going right
 			go->horizontalPosition += BOMB_SPEED * dt;
+		}
+
+		//first go up
+		if (system->getElapsedTime() - startTime < 1.5f) {
+			go->verticalPosition -= BOMB_SPEED * 0.3 * dt;
+		}
+		else {
+			//then go downwards
+			go->verticalPosition += BOMB_SPEED * 0.5 * dt;
 		}
 
 		if (go->horizontalPosition < 0 || go->horizontalPosition > WORLD_WIDTH) // When the rocket reaches the ends of the screen, it disappears.
