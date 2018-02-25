@@ -30,6 +30,7 @@ public:
 
 	bool moveLeft = false;
 	bool moveRight = false;
+	bool goingBack = false;
 
 	virtual void Create(AvancezLib* system, GameObject * go, std::set<GameObject*> * game_objects, float xPos, float yPos)
 	{
@@ -47,17 +48,23 @@ public:
 		if (m == GOING_RIGHT) {
 			moveRight = true;
 		}
+		if (m == GOING_BACK) {
+			goingBack = true;
+		}
 	}
 
 	virtual void Update(float dt) 
 	{
+		float mult = goingBack ? 1.5f : 1.0f;
+		goingBack = false;
+
 		if (moveLeft) {
 			moveLeft = false;
-			Move(dt * PLAYER_SPEED );
+			Move(dt * PLAYER_SPEED * mult);
 		}
 		if (moveRight) {
 			moveRight = false;
-			Move(- dt * PLAYER_SPEED);
+			Move(- dt * PLAYER_SPEED * mult);
 		}
 
 	}

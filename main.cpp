@@ -48,6 +48,7 @@ float game_speed = 1.f;
 
 #include "background.h"
 #include "soundmaker.h"
+#include "bomb.h"
 #include "rocket.h"
 #include "player.h"
 #include "box.h"

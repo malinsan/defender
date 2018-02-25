@@ -24,9 +24,8 @@ class Game : public GameObject
 
 	//enemy
 	Lander * lander;
+	ObjectPool<Bomb> bomb_pool;
 
-	//background
-	
 	bool game_over;
 
 	unsigned int score = 0;
@@ -81,12 +80,16 @@ public:
 		rockets_pool.Create(30);
 		for (auto rocket = rockets_pool.pool.begin(); rocket != rockets_pool.pool.end(); rocket++)
 		{
+			MoveAccordingToPlayerComponent * main_move_behaviour = new MoveAccordingToPlayerComponent();
+			main_move_behaviour->Create(system, *rocket, &game_objects, 0, 0, false);
+			player_behaviour->AddReceiver(main_move_behaviour);
+
 			RocketBehaviourComponent * behaviour = new RocketBehaviourComponent();
 			behaviour->Create(system, *rocket, &game_objects);
-			player_behaviour->AddReceiver(behaviour);
 			RenderComponent * render = new RenderComponent();
 			render->Create(system, *rocket, &game_objects, "data/rocket.bmp");
 			(*rocket)->Create();
+			(*rocket)->AddComponent(main_move_behaviour);
 			(*rocket)->AddComponent(behaviour);
 			(*rocket)->AddComponent(render);
 		}
@@ -95,13 +98,13 @@ public:
 		//create an enemy
 		lander = new Lander();
 		//movement according to player
-		LanderBehaviourComponent* lander_behaviour = new LanderBehaviourComponent();
-		lander_behaviour->Create(system, lander, &game_objects, 400, 400);
+		MoveAccordingToPlayerComponent* lander_behaviour = new MoveAccordingToPlayerComponent();
+		lander_behaviour->Create(system, lander, &game_objects, 400, 400, true);
 		//listen to player behaviour
 		player_behaviour->AddReceiver(lander_behaviour);
 		//AI behaviour
 		AIStateMachine * landerAI = new AIStateMachine();
-		landerAI->Create(system, lander, &game_objects, player);
+		landerAI->Create(system, lander, &game_objects, player, &bomb_pool);
 		//render component
 		RenderComponent * landerRender = new RenderComponent();
 		landerRender->Create(system, lander, &game_objects, "data/enemy_1.bmp");
@@ -111,6 +114,26 @@ public:
 		lander->AddComponent(landerAI);
 		lander->AddComponent(landerRender);
 		game_objects.insert(lander);
+
+		//alien bombs
+		bomb_pool.Create(1);
+		for (auto bomb = bomb_pool.pool.begin(); bomb != bomb_pool.pool.end(); bomb++)
+		{
+			MoveAccordingToPlayerComponent * main_move_behaviour = new MoveAccordingToPlayerComponent();
+			main_move_behaviour->Create(system, *bomb, &game_objects, 0, 0, false);
+			player_behaviour->AddReceiver(main_move_behaviour);
+
+			BombBehaviourComponent * behaviour = new BombBehaviourComponent();
+			behaviour->Create(system, *bomb, &game_objects);
+			RenderComponent * render = new RenderComponent();
+			render->Create(system, *bomb, &game_objects, "data/bomb.bmp");
+			(*bomb)->Create();
+			(*bomb)->AddComponent(main_move_behaviour);
+			(*bomb)->AddComponent(behaviour);
+			(*bomb)->AddComponent(render);
+		}
+
+
 
 		score = 0;
 	}

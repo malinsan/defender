@@ -123,13 +123,13 @@ public:
 			//move the ship backwards and the background forwards
 			if (go->horizontalPosition > 400 && !leftFacing) {
 				Send(GOING_BACK); //send to rocket 
-				go->horizontalPosition -= move * 2; // *2 to offset the background moving the other way 
+				go->horizontalPosition -= move * 0.5; // *2 to offset the background moving the other way 
 			}
 
 			//going to the left
 			if (go->horizontalPosition < 800 && leftFacing) {
 				Send(GOING_BACK);
-				go->horizontalPosition -= move * 2;
+				go->horizontalPosition -= move * 0.5;
 			}
 		}
 		else { //moving vertically

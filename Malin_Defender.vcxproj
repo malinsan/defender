@@ -28,6 +28,7 @@
     <ClInclude Include="ai_state_machine.h" />
     <ClInclude Include="avancezlib.h" />
     <ClInclude Include="background.h" />
+    <ClInclude Include="bomb.h" />
     <ClInclude Include="box.h" />
     <ClInclude Include="component.h" />
     <ClInclude Include="game.h" />

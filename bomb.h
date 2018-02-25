@@ -1,7 +1,7 @@
-
+#pragma once
 
 // rockets are shot by the player towards the aliens
-class Rocket : public GameObject
+class Bomb : public GameObject
 {
 
 public:
@@ -10,7 +10,7 @@ public:
 
 	virtual void Init(double xPos, double yPos, bool leftFacing)
 	{
-		SDL_Log("Rocket::Init");
+		SDL_Log("Bomb::Init");
 		GameObject::Init();
 
 		horizontalPosition = xPos;
@@ -33,31 +33,32 @@ public:
 };
 
 
-class RocketBehaviourComponent : public Component
+class BombBehaviourComponent : public Component
 {
 
 	bool goingLeft = true;
 	bool goingBack = false;
 
+	bool playerGoingLeft = false;
+	bool playerGoingRight = false;
+
 public:
 
 	void Update(float dt)
 	{
-
-		Rocket* rocket = (Rocket*)go;
 		
-
-		if (rocket->leftFacing) { //rocket going left
-			go->horizontalPosition -= ROCKET_SPEED * dt; 
+		Bomb* bomb = (Bomb*)go;
+		
+		if (bomb->leftFacing) { //rocket going left
+			go->horizontalPosition -= BOMB_SPEED * dt;
 		}
 		else { // rocket going right
-			go->horizontalPosition += ROCKET_SPEED * dt;
+			go->horizontalPosition += BOMB_SPEED * dt;
 		}
-		
 
-
-		if (go->horizontalPosition <= 0 || go->horizontalPosition >= WORLD_WIDTH) // When the rocket reaches the ends of the screen, it disappears.
+		if (go->horizontalPosition < 0 || go->horizontalPosition > WORLD_WIDTH) // When the rocket reaches the ends of the screen, it disappears.
 			go->enabled = false;
 	}
 
 };
+#pragma once

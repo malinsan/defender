@@ -100,23 +100,19 @@ class AIStateMachine : public Component
 		{
 			state_machine.current_state = this;
 			//have chance of going back to idle
-			if (Chance(2000)) {
+			if (Chance(1000)) {
 				state_machine.state_idle->Enter(state_machine);
 			}
 		}
 		virtual void Update(AIStateMachine& state_machine, float dt) 
 		{
-			//if far away from player approach them
-			if (!(InProximityTo(state_machine, true, 200))) {
-				state_machine.state_approach->Enter(state_machine, true);
-			}
-			else {
+			//if close to player, attack
+			if (InProximityTo(state_machine, true, 400)) {
 				state_machine.state_attack->Enter(state_machine);
 			}
-
-			//TODO: if close attack player!!!
-
-
+			else { //approach player
+				state_machine.state_approach->Enter(state_machine, true);
+			}
 		}
 
 	};
@@ -193,10 +189,23 @@ class AIStateMachine : public Component
 
 		virtual void Enter(AIStateMachine &state_machine)
 		{
-			//state_machine.current_state = this;
-			//	startTime = system->getElapsedTime();
+			state_machine.current_state = this;
+
+			//send an attack towards the player
+			// fetches a rocket from the pool and use it in game_objects
+			Bomb * bomb = state_machine.bomb_pool->FirstAvailable();
+			if (bomb != NULL)	// rocket is NULL if the object pool can not provide an object
+			{
+				//int x = leftFacing ? -PLAYER_WIDTH : PLAYER_WIDTH; //offset from player so rockets doesn't start from middle of player
+				int x = 10;
+				bool shootLeft = state_machine.player->horizontalPosition < state_machine.lander->horizontalPosition ? true : false;
+				bomb->Init(state_machine.lander->horizontalPosition + x, state_machine.lander->verticalPosition, shootLeft);
+				state_machine.game_objects->insert(bomb);
+			}
 		}
 		virtual void Update(AIStateMachine& state_machine, float dt) {
+			//go back to aggressive state
+			state_machine.state_aggressive->Enter(state_machine);
 		}
 
 
@@ -211,9 +220,10 @@ public:
 	const float PLAYER_RANGE = 200.0f;
 	const float HUMAN_RANGE = 10.0f;
 
-	Lander		* lander;
 	AvancezLib  * system;
 	Player		* player;
+	Lander		* lander;
+	ObjectPool<Bomb>* bomb_pool;
 
 	State *				current_state;
 	IdleState *			state_idle;
@@ -227,13 +237,14 @@ public:
 	
 	virtual ~AIStateMachine() {}
 
-	virtual void Create(AvancezLib* system, GameObject * go, std::set<GameObject*> * game_objects, Player* player)
+	virtual void Create(AvancezLib* system, GameObject * go, std::set<GameObject*> * game_objects, Player* player, ObjectPool<Bomb> * bomb_pool)
 	{
 		Component::Create(system, go, game_objects);
 
 		this->system = system;
 		lander = (Lander*)go;
 		this->player = player;
+		this->bomb_pool = bomb_pool;
 	}
 
 	virtual void Init()
