@@ -68,5 +68,8 @@
     <ClInclude Include="bomb.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="enemy_spawner.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -194,7 +194,7 @@ class AIStateMachine : public Component
 			//send an attack towards the player
 			// fetches a rocket from the pool and use it in game_objects
 			Bomb * bomb = state_machine.bomb_pool->FirstAvailable();
-			if (bomb != NULL)	// rocket is NULL if the object pool can not provide an object
+			if (bomb != NULL && (system->getElapsedTime() - state_machine.last_attack_time) > 1.0f)	// rocket is NULL if the object pool can not provide an object
 			{
 				state_machine.last_attack_time = system->getElapsedTime();
 				int x = 10;

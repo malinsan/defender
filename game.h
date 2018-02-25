@@ -23,7 +23,9 @@ class Game : public GameObject
 	ObjectPool<Rocket> rockets_pool;	// used to instantiate rockets
 
 	//enemy
-	Lander * lander;
+	EnemySpawner * enemy_spawner;
+	ObjectPool<Lander> lander_pool;
+	//Lander * lander;
 	ObjectPool<Bomb> bomb_pool;
 
 	bool game_over;
@@ -94,7 +96,39 @@ public:
 			(*rocket)->AddComponent(render);
 		}
 
+		//#################################################//
+		//						ENEMIES					   //
+		//#################################################//
 
+		//enemy spawner
+		enemy_spawner = new EnemySpawner();
+		SpawnEnemiesComponent * spawn_enemies_component = new SpawnEnemiesComponent();
+		spawn_enemies_component->Create(system, enemy_spawner, &game_objects, &lander_pool);
+		enemy_spawner->Create();
+		enemy_spawner->AddComponent(spawn_enemies_component);
+		game_objects.insert(enemy_spawner);
+
+		lander_pool.Create(5);
+		for (auto lander = lander_pool.pool.begin(); lander != lander_pool.pool.end(); lander++) {
+			//movement according to player
+			MoveAccordingToPlayerComponent* lander_behaviour = new MoveAccordingToPlayerComponent();
+			lander_behaviour->Create(system, *lander, &game_objects, 400, 400, true);
+			//listen to player behaviour
+			player_behaviour->AddReceiver(lander_behaviour);
+			//AI behaviour
+			AIStateMachine * landerAI = new AIStateMachine();
+			landerAI->Create(system, *lander, &game_objects, player, &bomb_pool);
+			//render component
+			RenderComponent * landerRender = new RenderComponent();
+			landerRender->Create(system, *lander, &game_objects, "data/enemy_1.bmp");
+
+			(*lander)->Create();
+			(*lander)->AddComponent(lander_behaviour);
+			(*lander)->AddComponent(landerAI);
+			(*lander)->AddComponent(landerRender);
+		}
+
+		/*
 		//create an enemy
 		lander = new Lander();
 		//movement according to player
@@ -114,9 +148,10 @@ public:
 		lander->AddComponent(landerAI);
 		lander->AddComponent(landerRender);
 		game_objects.insert(lander);
+		*/
 
 		//alien bombs
-		bomb_pool.Create(1);
+		bomb_pool.Create(30);
 		for (auto bomb = bomb_pool.pool.begin(); bomb != bomb_pool.pool.end(); bomb++)
 		{
 			MoveAccordingToPlayerComponent * main_move_behaviour = new MoveAccordingToPlayerComponent();

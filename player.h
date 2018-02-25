@@ -4,8 +4,7 @@ class Player : public GameObject
 public:
 
 	int lives;	// it's game over when goes below zero 
-	bool shooting; //for sound component
-
+	
 	virtual ~Player() { SDL_Log("Player::~Player"); }
 
 	virtual void Init()
@@ -13,7 +12,6 @@ public:
 		SDL_Log("Player::Init");
 		GameObject::Init();
 		lives = NUM_LIVES;
-		shooting = false;
 	}
 
 	virtual void Receive(Message m)

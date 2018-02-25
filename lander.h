@@ -2,13 +2,15 @@
 
 class Lander : public GameObject
 {
-
+public:
 	virtual ~Lander() { SDL_Log("Lander::Lander"); }
 
-	virtual void Init()
+	virtual void Init(float xPos, float yPos)
 	{
 		SDL_Log("Lander::Init");
 		GameObject::Init();
+		horizontalPosition = xPos;
+		verticalPosition = yPos;
 	}
 
 
