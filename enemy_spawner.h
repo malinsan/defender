@@ -32,9 +32,11 @@ public:
 	{
 		//spawn an enemy
 		Lander * lander = lander_pool->FirstAvailable();
-		float xPos = rand() % WORLD_WIDTH;
-		float yPos = rand() % HEIGHT;
 		if (lander != NULL && (system->getElapsedTime() - startTime) > spawnTime) {
+			//random location
+			float xPos = rand() % WORLD_WIDTH;
+			float yPos = rand() % HEIGHT;
+
 			lander->Init(xPos, yPos);
 			game_objects->insert(lander);
 			startTime = system->getElapsedTime();
