@@ -12,7 +12,7 @@ class EnemySpawner : public GameObject
 class SpawnEnemiesComponent : public Component 
 {
 	float startTime;
-	float spawnTime = 1.0f;
+	float spawnTime = 1.0f; //time between spawning of new enemies
 	ObjectPool<Lander> * lander_pool;
 
 public:
@@ -30,6 +30,9 @@ public:
 
 	virtual void Update(float dt) 
 	{
+		//varying spawntime
+		spawnTime = rand() % 30 + 1;
+
 		//spawn an enemy
 		Lander * lander = lander_pool->FirstAvailable();
 		if (lander != NULL && (system->getElapsedTime() - startTime) > spawnTime) {
