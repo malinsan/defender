@@ -56,8 +56,7 @@ float game_speed = 1.f;
 #include "lander.h"
 #include "human.h"
 #include "ai_state_machine.h"
-#include "enemy_spawner.h"
-#include "human_spawner.h"
+#include "spawner.h"
 
 #include "game.h"
 
