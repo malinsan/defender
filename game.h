@@ -141,7 +141,7 @@ public:
 			player_behaviour->AddReceiver(lander_behaviour);
 			//AI behaviour
 			AIStateMachine * landerAI = new AIStateMachine();
-			landerAI->Create(system, *lander, &game_objects, player, &bomb_pool);
+			landerAI->Create(system, *lander, &game_objects, player, &bomb_pool, &human_pool);
 			//render component
 			RenderComponent * landerRender = new RenderComponent();
 			landerRender->Create(system, *lander, &game_objects, "data/enemy_1.bmp");

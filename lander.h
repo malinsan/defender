@@ -3,6 +3,9 @@
 class Lander : public GameObject
 {
 public:
+
+	Human * abductedHuman;
+
 	virtual ~Lander() { SDL_Log("Lander::Lander"); }
 
 	virtual void Init(float xPos, float yPos)

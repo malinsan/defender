@@ -53,8 +53,8 @@ float game_speed = 1.f;
 #include "rocket.h"
 #include "player.h"
 #include "box.h"
-#include "lander.h"
 #include "human.h"
+#include "lander.h"
 #include "ai_state_machine.h"
 #include "spawner.h"
 

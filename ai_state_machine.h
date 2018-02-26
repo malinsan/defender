@@ -26,8 +26,14 @@ class AIStateMachine : public Component
 			float posX = state_machine.lander->horizontalPosition;
 			float posY = state_machine.lander->verticalPosition;
 
-			GameObject* target = isPlayerTarget ? state_machine.player : state_machine.player; //TODO: change latter to human
-				
+			GameObject* target;
+			if (isPlayerTarget) {
+				target = state_machine.player;
+			}
+			else {
+				target = state_machine.closestHuman;
+			}
+	
 			//where is actor?
 			float targetPosX = target->horizontalPosition;
 			float targetPosY = target->verticalPosition;
@@ -72,19 +78,16 @@ class AIStateMachine : public Component
 				startTime = system->getElapsedTime(); //reset time
 			}
 
-			//have chance of going to active state 
+			//have chance of going for player 
 			if (Chance(1)) {
 				state_machine.state_aggressive->Enter(state_machine);
 			}
 
-
-			//if player is close go to aggressive mode
-			/*if (InProximityTo(state_machine, true, 200)) {
-				state_machine.state_aggressive->Enter(state_machine);
-			}*/
-
 			//have chance of going for a human
-
+			if (Chance(1)) {
+				state_machine.state_humanAggressive->Enter(state_machine);
+			}
+			
 		}
 	};
 
@@ -119,7 +122,7 @@ class AIStateMachine : public Component
 
 	class ApproachState : public State
 	{
-		bool isAggressive; //abducting or aggressive?
+		bool isPlayerTarget; //abducting or aggressive?
 		float range;
 		State* cameFromState;
 		GameObject* target;
@@ -129,12 +132,12 @@ class AIStateMachine : public Component
 			this->system = system;
 		}
 
-		virtual void Enter(AIStateMachine &state_machine, bool isAggressive)
+		virtual void Enter(AIStateMachine &state_machine, bool isPlayerTarget)
 		{
 			state_machine.current_state = this;
-			this->isAggressive = isAggressive;
+			this->isPlayerTarget = isPlayerTarget;
 
-			if (isAggressive) {
+			if (isPlayerTarget) {
 				range = state_machine.PLAYER_RANGE; //shoot player
 				cameFromState = state_machine.state_aggressive;
 				target = state_machine.player;
@@ -142,7 +145,7 @@ class AIStateMachine : public Component
 			else {
 				range = state_machine.HUMAN_RANGE; //pickup humans
 				cameFromState = state_machine.state_abductor;
-				target = state_machine.player;
+				target = state_machine.closestHuman;
 			}
 		}
 
@@ -155,7 +158,7 @@ class AIStateMachine : public Component
 			state_machine.lander->verticalPosition += verticalMovement;
 
 
-			if (InProximityTo(state_machine, isAggressive, range)) {
+			if (InProximityTo(state_machine, isPlayerTarget, range)) {
 				//if we are in range go back to the state we came from to either shoot at the player or abduct a human
 				cameFromState->Enter(state_machine);
 			}
@@ -165,15 +168,54 @@ class AIStateMachine : public Component
 
 	};
 
-	class AbductorState : public State
+	class HumanAggressiveState : public State
 	{
 	public:
+		HumanAggressiveState(AvancezLib* system)
+		{
+			this->system = system;
+		}
+
 		virtual void Enter(AIStateMachine &state_machine)
 		{
-			//state_machine.current_state = this;
+			state_machine.current_state = this;
 		//	startTime = system->getElapsedTime();
 		}
 		virtual void Update(AIStateMachine& state_machine, float dt) {
+
+			//if close to human, abduct
+			if (InProximityTo(state_machine, false, state_machine.HUMAN_RANGE)) {
+				state_machine.state_abductor->Enter(state_machine);
+			}
+			else {
+				state_machine.state_approach->Enter(state_machine, false);
+			}
+			//else approach
+		}
+
+
+	};
+
+	class AbductorState : public State
+	{
+	public:
+		AbductorState(AvancezLib* system)
+		{
+			this->system = system;
+		}
+		virtual void Enter(AIStateMachine &state_machine)
+		{
+			state_machine.current_state = this;
+			SDL_Log("bipp bopp");
+			//pick up the human
+			state_machine.lander->abductedHuman = state_machine.closestHuman;
+			state_machine.closestHuman->abducted = true;
+		}
+		virtual void Update(AIStateMachine& state_machine, float dt) {
+			//move upwards 
+			state_machine.lander->verticalPosition -= LANDER_SPEED * dt;
+			//state_machine.closestHuman->verticalPosition -= LANDER_SPEED * dt; //maybe move to human
+
 		}
 
 
@@ -218,17 +260,20 @@ public:
 	const float	ATTACK_TIME = 0.2f;
 	const float	ATTACK_COOLDOWN_TIME = 0.05f;
 	const float PLAYER_RANGE = 200.0f;
-	const float HUMAN_RANGE = 10.0f;
+	const float HUMAN_RANGE = 20.0f;
 
 	AvancezLib  * system;
 	Player		* player;
 	Lander		* lander;
 	ObjectPool<Bomb>* bomb_pool;
+	ObjectPool<Human> human_pool;
+	Human * closestHuman;
 
 	State *				current_state;
 	IdleState *			state_idle;
 
 	AggressiveState *	state_aggressive;
+	HumanAggressiveState * state_humanAggressive;
 	AbductorState *		state_abductor;
 
 	AttackState *		state_attack;
@@ -237,7 +282,7 @@ public:
 	
 	virtual ~AIStateMachine() {}
 
-	virtual void Create(AvancezLib* system, GameObject * go, std::set<GameObject*> * game_objects, Player* player, ObjectPool<Bomb> * bomb_pool)
+	virtual void Create(AvancezLib* system, GameObject * go, std::set<GameObject*> * game_objects, Player* player, ObjectPool<Bomb> * bomb_pool, ObjectPool<Human> * human_pool)
 	{
 		Component::Create(system, go, game_objects);
 
@@ -245,14 +290,18 @@ public:
 		lander = (Lander*)go;
 		this->player = player;
 		this->bomb_pool = bomb_pool;
+		this->human_pool = *human_pool;
 	}
 
 	virtual void Init()
 	{
+		FindClosestHuman();
 		state_idle = new IdleState(system);
 		state_attack = new AttackState(system);
 		state_aggressive = new AggressiveState(system);
 		state_approach = new ApproachState(system);
+		state_humanAggressive = new HumanAggressiveState(system);
+		state_abductor = new AbductorState(system);
 		
 		current_state = state_idle;
 	}
@@ -262,5 +311,20 @@ public:
 	{
 		// No need for input
 		current_state->Update(*this, dt);
+	}
+
+	void FindClosestHuman() 
+	{
+		closestHuman = human_pool.FirstAvailable();
+		float distance = 1000.0f;
+		for (auto human = human_pool.pool.begin(); human != human_pool.pool.end(); human++)
+		{
+			Human* castHuman = *human;
+			float tmpDistance = current_state->Distance(lander->horizontalPosition, lander->verticalPosition, castHuman->horizontalPosition, castHuman->verticalPosition);
+			if (tmpDistance < distance) {
+				distance = tmpDistance;
+				closestHuman = castHuman;
+			}
+		}
 	}
 };
