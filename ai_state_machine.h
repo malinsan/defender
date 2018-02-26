@@ -260,7 +260,7 @@ public:
 	const float	ATTACK_TIME = 0.2f;
 	const float	ATTACK_COOLDOWN_TIME = 0.05f;
 	const float PLAYER_RANGE = 200.0f;
-	const float HUMAN_RANGE = 20.0f;
+	const float HUMAN_RANGE = 30.0f;
 
 	AvancezLib  * system;
 	Player		* player;
@@ -320,10 +320,12 @@ public:
 		for (auto human = human_pool.pool.begin(); human != human_pool.pool.end(); human++)
 		{
 			Human* castHuman = *human;
-			float tmpDistance = current_state->Distance(lander->horizontalPosition, lander->verticalPosition, castHuman->horizontalPosition, castHuman->verticalPosition);
-			if (tmpDistance < distance) {
-				distance = tmpDistance;
-				closestHuman = castHuman;
+			if (!castHuman->abducted) {
+				float tmpDistance = current_state->Distance(lander->horizontalPosition, lander->verticalPosition, castHuman->horizontalPosition, castHuman->verticalPosition);
+				if (tmpDistance < distance && !castHuman->abducted) {
+					distance = tmpDistance;
+					closestHuman = castHuman;
+				}
 			}
 		}
 	}
