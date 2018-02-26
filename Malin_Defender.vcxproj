@@ -31,11 +31,10 @@
     <ClInclude Include="bomb.h" />
     <ClInclude Include="box.h" />
     <ClInclude Include="component.h" />
-    <ClInclude Include="enemy_spawner.h" />
+    <ClInclude Include="spawner.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="game_object.h" />
     <ClInclude Include="human.h" />
-    <ClInclude Include="human_spawner.h" />
     <ClInclude Include="lander.h" />
     <ClInclude Include="object_pool.h" />
     <ClInclude Include="player.h" />

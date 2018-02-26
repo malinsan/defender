@@ -68,13 +68,10 @@
     <ClInclude Include="bomb.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="enemy_spawner.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="human.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="human_spawner.h">
+    <ClInclude Include="spawner.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
