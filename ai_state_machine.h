@@ -35,6 +35,9 @@ class AIStateMachine : public Component
 			}
 	
 			//where is actor?
+			if (target == NULL) {
+				return false;
+			}
 			float targetPosX = target->horizontalPosition;
 			float targetPosY = target->verticalPosition;
 
@@ -144,12 +147,20 @@ class AIStateMachine : public Component
 			}
 			else {
 				range = state_machine.HUMAN_RANGE; //pickup humans
-				cameFromState = state_machine.state_abductor;
+				cameFromState = state_machine.state_humanAggressive;
 				target = state_machine.closestHuman;
 			}
 		}
 
 		virtual void Update(AIStateMachine& state_machine, float dt) {
+			//still go for target?
+			if (!isPlayerTarget) {
+				Human * h = (Human*)target;
+				if (h->abducted) {
+					cameFromState->Enter(state_machine);
+				}
+			}
+
 			//move towards target
 			float horizontalMovement = target->horizontalPosition > state_machine.lander->horizontalPosition ? dt * LANDER_SPEED : -dt * LANDER_SPEED;
 			float verticalMovement = target->verticalPosition > state_machine.lander->verticalPosition ? dt * LANDER_SPEED : -dt * LANDER_SPEED;
@@ -179,13 +190,10 @@ class AIStateMachine : public Component
 		virtual void Enter(AIStateMachine &state_machine)
 		{
 			state_machine.current_state = this;
-			//state_machine.FindClosestHuman();
+			state_machine.FindClosestHuman();
 		//	startTime = system->getElapsedTime();
 		}
 		virtual void Update(AIStateMachine& state_machine, float dt) {
-
-			//hmmmmmmmmmm?
-			state_machine.FindClosestHuman();
 
 			//if close to human, abduct
 			if (InProximityTo(state_machine, false, state_machine.HUMAN_RANGE)) 
@@ -210,7 +218,6 @@ class AIStateMachine : public Component
 		virtual void Enter(AIStateMachine &state_machine)
 		{
 			state_machine.current_state = this;
-			SDL_Log("bipp bopp");
 			//pick up the human
 			state_machine.lander->abductedHuman = state_machine.closestHuman;
 			state_machine.closestHuman->abducted = true;

@@ -48,8 +48,13 @@ public:
 		Lander * lander = lander_pool->FirstAvailable();
 		if (lander != NULL && (system->getElapsedTime() - startTime) > spawnTime) {
 			//random location
-			float xPos = rand() % WORLD_WIDTH;
-			float yPos = rand() % HEIGHT - 100;
+//			float xPos = rand() % WORLD_WIDTH;
+	//		float yPos = rand() % HEIGHT - 100;
+
+			int rX = rand() % WORLD_WIDTH;
+			int rY = rand() % (HEIGHT-200);
+			float xPos = (float)rX;
+			float yPos = (float)rY;
 
 			lander->Init(xPos, yPos);
 			game_objects->insert(lander);
