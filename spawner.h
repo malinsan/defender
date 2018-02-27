@@ -49,7 +49,7 @@ public:
 		if (lander != NULL && (system->getElapsedTime() - startTime) > spawnTime) {
 			//random location
 			float xPos = rand() % WORLD_WIDTH;
-			float yPos = rand() % HEIGHT + 32;
+			float yPos = rand() % HEIGHT - 100;
 
 			lander->Init(xPos, yPos);
 			game_objects->insert(lander);

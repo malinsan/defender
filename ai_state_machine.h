@@ -179,20 +179,24 @@ class AIStateMachine : public Component
 		virtual void Enter(AIStateMachine &state_machine)
 		{
 			state_machine.current_state = this;
+			//state_machine.FindClosestHuman();
 		//	startTime = system->getElapsedTime();
 		}
 		virtual void Update(AIStateMachine& state_machine, float dt) {
 
+			//hmmmmmmmmmm?
+			state_machine.FindClosestHuman();
+
 			//if close to human, abduct
-			if (InProximityTo(state_machine, false, state_machine.HUMAN_RANGE)) {
+			if (InProximityTo(state_machine, false, state_machine.HUMAN_RANGE)) 
+			{
 				state_machine.state_abductor->Enter(state_machine);
 			}
-			else {
+			else 
+			{//else approach
 				state_machine.state_approach->Enter(state_machine, false);
 			}
-			//else approach
 		}
-
 
 	};
 
@@ -214,7 +218,6 @@ class AIStateMachine : public Component
 		virtual void Update(AIStateMachine& state_machine, float dt) {
 			//move upwards 
 			state_machine.lander->verticalPosition -= LANDER_SPEED * dt;
-			//state_machine.closestHuman->verticalPosition -= LANDER_SPEED * dt; //maybe move to human
 
 		}
 
@@ -260,14 +263,14 @@ public:
 	const float	ATTACK_TIME = 0.2f;
 	const float	ATTACK_COOLDOWN_TIME = 0.05f;
 	const float PLAYER_RANGE = 200.0f;
-	const float HUMAN_RANGE = 30.0f;
+	const float HUMAN_RANGE = 35.0f;
 
 	AvancezLib  * system;
 	Player		* player;
 	Lander		* lander;
 	ObjectPool<Bomb>* bomb_pool;
 	ObjectPool<Human> human_pool;
-	Human * closestHuman;
+	Human		* closestHuman;
 
 	State *				current_state;
 	IdleState *			state_idle;
@@ -320,8 +323,8 @@ public:
 		for (auto human = human_pool.pool.begin(); human != human_pool.pool.end(); human++)
 		{
 			Human* castHuman = *human;
-			if (!castHuman->abducted) {
-				float tmpDistance = current_state->Distance(lander->horizontalPosition, lander->verticalPosition, castHuman->horizontalPosition, castHuman->verticalPosition);
+			if (castHuman->enabled && !castHuman->abducted) {
+				float tmpDistance = current_state->Distance((float)lander->horizontalPosition, (float)lander->verticalPosition, (float)castHuman->horizontalPosition, (float)castHuman->verticalPosition);
 				if (tmpDistance < distance && !castHuman->abducted) {
 					distance = tmpDistance;
 					closestHuman = castHuman;
