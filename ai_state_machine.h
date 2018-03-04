@@ -227,8 +227,6 @@ class AIStateMachine : public Component
 			state_machine.lander->verticalPosition -= LANDER_SPEED * dt;
 
 		}
-
-
 	};
 
 	class AttackState : public State
