@@ -21,19 +21,11 @@ class AIStateMachine : public Component
 		}
 
 		//proximity to player or humans, parameter isPlayerTarget should be true if checking proximity to player and false otherwise
-		bool InProximityTo(AIStateMachine& state_machine, bool isPlayerTarget, float range) {
+		bool InProximityTo(AIStateMachine& state_machine, GameObject* target, float range) {
 			//where are we?
 			float posX = state_machine.lander->horizontalPosition;
 			float posY = state_machine.lander->verticalPosition;
 
-			GameObject* target;
-			if (isPlayerTarget) {
-				target = state_machine.player;
-			}
-			else {
-				target = state_machine.closestHuman;
-			}
-	
 			//where is actor?
 			if (target == NULL) {
 				return false;
@@ -113,7 +105,7 @@ class AIStateMachine : public Component
 		virtual void Update(AIStateMachine& state_machine, float dt) 
 		{
 			//if close to player, attack
-			if (InProximityTo(state_machine, true, 400)) {
+			if (InProximityTo(state_machine, state_machine.player, 400)) {
 				state_machine.state_attack->Enter(state_machine);
 			}
 			else { //approach player
@@ -169,7 +161,7 @@ class AIStateMachine : public Component
 			state_machine.lander->verticalPosition += verticalMovement;
 
 
-			if (InProximityTo(state_machine, isPlayerTarget, range)) {
+			if (InProximityTo(state_machine, target, range)) {
 				//if we are in range go back to the state we came from to either shoot at the player or abduct a human
 				cameFromState->Enter(state_machine);
 			}
@@ -196,7 +188,7 @@ class AIStateMachine : public Component
 		virtual void Update(AIStateMachine& state_machine, float dt) {
 
 			//if close to human, abduct
-			if (InProximityTo(state_machine, false, state_machine.HUMAN_RANGE)) 
+			if (InProximityTo(state_machine, state_machine.closestHuman, state_machine.HUMAN_RANGE)) 
 			{
 				state_machine.state_abductor->Enter(state_machine);
 			}
@@ -328,7 +320,7 @@ public:
 		for (auto human = human_pool.pool.begin(); human != human_pool.pool.end(); human++)
 		{
 			Human* castHuman = *human;
-			if (castHuman->enabled && !castHuman->abducted) {
+			if (castHuman->enabled && !castHuman->abducted && !castHuman->carried) {
 				float tmpDistance = current_state->Distance((float)lander->horizontalPosition, (float)lander->verticalPosition, (float)castHuman->horizontalPosition, (float)castHuman->verticalPosition);
 				if (tmpDistance < distance && !castHuman->abducted) {
 					distance = tmpDistance;

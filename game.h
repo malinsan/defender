@@ -108,8 +108,9 @@ public:
 			main_move_behaviour->Create(system, *human, &game_objects, 0, 0, true);
 			player_behaviour->AddReceiver(main_move_behaviour);
 
-			HumanBehaviourComponent * behaviour = new HumanBehaviourComponent();
-			behaviour->Create(system, *human, &game_objects);
+			//HumanBehaviourComponent * behaviour = new HumanBehaviourComponent();
+			HumanStateMachine * behaviour = new HumanStateMachine();
+			behaviour->Create(system, *human, &game_objects, player);
 
 			RenderComponent * render = new RenderComponent();
 			render->Create(system, *human, &game_objects, "data/human.bmp");
@@ -157,27 +158,7 @@ public:
 			(*lander)->AddComponent(collision);
 		}
 
-		/*
-		//create an enemy
-		lander = new Lander();
-		//movement according to player
-		MoveAccordingToPlayerComponent* lander_behaviour = new MoveAccordingToPlayerComponent();
-		lander_behaviour->Create(system, lander, &game_objects, 400, 400, true);
-		//listen to player behaviour
-		player_behaviour->AddReceiver(lander_behaviour);
-		//AI behaviour
-		AIStateMachine * landerAI = new AIStateMachine();
-		landerAI->Create(system, lander, &game_objects, player, &bomb_pool);
-		//render component
-		RenderComponent * landerRender = new RenderComponent();
-		landerRender->Create(system, lander, &game_objects, "data/enemy_1.bmp");
-
-		lander->Create();
-		lander->AddComponent(lander_behaviour);
-		lander->AddComponent(landerAI);
-		lander->AddComponent(landerRender);
-		game_objects.insert(lander);
-		*/
+		
 
 		//alien bombs
 		bomb_pool.Create(30);

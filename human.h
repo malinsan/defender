@@ -4,6 +4,7 @@ class Human : public GameObject
 public:
 	bool abducted;
 	bool dropped;
+	bool carried;
 
 	virtual ~Human() {}
 
@@ -11,14 +12,20 @@ public:
 	{
 		SDL_Log("Human Init");
 		GameObject::Init();
+
 		horizontalPosition = xPos;
 		verticalPosition = 620;
 		abducted = false;
+		carried = false;
 	}
 
 	virtual void Receive(Message m) {
 		if (m == ABDUCTED) {
 			abducted = true;
+		}
+		if (m == DROPPED) {
+			abducted = false;
+			dropped = true;
 		}
 	}
 };

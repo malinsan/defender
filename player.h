@@ -4,6 +4,7 @@ class Player : public GameObject
 public:
 
 	int lives;	// it's game over when goes below zero 
+	int carriedHumans;
 	
 	virtual ~Player() { SDL_Log("Player::~Player"); }
 
@@ -12,6 +13,7 @@ public:
 		SDL_Log("Player::Init");
 		GameObject::Init();
 		lives = NUM_LIVES;
+		carriedHumans = 0;
 	}
 
 	virtual void Receive(Message m)
