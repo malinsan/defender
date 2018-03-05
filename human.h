@@ -3,6 +3,7 @@ class Human : public GameObject
 {
 public:
 	bool abducted;
+	bool dropped;
 
 	virtual ~Human() {}
 

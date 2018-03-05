@@ -146,10 +146,15 @@ public:
 			RenderComponent * landerRender = new RenderComponent();
 			landerRender->Create(system, *lander, &game_objects, "data/enemy_1.bmp");
 
+			//collision with rockets
+			CollideComponent* collision = new CollideComponent();
+			collision->Create(system, *lander, &game_objects, (ObjectPool<GameObject>*)&rockets_pool);
+
 			(*lander)->Create();
 			(*lander)->AddComponent(lander_behaviour);
 			(*lander)->AddComponent(landerAI);
 			(*lander)->AddComponent(landerRender);
+			(*lander)->AddComponent(collision);
 		}
 
 		/*

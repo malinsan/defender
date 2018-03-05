@@ -16,6 +16,15 @@ public:
 		verticalPosition = yPos;
 	}
 
+	virtual void Receive(Message m) {
+		if (!enabled) {
+			return;
+		}
+		if (m == HIT) {
+			enabled = false;
+		}
+	}
+
 
 };
 
