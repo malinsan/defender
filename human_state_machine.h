@@ -118,7 +118,7 @@ class HumanStateMachine : public Component
 		virtual void Update(HumanStateMachine& state_machine, float dt) {
 
 			//get picked up by the player if they are close
-			if (InProximityTo(state_machine, state_machine.player, 25)) {
+			if (InProximityTo(state_machine, state_machine.player, 35)) {
 				intensity = 0.0f;
 				state_machine.human->dropped = false;
 				state_machine.state_carried->Enter(state_machine);
