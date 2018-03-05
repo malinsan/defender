@@ -55,9 +55,9 @@ public:
 		
 		background = new Background();
 		RenderComponent* background_render = new RenderComponent();
-		background_render->Create(system, background, &game_objects, "data/bakgrund_test.bmp");
+		background_render->Create(system, background, &game_objects, "data/bakgrund.bmp");
 		BackgroundBehaviourComponent * background_component = new BackgroundBehaviourComponent();
-		background_component->Create(system, background, &game_objects, -600, 0);
+		background_component->Create(system, background, &game_objects, -(WORLD_WIDTH/2), 0);
 
 		background->Create();
 		background->AddComponent(background_render);

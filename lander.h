@@ -74,10 +74,10 @@ public:
 		if (wrapAround) {
 			//going right wraparound
 			if (go->horizontalPosition >= WORLD_WIDTH) {
-				go->horizontalPosition = 0;
+				go->horizontalPosition = -WORLD_WIDTH;
 			}
 			//left wraparound
-			if (go->horizontalPosition < 0) {
+			if (go->horizontalPosition < -WORLD_WIDTH) {
 				go->horizontalPosition = WORLD_WIDTH;
 			}
 		}

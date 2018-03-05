@@ -7,17 +7,12 @@ public:
 
 		GameObject::Init();
 
-		//width = 2400
-		//middle = 1200
-		//screen width 1200, /2 = 600
-		horizontalPosition = -600; //offset so we draw it in the middle
+		horizontalPosition = -(WORLD_WIDTH / 2); //offset so we draw it in the middle
 		verticalPosition = 0;
 
 	}
 
 	virtual void Receive(Message m) {
-
-
 
 	}
 
@@ -72,14 +67,14 @@ public:
 	void Move(float move) {
 
 		go->horizontalPosition += move;
-		
+
 		//going right wraparound
-		if (go->horizontalPosition < - WORLD_WIDTH) {
-			go->horizontalPosition = 0;
+		if (go->horizontalPosition < -(WORLD_WIDTH / 2)) {
+			go->horizontalPosition = 0 + move;
 		}
 		//left wraparound
 		if (go->horizontalPosition > 0) {
-			go->horizontalPosition = - WORLD_WIDTH;
+			go->horizontalPosition = -(WORLD_WIDTH / 2) + move;
 		}
 
 	}
