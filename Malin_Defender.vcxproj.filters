@@ -74,5 +74,8 @@
     <ClInclude Include="spawner.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="human_state_machine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

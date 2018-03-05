@@ -32,13 +32,14 @@ public:
 	{
 		startTime = system->getElapsedTime();
 		humanStartTime = system->getElapsedTime();
+
+		for (int i = 0; i < NUM_HUMANS; i++) {
+			SpawnHuman();
+		}
 	}
 
 	virtual void Update(float dt) 
 	{
-		if (numberOfHumansSpawned < NUM_HUMANS) {
-			SpawnHuman();
-		}
 		SpawnLander();
 	}
 

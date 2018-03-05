@@ -4,6 +4,9 @@ class Player : public GameObject
 public:
 
 	int lives;	// it's game over when goes below zero 
+	int carriedHumans;
+
+	bool leftFacing = true;
 	
 	virtual ~Player() { SDL_Log("Player::~Player"); }
 
@@ -12,6 +15,7 @@ public:
 		SDL_Log("Player::Init");
 		GameObject::Init();
 		lives = NUM_LIVES;
+		carriedHumans = 0;
 	}
 
 	virtual void Receive(Message m)
@@ -37,11 +41,12 @@ public:
 class PlayerBehaviourComponent : public Component
 {
 
+	Player * thisPlayer;
 	float time_fire_pressed;	// time from the last time the fire button was pressed
 	ObjectPool<Rocket> * rockets_pool;
 
 	bool movingHorizontally = true;
-	bool leftFacing = true;
+	//bool leftFacing = true;
 	
 public:
 	virtual ~PlayerBehaviourComponent() {}
@@ -50,12 +55,14 @@ public:
 	{
 		Component::Create(system, go, game_objects);
 		this->rockets_pool = rockets_pool;
+		thisPlayer = (Player *)go;
 	}
 
 	virtual void Init()
 	{
 		go->horizontalPosition = 320;
 		go->verticalPosition = 480 - 32;
+		
 		go->horizontalVelocity = 0.0f;
 		go->verticalVelocity = 0.0f;
 
@@ -80,14 +87,14 @@ public:
 		}
 		if (keys.right) {
 			movingHorizontally = true;
-			leftFacing = false;
+			thisPlayer->leftFacing = false;
 			Send(GOING_RIGHT); //tell rendering to change sprite
 			Move(dt * PLAYER_SPEED);
 		}
 
 		if (keys.left) {
 			movingHorizontally = true;
-			leftFacing = true;
+			thisPlayer->leftFacing = true;
 			Send(GOING_LEFT);
 			Move(-dt * PLAYER_SPEED);
 		}
@@ -99,8 +106,8 @@ public:
 				Rocket * rocket = rockets_pool->FirstAvailable();
 				if (rocket != NULL)	// rocket is NULL is the object pool can not provide an object
 				{
-					int x = leftFacing ? -PLAYER_WIDTH : PLAYER_WIDTH; //offset from player so rockets doesn't start from middle of player
-					rocket->Init(go->horizontalPosition + x, go->verticalPosition, leftFacing);
+					int x = thisPlayer->leftFacing ? -PLAYER_WIDTH : PLAYER_WIDTH; //offset from player so rockets doesn't start from middle of player
+					rocket->Init(go->horizontalPosition + x, go->verticalPosition, thisPlayer->leftFacing);
 					game_objects->insert(rocket);
 				}
 
@@ -119,13 +126,13 @@ public:
 			
 			//going to the right
 			//move the ship backwards and the background forwards
-			if (go->horizontalPosition > 400 && !leftFacing) {
+			if (go->horizontalPosition > 400 && !thisPlayer->leftFacing) {
 				Send(GOING_BACK); //send to rocket 
 				go->horizontalPosition -= move * 0.5; // *2 to offset the background moving the other way 
 			}
 
 			//going to the left
-			if (go->horizontalPosition < 800 && leftFacing) {
+			if (go->horizontalPosition < 800 && thisPlayer->leftFacing) {
 				Send(GOING_BACK);
 				go->horizontalPosition -= move * 0.5;
 			}

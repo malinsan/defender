@@ -21,6 +21,9 @@ public:
 			return;
 		}
 		if (m == HIT) {
+			if (abductedHuman != NULL) {
+				abductedHuman->Receive(DROPPED);
+			}
 			enabled = false;
 		}
 	}

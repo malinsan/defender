@@ -24,6 +24,7 @@ const unsigned int	NUM_LIVES = 2;
 int PLAYER_WIDTH = 64;
 int PLAYER_HEIGHT = 25;
 const unsigned int	NUM_HUMANS = 10;
+int NUM_ALIENS = 5;
 
 const unsigned int	MAX_NUM_ROCKETS = 32;
 const unsigned int	MAX_NUM_BOMBS = 32;
@@ -57,6 +58,7 @@ float game_speed = 1.f;
 #include "human.h"
 #include "lander.h"
 #include "ai_state_machine.h"
+#include "human_state_machine.h"
 #include "spawner.h"
 
 #include "game.h"
