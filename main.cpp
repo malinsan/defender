@@ -20,15 +20,17 @@ const unsigned int WIDTH = 1200;
 const unsigned int HEIGHT = 670;
 const unsigned int LEVEL_CHUNKS = 7;
 const unsigned int	MAX_NUM_GAME_OBJECTS = 10000;
-const unsigned int	NUM_LIVES = 2;
+const unsigned int	NUM_LIVES = 3;
 int PLAYER_WIDTH = 64;
 int PLAYER_HEIGHT = 25;
 const unsigned int	NUM_HUMANS = 10;
 int NUM_ALIENS = 5;
+int NUM_SMARTBOMBS = 3;
 
 const unsigned int	MAX_NUM_ROCKETS = 32;
 const unsigned int	MAX_NUM_BOMBS = 32;
 const unsigned int	POINTS_PER_ALIEN = 100;
+const unsigned int	POINTS_PER_HUMAN = 500;
 
 const float			FIRE_TIME_INTERVAL = .5f;
 const float			BOMB_TIME_INTERVAL = 1.25f;

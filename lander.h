@@ -24,6 +24,7 @@ public:
 			if (abductedHuman != NULL) {
 				abductedHuman->Receive(DROPPED);
 			}
+			Send(ALIEN_HIT);
 			enabled = false;
 		}
 	}
@@ -53,7 +54,6 @@ public:
 
 	virtual void Update(float dt) 
 	{
-
 		float mult = goingBack ? 1.5f : 1.0f;
 		goingBack = false;
 

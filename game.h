@@ -27,9 +27,11 @@ class Game : public GameObject
 	ObjectPool<Lander> lander_pool;
 	//Lander * lander;
 	ObjectPool<Bomb> bomb_pool;
-
-
 	ObjectPool<Human> human_pool;
+
+	//UI Sprites
+	Sprite * lifeSprite;
+	Sprite * bombSprite;
 
 
 	bool game_over;
@@ -108,7 +110,6 @@ public:
 			main_move_behaviour->Create(system, *human, &game_objects, 0, 0, true);
 			player_behaviour->AddReceiver(main_move_behaviour);
 
-			//HumanBehaviourComponent * behaviour = new HumanBehaviourComponent();
 			HumanStateMachine * behaviour = new HumanStateMachine();
 			behaviour->Create(system, *human, &game_objects, player);
 
@@ -145,7 +146,7 @@ public:
 			landerAI->Create(system, *lander, &game_objects, player, &bomb_pool, &human_pool);
 			//render component
 			RenderComponent * landerRender = new RenderComponent();
-			landerRender->Create(system, *lander, &game_objects, "data/enemy_1.bmp");
+			landerRender->Create(system, *lander, &game_objects, "data/lander.bmp");
 
 			//collision with rockets
 			CollideComponent* collision = new CollideComponent();
@@ -156,6 +157,7 @@ public:
 			(*lander)->AddComponent(landerAI);
 			(*lander)->AddComponent(landerRender);
 			(*lander)->AddComponent(collision);
+			(*lander)->AddReceiver(player);
 		}
 
 		
@@ -178,7 +180,11 @@ public:
 			(*bomb)->AddComponent(render);
 		}
 
-
+		///////////////////////////////////
+		//            U I                //
+		///////////////////////////////////
+		lifeSprite = system->createSprite("data/shipR.bmp");
+		bombSprite = system->createSprite("data/smartbomb.bmp");
 
 		score = 0;
 	}
@@ -213,8 +219,18 @@ public:
 	virtual void Draw()
 	{
 		char msg[1024];
-		sprintf_s(msg, "Defender Time");
-		system->drawText(300, 32, msg);
+		
+		for (int i = 0; i < player->lives; i++) {
+			lifeSprite->draw(30 + (PLAYER_WIDTH + 10) * i, 15, 0);
+		}
+
+		for (int i = 0; i < player->smartBombs; i++) {
+			bombSprite->draw(250, 15 + (i * 20), 0);
+		}
+
+		sprintf_s(msg, "%07d", player->score);
+		system->drawText(30, 50, msg);
+
 
 		if (IsGameOver())
 		{
@@ -227,6 +243,7 @@ public:
 	{
 		if (m == GAME_OVER)
 			game_over = true;
+		
 	}
 
 

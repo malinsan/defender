@@ -4,6 +4,9 @@ class Player : public GameObject
 public:
 
 	int lives;	// it's game over when goes below zero 
+	int score;
+	int smartBombs;
+
 	int carriedHumans;
 
 	bool leftFacing = true;
@@ -14,8 +17,13 @@ public:
 	{
 		SDL_Log("Player::Init");
 		GameObject::Init();
+
 		lives = NUM_LIVES;
+		score = 0;
+		smartBombs = NUM_SMARTBOMBS;
+
 		carriedHumans = 0;
+		
 	}
 
 	virtual void Receive(Message m)
@@ -27,6 +35,9 @@ public:
 
 			if (lives < 0)
 				Send(GAME_OVER);
+		}
+		if (m == ALIEN_HIT) {
+			score += POINTS_PER_ALIEN;
 		}
 	}
 
