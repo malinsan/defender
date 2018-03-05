@@ -4,8 +4,7 @@ class Player : public GameObject
 public:
 
 	int lives;	// it's game over when goes below zero 
-	bool shooting; //for sound component
-
+	
 	virtual ~Player() { SDL_Log("Player::~Player"); }
 
 	virtual void Init()
@@ -13,7 +12,6 @@ public:
 		SDL_Log("Player::Init");
 		GameObject::Init();
 		lives = NUM_LIVES;
-		shooting = false;
 	}
 
 	virtual void Receive(Message m)
@@ -58,6 +56,8 @@ public:
 	{
 		go->horizontalPosition = 320;
 		go->verticalPosition = 480 - 32;
+		go->horizontalVelocity = 0.0f;
+		go->verticalVelocity = 0.0f;
 
 		time_fire_pressed = -10000.f;
 	}
@@ -120,24 +120,17 @@ public:
 			//going to the right
 			//move the ship backwards and the background forwards
 			if (go->horizontalPosition > 400 && !leftFacing) {
-				go->horizontalPosition -= move * 2; // *2 to offset the background moving the other way 
-				Send(R_EDGE_REACHED);
-			}
-			//just move the background
-			else if (go->horizontalPosition <= 400 && !leftFacing) {
-				Send(R_EDGE_REACHED);
+				Send(GOING_BACK); //send to rocket 
+				go->horizontalPosition -= move * 0.5; // *2 to offset the background moving the other way 
 			}
 
 			//going to the left
 			if (go->horizontalPosition < 800 && leftFacing) {
-				go->horizontalPosition -= move * 2;
-				Send(L_EDGE_REACHED);
-			}
-			else if(go->horizontalPosition >= 800 && leftFacing){
-				Send(L_EDGE_REACHED);
+				Send(GOING_BACK);
+				go->horizontalPosition -= move * 0.5;
 			}
 		}
-		else {
+		else { //moving vertically
 			go->verticalPosition += move;
 			if (go->verticalPosition < 0) {
 				go->verticalPosition = 0 + PLAYER_HEIGHT;

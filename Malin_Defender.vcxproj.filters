@@ -59,5 +59,20 @@
     <ClInclude Include="soundmaker.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="lander.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ai_state_machine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="bomb.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="human.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="spawner.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

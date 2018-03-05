@@ -22,9 +22,16 @@ class Game : public GameObject
 	Player * player;
 	ObjectPool<Rocket> rockets_pool;	// used to instantiate rockets
 
+	//enemy
+	Spawner * enemy_spawner;
+	ObjectPool<Lander> lander_pool;
+	//Lander * lander;
+	ObjectPool<Bomb> bomb_pool;
 
-	//background
-	
+
+	ObjectPool<Human> human_pool;
+
+
 	bool game_over;
 
 	unsigned int score = 0;
@@ -50,7 +57,7 @@ public:
 		RenderComponent* background_render = new RenderComponent();
 		background_render->Create(system, background, &game_objects, "data/bakgrund_test.bmp");
 		BackgroundBehaviourComponent * background_component = new BackgroundBehaviourComponent();
-		background_component->Create(system, background, &game_objects);
+		background_component->Create(system, background, &game_objects, -600, 0);
 
 		background->Create();
 		background->AddComponent(background_render);
@@ -66,7 +73,7 @@ public:
 		//background listens to player movement
 		player_behaviour->AddReceiver(background_component);
 		PlayerRenderComponent * player_render = new PlayerRenderComponent();
-		player_render->Create(system, player, &game_objects, "data/shipLeft.bmp", "data/shipRight.bmp");
+		player_render->Create(system, player, &game_objects, "data/shipL.bmp", "data/shipR.bmp");
 		player_behaviour->AddReceiver(player_render);
 
 		player->Create();
@@ -79,14 +86,117 @@ public:
 		rockets_pool.Create(30);
 		for (auto rocket = rockets_pool.pool.begin(); rocket != rockets_pool.pool.end(); rocket++)
 		{
+			MoveAccordingToPlayerComponent * main_move_behaviour = new MoveAccordingToPlayerComponent();
+			main_move_behaviour->Create(system, *rocket, &game_objects, 0, 0, false);
+			player_behaviour->AddReceiver(main_move_behaviour);
+
 			RocketBehaviourComponent * behaviour = new RocketBehaviourComponent();
 			behaviour->Create(system, *rocket, &game_objects);
 			RenderComponent * render = new RenderComponent();
 			render->Create(system, *rocket, &game_objects, "data/rocket.bmp");
 			(*rocket)->Create();
+			(*rocket)->AddComponent(main_move_behaviour);
 			(*rocket)->AddComponent(behaviour);
 			(*rocket)->AddComponent(render);
 		}
+
+		//HUMANS
+		human_pool.Create(10);
+		for (auto human = human_pool.pool.begin(); human != human_pool.pool.end(); human ++) 
+		{
+			MoveAccordingToPlayerComponent * main_move_behaviour = new MoveAccordingToPlayerComponent();
+			main_move_behaviour->Create(system, *human, &game_objects, 0, 0, true);
+			player_behaviour->AddReceiver(main_move_behaviour);
+
+			HumanBehaviourComponent * behaviour = new HumanBehaviourComponent();
+			behaviour->Create(system, *human, &game_objects);
+
+			RenderComponent * render = new RenderComponent();
+			render->Create(system, *human, &game_objects, "data/human.bmp");
+
+			(*human)->Create();
+			(*human)->AddComponent(main_move_behaviour);
+			(*human)->AddComponent(behaviour);
+			(*human)->AddComponent(render);
+		}
+
+		//#################################################//
+		//						ENEMIES					   //
+		//#################################################//
+
+		//enemy spawner
+		enemy_spawner = new Spawner();
+		SpawnerComponent * spawn_enemies_component = new SpawnerComponent();
+		spawn_enemies_component->Create(system, enemy_spawner, &game_objects, &lander_pool, &human_pool);
+		enemy_spawner->Create();
+		enemy_spawner->AddComponent(spawn_enemies_component);
+		game_objects.insert(enemy_spawner);
+
+		lander_pool.Create(5);
+		for (auto lander = lander_pool.pool.begin(); lander != lander_pool.pool.end(); lander++) {
+			//movement according to player
+			MoveAccordingToPlayerComponent* lander_behaviour = new MoveAccordingToPlayerComponent();
+			lander_behaviour->Create(system, *lander, &game_objects, 400, 400, true);
+			//listen to player behaviour
+			player_behaviour->AddReceiver(lander_behaviour);
+			//AI behaviour
+			AIStateMachine * landerAI = new AIStateMachine();
+			landerAI->Create(system, *lander, &game_objects, player, &bomb_pool, &human_pool);
+			//render component
+			RenderComponent * landerRender = new RenderComponent();
+			landerRender->Create(system, *lander, &game_objects, "data/enemy_1.bmp");
+
+			//collision with rockets
+			CollideComponent* collision = new CollideComponent();
+			collision->Create(system, *lander, &game_objects, (ObjectPool<GameObject>*)&rockets_pool);
+
+			(*lander)->Create();
+			(*lander)->AddComponent(lander_behaviour);
+			(*lander)->AddComponent(landerAI);
+			(*lander)->AddComponent(landerRender);
+			(*lander)->AddComponent(collision);
+		}
+
+		/*
+		//create an enemy
+		lander = new Lander();
+		//movement according to player
+		MoveAccordingToPlayerComponent* lander_behaviour = new MoveAccordingToPlayerComponent();
+		lander_behaviour->Create(system, lander, &game_objects, 400, 400, true);
+		//listen to player behaviour
+		player_behaviour->AddReceiver(lander_behaviour);
+		//AI behaviour
+		AIStateMachine * landerAI = new AIStateMachine();
+		landerAI->Create(system, lander, &game_objects, player, &bomb_pool);
+		//render component
+		RenderComponent * landerRender = new RenderComponent();
+		landerRender->Create(system, lander, &game_objects, "data/enemy_1.bmp");
+
+		lander->Create();
+		lander->AddComponent(lander_behaviour);
+		lander->AddComponent(landerAI);
+		lander->AddComponent(landerRender);
+		game_objects.insert(lander);
+		*/
+
+		//alien bombs
+		bomb_pool.Create(30);
+		for (auto bomb = bomb_pool.pool.begin(); bomb != bomb_pool.pool.end(); bomb++)
+		{
+			MoveAccordingToPlayerComponent * main_move_behaviour = new MoveAccordingToPlayerComponent();
+			main_move_behaviour->Create(system, *bomb, &game_objects, 0, 0, false);
+			player_behaviour->AddReceiver(main_move_behaviour);
+
+			BombBehaviourComponent * behaviour = new BombBehaviourComponent();
+			behaviour->Create(system, *bomb, &game_objects);
+			RenderComponent * render = new RenderComponent();
+			render->Create(system, *bomb, &game_objects, "data/bomb.bmp");
+			(*bomb)->Create();
+			(*bomb)->AddComponent(main_move_behaviour);
+			(*bomb)->AddComponent(behaviour);
+			(*bomb)->AddComponent(render);
+		}
+
 
 
 		score = 0;

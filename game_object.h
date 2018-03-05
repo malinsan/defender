@@ -3,7 +3,7 @@
 #include <vector>
 
 
-enum Message { GOING_LEFT, GOING_RIGHT, R_EDGE_REACHED, L_EDGE_REACHED, SHOOT, HIT, ALIEN_HIT, GAME_OVER, LEVEL_WIN, NO_MSG };
+enum Message {ABDUCTED, GOING_BACK, GOING_LEFT, GOING_RIGHT, SHOOT, HIT, ALIEN_HIT, GAME_OVER, LEVEL_WIN, NO_MSG };
 
 class Component;
 
@@ -16,6 +16,8 @@ protected:
 public:
 	double horizontalPosition;
 	double verticalPosition;
+	double horizontalVelocity, verticalVelocity; //"physics"
+
 	float angle; // angle of rotation in degrees
 	bool enabled;
 

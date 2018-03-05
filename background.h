@@ -28,31 +28,43 @@ class BackgroundBehaviourComponent : public Component
 {
 public:
 
-	bool moveBG = false;
 	bool moveLeft = false;
-	//wrapspot is the corner of 'last' window 
-	int wrapSpot = -1200;
+	bool moveRight = false;
+	bool goingBack = false;
 
+	virtual void Create(AvancezLib* system, GameObject * go, std::set<GameObject*> * game_objects, float xPos, float yPos)
+	{
+		Component::Create(system, go, game_objects);
+		go->horizontalPosition = xPos;
+		go->verticalPosition = yPos;
+
+	}
+
+	
 	virtual void Receive(Message m) {
-		if (m == L_EDGE_REACHED) {
-			moveBG = true;
+		if (m == GOING_LEFT) {
 			moveLeft = true;
 		}
-		if (m == R_EDGE_REACHED) {
-			moveBG = true;
+		if (m == GOING_RIGHT) {
+			moveRight = true;
+		}
+		if (m == GOING_BACK) {
+			goingBack = true;
 		}
 	}
 
 	virtual void Update(float dt) 
 	{
+		float mult = goingBack ? 1.5f : 1.0f;
+		goingBack = false;
+
 		if (moveLeft) {
-			moveBG = false;
 			moveLeft = false;
-			Move(dt * PLAYER_SPEED );
+			Move(dt * PLAYER_SPEED * mult);
 		}
-		else if (moveBG && !moveLeft) {
-			moveBG = false;
-			Move(- dt * PLAYER_SPEED);
+		if (moveRight) {
+			moveRight = false;
+			Move(- dt * PLAYER_SPEED * mult);
 		}
 
 	}
@@ -62,12 +74,12 @@ public:
 		go->horizontalPosition += move;
 		
 		//going right wraparound
-		if (go->horizontalPosition < wrapSpot) {
+		if (go->horizontalPosition < - WORLD_WIDTH) {
 			go->horizontalPosition = 0;
 		}
 		//left wraparound
 		if (go->horizontalPosition > 0) {
-			go->horizontalPosition = wrapSpot;
+			go->horizontalPosition = - WORLD_WIDTH;
 		}
 
 	}
