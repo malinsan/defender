@@ -71,6 +71,7 @@ public:
 		Component::Create(system, go, game_objects);
 		this->rockets_pool = rockets_pool;
 		thisPlayer = (Player *)go;
+
 	}
 
 	virtual void Init()
@@ -141,8 +142,9 @@ public:
 
 	//teleport the player to a random position on the screen 
 	void Teleport(float dt) {
+		Send(TELEPORTED); //background update, animation, play sound
 		go->horizontalPosition = WIDTH / 2; //put player in the middle of the screen
-		Send(TELEPORTED); //background update, play sound
+
 	}
 
 	// move the player left or right, up or down
@@ -198,22 +200,59 @@ class PlayerRenderComponent : public Component
 	Sprite* rightSprite;
 	Sprite * currentSprite;
 
+	//teleportation
+	Sprite* oldSprite;
+	Sprite* firstTPSprite;
+	Sprite* secondTPSprite;
+	bool teleporting = false;
+	int tpFrames = 0;
+	const int TOTAL_TP_FRAMES = 200;
+
 public:
 	virtual ~PlayerRenderComponent() {}
 
 
-	virtual void Create(AvancezLib * system, GameObject * go, std::set<GameObject*>* game_objects, const char * left_sprite_name, const char * right_sprite_name)
+	virtual void Create(AvancezLib * system, GameObject * go, std::set<GameObject*>* game_objects, 
+		const char * left_sprite_name, const char * right_sprite_name,
+		const char * first_TP_sprite, const char * second_TP_sprite)
 	{
 		Component::Create(system, go, game_objects);
 
 		leftSprite = system->createSprite(left_sprite_name);
 		rightSprite = system->createSprite(right_sprite_name);
-		currentSprite = leftSprite;
+		//teleport
+		firstTPSprite = system->createSprite(first_TP_sprite);
+		secondTPSprite = system->createSprite(second_TP_sprite);
+
+		currentSprite = rightSprite;
 	}
 
 	virtual void Update(float dt) {
 		if (!go->enabled)
 			return;
+
+
+		if (teleporting) {
+			if (tpFrames == 0) { // save which way we were going
+				oldSprite = currentSprite;
+			}
+			if (tpFrames < TOTAL_TP_FRAMES) {
+				if (tpFrames < TOTAL_TP_FRAMES/2) {
+					currentSprite = firstTPSprite;
+					tpFrames++;
+				}
+				else {
+					currentSprite = secondTPSprite;
+					tpFrames++;
+				}
+			}
+			else {
+				teleporting = false;
+				tpFrames = 0;
+				currentSprite = oldSprite; //TODO; which way we were going
+			}
+		}
+
 
 		if (currentSprite)
 			currentSprite->draw(int(go->horizontalPosition), int(go->verticalPosition), go->angle);
@@ -232,6 +271,9 @@ public:
 		}
 		if (m == GOING_RIGHT) {
 			currentSprite = rightSprite;
+		}
+		if (m == TELEPORTED) {
+			teleporting = true;
 		}
 	}
 
