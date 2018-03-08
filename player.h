@@ -265,7 +265,7 @@ public:
 #pragma endregion
 
 
-		if (!active) {
+		if (!teleporting && !active) {
 			currentSprite = currentInactiveSprite;
 		}
 

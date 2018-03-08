@@ -224,7 +224,7 @@ public:
 		char msg[1024];
 		
 		for (int i = 0; i < player->lives; i++) {
-			lifeSprite->draw(30 + (PLAYER_WIDTH + 10) * i, 15, 0);
+			lifeSprite->draw(10 + (PLAYER_WIDTH + 10) * i, 15, 0);
 		}
 
 		for (int i = 0; i < player->smartBombs; i++) {
@@ -233,10 +233,6 @@ public:
 
 		sprintf_s(msg, "%07d", player->score);
 		system->drawText(30, 50, msg);
-
-		sprintf_s(msg, "%07d", player->horizontalPosition);
-		system->drawText(600, 50, msg);
-
 
 		if (IsGameOver())
 		{
