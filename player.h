@@ -55,6 +55,10 @@ class PlayerBehaviourComponent : public Component
 	Player * thisPlayer;
 	float time_fire_pressed;	// time from the last time the fire button was pressed
 	ObjectPool<Rocket> * rockets_pool;
+	
+	//teleport stuff
+	float time_teleported;
+	float teleport_cooldown = 3.0f;
 
 	bool movingHorizontally = true;
 	//bool leftFacing = true;
@@ -126,8 +130,20 @@ public:
 				
 			}
 		}
+		//teleportation
+		if (keys.teleport) {
+			if ((system->getElapsedTime() - time_teleported) > teleport_cooldown) {
+				Teleport(dt);
+				time_teleported = system->getElapsedTime();
+			}
+		}
 	}
 
+	//teleport the player to a random position on the screen 
+	void Teleport(float dt) {
+		go->horizontalPosition = WIDTH / 2; //put player in the middle of the screen
+		Send(TELEPORTED); //background update, play sound
+	}
 
 	// move the player left or right, up or down
 	// param move depends on the time, so the player moves always at the same speed on any computer
@@ -139,7 +155,7 @@ public:
 			//move the ship backwards and the background forwards
 			if (go->horizontalPosition > 400 && !thisPlayer->leftFacing) {
 				Send(GOING_BACK); //send to rocket 
-				go->horizontalPosition -= move * 0.5; // *2 to offset the background moving the other way 
+				go->horizontalPosition -= move * 0.5; // *0.5 to offset the background moving the other way 
 			}
 
 			//going to the left

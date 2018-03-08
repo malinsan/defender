@@ -26,13 +26,16 @@ public:
 	bool moveLeft = false;
 	bool moveRight = false;
 	bool goingBack = false;
+	bool playerTeleported = false;
+	
+	Player * player;
 
-	virtual void Create(AvancezLib* system, GameObject * go, std::set<GameObject*> * game_objects, float xPos, float yPos)
+	virtual void Create(AvancezLib* system, GameObject * go, std::set<GameObject*> * game_objects, Player * player, float xPos, float yPos)
 	{
 		Component::Create(system, go, game_objects);
 		go->horizontalPosition = xPos;
 		go->verticalPosition = yPos;
-
+		this->player = player;
 	}
 
 	
@@ -46,12 +49,23 @@ public:
 		if (m == GOING_BACK) {
 			goingBack = true;
 		}
+		if (m == TELEPORTED) {
+			playerTeleported = true;
+		}
 	}
 
 	virtual void Update(float dt) 
 	{
 		float mult = goingBack ? 1.5f : 1.0f;
 		goingBack = false;
+
+		if (playerTeleported) { //move so that player is in the middle
+			go->horizontalPosition -= (rand() % ((WORLD_WIDTH/2)-WIDTH)) + WIDTH;
+			Move(dt); //to fix wrapping
+
+			//SDL_Log(player->horizontalPosition);
+			playerTeleported = false;
+		}
 
 		if (moveLeft) {
 			moveLeft = false;

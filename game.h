@@ -45,7 +45,8 @@ public:
 		SDL_Log("Game::Create");
 
 		this->system = system;
-		
+
+		player = new Player();
 		
 		//create soundmaker
 		soundMaker = new SoundMaker();
@@ -59,7 +60,7 @@ public:
 		RenderComponent* background_render = new RenderComponent();
 		background_render->Create(system, background, &game_objects, "data/bakgrund.bmp");
 		BackgroundBehaviourComponent * background_component = new BackgroundBehaviourComponent();
-		background_component->Create(system, background, &game_objects, -(WORLD_WIDTH/2), 0);
+		background_component->Create(system, background, &game_objects, player, -(WORLD_WIDTH/2), 0);
 
 		background->Create();
 		background->AddComponent(background_render);
@@ -67,7 +68,6 @@ public:
 		//game_objects.insert(background);
 
 
-		player = new Player();
 		PlayerBehaviourComponent * player_behaviour = new PlayerBehaviourComponent();
 		player_behaviour->Create(system, player, &game_objects, &rockets_pool);
 		//sound component listens to players actions
@@ -84,6 +84,7 @@ public:
 		//player->AddComponent(player_shoot);
 		player->AddReceiver(this);
 		game_objects.insert(player);
+
 
 		rockets_pool.Create(30);
 		for (auto rocket = rockets_pool.pool.begin(); rocket != rockets_pool.pool.end(); rocket++)
@@ -207,7 +208,7 @@ public:
 			dt = 0.f;
 
 		//first component should be background
-		background->Update(dt); //doesn't run?
+		background->Update(dt); 
 
 		for (auto go = game_objects.begin(); go != game_objects.end(); go++) {
 			//except for background 
@@ -230,6 +231,9 @@ public:
 
 		sprintf_s(msg, "%07d", player->score);
 		system->drawText(30, 50, msg);
+
+		sprintf_s(msg, "%07d", player->horizontalPosition);
+		system->drawText(600, 50, msg);
 
 
 		if (IsGameOver())
@@ -261,6 +265,8 @@ public:
 	{
 		SDL_Log("Game::Destroy");
 
+		lifeSprite->destroy();
+		bombSprite->destroy();
 		for (auto go = game_objects.begin(); go != game_objects.end(); go++)
 			(*go)->Destroy();
 

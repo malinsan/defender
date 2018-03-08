@@ -39,7 +39,7 @@ bool AvancezLib::init(int width, int height)
 	}
 
 	// initialize the keys
-	key.fire = false;	key.left = false;	key.right = false;	 key.up = false;	key.down = false;
+	key.fire = false;	key.left = false;	key.right = false;	 key.up = false;	key.down = false; key.teleport = false; key.smartbomb = false;
 
 	//Initialize renderer color
 	SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
@@ -101,6 +101,13 @@ bool AvancezLib::update()
 			case SDLK_DOWN:
 				key.down = true;
 				break;
+			case SDLK_z:
+				key.teleport = true;
+				break;
+			case SDLK_x:
+				key.smartbomb = true;
+				break;
+
 			}
 		}
 
@@ -123,6 +130,13 @@ bool AvancezLib::update()
 			case SDLK_DOWN:
 				key.down = false;
 				break;
+			case SDLK_z:
+				key.teleport = false;
+				break;
+			case SDLK_x:
+				key.smartbomb = false;
+				break;
+
 			}
 		}
 
@@ -194,6 +208,8 @@ void AvancezLib::getKeyStatus(KeyStatus & keys)
 	keys.right = key.right;
 	keys.up = key.up;
 	keys.down = key.down;
+	keys.teleport = key.teleport;
+	keys.smartbomb = key.smartbomb;
 }
 
 
