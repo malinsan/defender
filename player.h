@@ -197,8 +197,14 @@ public:
 class PlayerRenderComponent : public Component 
 {
 	Sprite* leftSprite;
+	Sprite* leftActiveSprite;
 	Sprite* rightSprite;
+	Sprite* rightActiveSprite;
+
+	Sprite * currentInactiveSprite;
 	Sprite * currentSprite;
+
+	bool active = false;
 
 	//teleportation
 	Sprite* oldSprite;
@@ -214,30 +220,33 @@ public:
 
 	virtual void Create(AvancezLib * system, GameObject * go, std::set<GameObject*>* game_objects, 
 		const char * left_sprite_name, const char * right_sprite_name,
+		const char * leftActive_sprite, const char * rightActive_sprite,
 		const char * first_TP_sprite, const char * second_TP_sprite)
 	{
 		Component::Create(system, go, game_objects);
 
 		leftSprite = system->createSprite(left_sprite_name);
+		leftActiveSprite = system->createSprite(leftActive_sprite);
 		rightSprite = system->createSprite(right_sprite_name);
+		rightActiveSprite = system->createSprite(rightActive_sprite);
 		//teleport
 		firstTPSprite = system->createSprite(first_TP_sprite);
 		secondTPSprite = system->createSprite(second_TP_sprite);
 
-		currentSprite = rightSprite;
+		currentInactiveSprite = rightSprite;
+
 	}
 
 	virtual void Update(float dt) {
 		if (!go->enabled)
 			return;
 
+#pragma region Teleport
 
+		//teleportation
 		if (teleporting) {
-			if (tpFrames == 0) { // save which way we were going
-				oldSprite = currentSprite;
-			}
 			if (tpFrames < TOTAL_TP_FRAMES) {
-				if (tpFrames < TOTAL_TP_FRAMES/2) {
+				if (tpFrames < TOTAL_TP_FRAMES / 2) {
 					currentSprite = firstTPSprite;
 					tpFrames++;
 				}
@@ -246,16 +255,24 @@ public:
 					tpFrames++;
 				}
 			}
-			else {
+			else { //teleportation over
 				teleporting = false;
 				tpFrames = 0;
-				currentSprite = oldSprite; //TODO; which way we were going
+				currentSprite = oldSprite;
 			}
 		}
 
+#pragma endregion
+
+
+		if (!active) {
+			currentSprite = currentInactiveSprite;
+		}
 
 		if (currentSprite)
 			currentSprite->draw(int(go->horizontalPosition), int(go->verticalPosition), go->angle);
+
+		active = false;
 
 	}
 	virtual void Destroy() {
@@ -267,12 +284,17 @@ public:
 
 	virtual void Receive(Message m) {
 		if (m == GOING_LEFT) {
-			currentSprite = leftSprite;
+			currentSprite = leftActiveSprite;
+			currentInactiveSprite = leftSprite;
+			active = true;
 		}
 		if (m == GOING_RIGHT) {
-			currentSprite = rightSprite;
+			currentSprite = rightActiveSprite;
+			currentInactiveSprite = rightSprite;
+			active = true;
 		}
 		if (m == TELEPORTED) {
+			oldSprite = currentSprite; //save which way we were going
 			teleporting = true;
 		}
 	}

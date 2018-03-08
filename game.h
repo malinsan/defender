@@ -75,7 +75,9 @@ public:
 		//background listens to player movement
 		player_behaviour->AddReceiver(background_component);
 		PlayerRenderComponent * player_render = new PlayerRenderComponent();
-		player_render->Create(system, player, &game_objects, "data/shipL.bmp", "data/shipR.bmp", "data/shipRTeleport1.bmp", "data/shipRTeleport2.bmp");
+		player_render->Create(system, player, &game_objects, "data/shipL.bmp", "data/shipR.bmp",
+			"data/shipLActive.bmp", "data/shipRActive.bmp",
+			"data/shipRTeleport1.bmp", "data/shipRTeleport2.bmp");
 		player_behaviour->AddReceiver(player_render);
 
 		player->Create();
