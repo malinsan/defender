@@ -161,6 +161,7 @@ class HumanStateMachine : public Component
 			if (state_machine.human->verticalPosition >= 620) {
 				state_machine.player->carriedHumans--;
 				state_machine.human->carried = false;
+				state_machine.player->score += POINTS_PER_HUMAN;
 				state_machine.state_idle->Enter(state_machine);
 			}
 

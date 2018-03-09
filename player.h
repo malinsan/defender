@@ -4,6 +4,9 @@ class Player : public GameObject
 public:
 
 	int lives;	// it's game over when goes below zero 
+	int score;
+	int smartBombs;
+
 	int carriedHumans;
 
 	bool leftFacing = true;
@@ -14,8 +17,13 @@ public:
 	{
 		SDL_Log("Player::Init");
 		GameObject::Init();
+
 		lives = NUM_LIVES;
+		score = 0;
+		smartBombs = NUM_SMARTBOMBS;
+
 		carriedHumans = 0;
+		
 	}
 
 	virtual void Receive(Message m)
@@ -27,6 +35,9 @@ public:
 
 			if (lives < 0)
 				Send(GAME_OVER);
+		}
+		if (m == ALIEN_HIT) {
+			score += POINTS_PER_ALIEN;
 		}
 	}
 
@@ -44,6 +55,10 @@ class PlayerBehaviourComponent : public Component
 	Player * thisPlayer;
 	float time_fire_pressed;	// time from the last time the fire button was pressed
 	ObjectPool<Rocket> * rockets_pool;
+	
+	//teleport stuff
+	float time_teleported;
+	float teleport_cooldown = 3.0f;
 
 	bool movingHorizontally = true;
 	//bool leftFacing = true;
@@ -56,6 +71,7 @@ public:
 		Component::Create(system, go, game_objects);
 		this->rockets_pool = rockets_pool;
 		thisPlayer = (Player *)go;
+
 	}
 
 	virtual void Init()
@@ -115,8 +131,21 @@ public:
 				
 			}
 		}
+		//teleportation
+		if (keys.teleport) {
+			if ((system->getElapsedTime() - time_teleported) > teleport_cooldown) {
+				Teleport(dt);
+				time_teleported = system->getElapsedTime();
+			}
+		}
 	}
 
+	//teleport the player to a random position on the screen 
+	void Teleport(float dt) {
+		Send(TELEPORTED); //background update, animation, play sound
+		go->horizontalPosition = WIDTH / 2; //put player in the middle of the screen
+
+	}
 
 	// move the player left or right, up or down
 	// param move depends on the time, so the player moves always at the same speed on any computer
@@ -128,7 +157,7 @@ public:
 			//move the ship backwards and the background forwards
 			if (go->horizontalPosition > 400 && !thisPlayer->leftFacing) {
 				Send(GOING_BACK); //send to rocket 
-				go->horizontalPosition -= move * 0.5; // *2 to offset the background moving the other way 
+				go->horizontalPosition -= move * 0.5; // *0.5 to offset the background moving the other way 
 			}
 
 			//going to the left
@@ -168,28 +197,82 @@ public:
 class PlayerRenderComponent : public Component 
 {
 	Sprite* leftSprite;
+	Sprite* leftActiveSprite;
 	Sprite* rightSprite;
+	Sprite* rightActiveSprite;
+
+	Sprite * currentInactiveSprite;
 	Sprite * currentSprite;
+
+	bool active = false;
+
+	//teleportation
+	Sprite* oldSprite;
+	Sprite* firstTPSprite;
+	Sprite* secondTPSprite;
+	bool teleporting = false;
+	int tpFrames = 0;
+	const int TOTAL_TP_FRAMES = 200;
 
 public:
 	virtual ~PlayerRenderComponent() {}
 
 
-	virtual void Create(AvancezLib * system, GameObject * go, std::set<GameObject*>* game_objects, const char * left_sprite_name, const char * right_sprite_name)
+	virtual void Create(AvancezLib * system, GameObject * go, std::set<GameObject*>* game_objects, 
+		const char * left_sprite_name, const char * right_sprite_name,
+		const char * leftActive_sprite, const char * rightActive_sprite,
+		const char * first_TP_sprite, const char * second_TP_sprite)
 	{
 		Component::Create(system, go, game_objects);
 
 		leftSprite = system->createSprite(left_sprite_name);
+		leftActiveSprite = system->createSprite(leftActive_sprite);
 		rightSprite = system->createSprite(right_sprite_name);
-		currentSprite = leftSprite;
+		rightActiveSprite = system->createSprite(rightActive_sprite);
+		//teleport
+		firstTPSprite = system->createSprite(first_TP_sprite);
+		secondTPSprite = system->createSprite(second_TP_sprite);
+
+		currentInactiveSprite = rightSprite;
+
 	}
 
 	virtual void Update(float dt) {
 		if (!go->enabled)
 			return;
 
+#pragma region Teleport
+
+		//teleportation
+		if (teleporting) {
+			if (tpFrames < TOTAL_TP_FRAMES) {
+				if (tpFrames < TOTAL_TP_FRAMES / 2) {
+					currentSprite = firstTPSprite;
+					tpFrames++;
+				}
+				else {
+					currentSprite = secondTPSprite;
+					tpFrames++;
+				}
+			}
+			else { //teleportation over
+				teleporting = false;
+				tpFrames = 0;
+				currentSprite = oldSprite;
+			}
+		}
+
+#pragma endregion
+
+
+		if (!teleporting && !active) {
+			currentSprite = currentInactiveSprite;
+		}
+
 		if (currentSprite)
 			currentSprite->draw(int(go->horizontalPosition), int(go->verticalPosition), go->angle);
+
+		active = false;
 
 	}
 	virtual void Destroy() {
@@ -201,10 +284,18 @@ public:
 
 	virtual void Receive(Message m) {
 		if (m == GOING_LEFT) {
-			currentSprite = leftSprite;
+			currentSprite = leftActiveSprite;
+			currentInactiveSprite = leftSprite;
+			active = true;
 		}
 		if (m == GOING_RIGHT) {
-			currentSprite = rightSprite;
+			currentSprite = rightActiveSprite;
+			currentInactiveSprite = rightSprite;
+			active = true;
+		}
+		if (m == TELEPORTED) {
+			oldSprite = currentSprite; //save which way we were going
+			teleporting = true;
 		}
 	}
 

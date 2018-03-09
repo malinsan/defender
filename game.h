@@ -27,9 +27,11 @@ class Game : public GameObject
 	ObjectPool<Lander> lander_pool;
 	//Lander * lander;
 	ObjectPool<Bomb> bomb_pool;
-
-
 	ObjectPool<Human> human_pool;
+
+	//UI Sprites
+	Sprite * lifeSprite;
+	Sprite * bombSprite;
 
 
 	bool game_over;
@@ -43,7 +45,8 @@ public:
 		SDL_Log("Game::Create");
 
 		this->system = system;
-		
+
+		player = new Player();
 		
 		//create soundmaker
 		soundMaker = new SoundMaker();
@@ -55,9 +58,9 @@ public:
 		
 		background = new Background();
 		RenderComponent* background_render = new RenderComponent();
-		background_render->Create(system, background, &game_objects, "data/bakgrund_test.bmp");
+		background_render->Create(system, background, &game_objects, "data/bakgrund.bmp");
 		BackgroundBehaviourComponent * background_component = new BackgroundBehaviourComponent();
-		background_component->Create(system, background, &game_objects, -600, 0);
+		background_component->Create(system, background, &game_objects, player, -(WORLD_WIDTH/2), 0);
 
 		background->Create();
 		background->AddComponent(background_render);
@@ -65,7 +68,6 @@ public:
 		//game_objects.insert(background);
 
 
-		player = new Player();
 		PlayerBehaviourComponent * player_behaviour = new PlayerBehaviourComponent();
 		player_behaviour->Create(system, player, &game_objects, &rockets_pool);
 		//sound component listens to players actions
@@ -73,7 +75,9 @@ public:
 		//background listens to player movement
 		player_behaviour->AddReceiver(background_component);
 		PlayerRenderComponent * player_render = new PlayerRenderComponent();
-		player_render->Create(system, player, &game_objects, "data/shipL.bmp", "data/shipR.bmp");
+		player_render->Create(system, player, &game_objects, "data/shipL.bmp", "data/shipR.bmp",
+			"data/shipLActive.bmp", "data/shipRActive.bmp",
+			"data/shipRTeleport1.bmp", "data/shipRTeleport2.bmp");
 		player_behaviour->AddReceiver(player_render);
 
 		player->Create();
@@ -82,6 +86,7 @@ public:
 		//player->AddComponent(player_shoot);
 		player->AddReceiver(this);
 		game_objects.insert(player);
+
 
 		rockets_pool.Create(30);
 		for (auto rocket = rockets_pool.pool.begin(); rocket != rockets_pool.pool.end(); rocket++)
@@ -108,7 +113,6 @@ public:
 			main_move_behaviour->Create(system, *human, &game_objects, 0, 0, true);
 			player_behaviour->AddReceiver(main_move_behaviour);
 
-			//HumanBehaviourComponent * behaviour = new HumanBehaviourComponent();
 			HumanStateMachine * behaviour = new HumanStateMachine();
 			behaviour->Create(system, *human, &game_objects, player);
 
@@ -145,7 +149,7 @@ public:
 			landerAI->Create(system, *lander, &game_objects, player, &bomb_pool, &human_pool);
 			//render component
 			RenderComponent * landerRender = new RenderComponent();
-			landerRender->Create(system, *lander, &game_objects, "data/enemy_1.bmp");
+			landerRender->Create(system, *lander, &game_objects, "data/lander.bmp");
 
 			//collision with rockets
 			CollideComponent* collision = new CollideComponent();
@@ -156,6 +160,7 @@ public:
 			(*lander)->AddComponent(landerAI);
 			(*lander)->AddComponent(landerRender);
 			(*lander)->AddComponent(collision);
+			(*lander)->AddReceiver(player);
 		}
 
 		
@@ -178,7 +183,11 @@ public:
 			(*bomb)->AddComponent(render);
 		}
 
-
+		///////////////////////////////////
+		//            U I                //
+		///////////////////////////////////
+		lifeSprite = system->createSprite("data/shipR.bmp");
+		bombSprite = system->createSprite("data/smartbomb.bmp");
 
 		score = 0;
 	}
@@ -201,7 +210,7 @@ public:
 			dt = 0.f;
 
 		//first component should be background
-		background->Update(dt); //doesn't run?
+		background->Update(dt); 
 
 		for (auto go = game_objects.begin(); go != game_objects.end(); go++) {
 			//except for background 
@@ -213,8 +222,17 @@ public:
 	virtual void Draw()
 	{
 		char msg[1024];
-		sprintf_s(msg, "Defender Time");
-		system->drawText(300, 32, msg);
+		
+		for (int i = 0; i < player->lives; i++) {
+			lifeSprite->draw(10 + (PLAYER_WIDTH + 10) * i, 15, 0);
+		}
+
+		for (int i = 0; i < player->smartBombs; i++) {
+			bombSprite->draw(250, 15 + (i * 20), 0);
+		}
+
+		sprintf_s(msg, "%07d", player->score);
+		system->drawText(30, 50, msg);
 
 		if (IsGameOver())
 		{
@@ -227,6 +245,7 @@ public:
 	{
 		if (m == GAME_OVER)
 			game_over = true;
+		
 	}
 
 
@@ -244,6 +263,8 @@ public:
 	{
 		SDL_Log("Game::Destroy");
 
+		lifeSprite->destroy();
+		bombSprite->destroy();
 		for (auto go = game_objects.begin(); go != game_objects.end(); go++)
 			(*go)->Destroy();
 

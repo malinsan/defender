@@ -316,7 +316,7 @@ public:
 	void FindClosestHuman() 
 	{
 		closestHuman = human_pool.FirstAvailable();
-		float distance = 1000.0f;
+		float distance = 100000.0f;
 		for (auto human = human_pool.pool.begin(); human != human_pool.pool.end(); human++)
 		{
 			Human* castHuman = *human;

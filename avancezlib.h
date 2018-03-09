@@ -56,6 +56,8 @@ public:
 		bool right; // right arrow
 		bool up;
 		bool down;
+		bool teleport; //Z
+		bool smartbomb; //X
 	};
 
 	// Returns the keyboard status. If a flag is set, the corresponding key is being held down.

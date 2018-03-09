@@ -31,7 +31,7 @@ bool AvancezLib::init(int width, int height)
 	}
 
 	TTF_Init();
-	font = TTF_OpenFont("data/space_invaders.ttf", 12); //this opens a font style and sets a size
+	font = TTF_OpenFont("data/space_invaders.ttf", 22); //this opens a font style and sets a size
 	if (font == NULL)
 	{
 		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "font cannot be created! SDL_Error: %s\n", SDL_GetError());
@@ -39,7 +39,7 @@ bool AvancezLib::init(int width, int height)
 	}
 
 	// initialize the keys
-	key.fire = false;	key.left = false;	key.right = false;	 key.up = false;	key.down = false;
+	key.fire = false;	key.left = false;	key.right = false;	 key.up = false;	key.down = false; key.teleport = false; key.smartbomb = false;
 
 	//Initialize renderer color
 	SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
@@ -101,6 +101,13 @@ bool AvancezLib::update()
 			case SDLK_DOWN:
 				key.down = true;
 				break;
+			case SDLK_z:
+				key.teleport = true;
+				break;
+			case SDLK_x:
+				key.smartbomb = true;
+				break;
+
 			}
 		}
 
@@ -123,6 +130,13 @@ bool AvancezLib::update()
 			case SDLK_DOWN:
 				key.down = false;
 				break;
+			case SDLK_z:
+				key.teleport = false;
+				break;
+			case SDLK_x:
+				key.smartbomb = false;
+				break;
+
 			}
 		}
 
@@ -165,9 +179,9 @@ Sprite * AvancezLib::createSprite(const char * path)
 
 void AvancezLib::drawText(int x, int y, const char * msg)
 {
-	SDL_Color black = { 0, 0, 0 };  // this is the color in rgb format, maxing out all would give you the color white, and it will be your text's color
+	SDL_Color blue = { 129, 54, 255 };  // this is the color in rgb format, maxing out all would give you the color white, and it will be your text's color
 
-	SDL_Surface* surf = TTF_RenderText_Solid(font, msg, black); // as TTF_RenderText_Solid could only be used on SDL_Surface then you have to create the surface first
+	SDL_Surface* surf = TTF_RenderText_Solid(font, msg, blue); // as TTF_RenderText_Solid could only be used on SDL_Surface then you have to create the surface first
 
 	SDL_Texture* msg_texture = SDL_CreateTextureFromSurface(renderer, surf); //now you can convert it into a texture
 
@@ -194,6 +208,8 @@ void AvancezLib::getKeyStatus(KeyStatus & keys)
 	keys.right = key.right;
 	keys.up = key.up;
 	keys.down = key.down;
+	keys.teleport = key.teleport;
+	keys.smartbomb = key.smartbomb;
 }
 
 

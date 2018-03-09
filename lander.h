@@ -24,6 +24,7 @@ public:
 			if (abductedHuman != NULL) {
 				abductedHuman->Receive(DROPPED);
 			}
+			Send(ALIEN_HIT);
 			enabled = false;
 		}
 	}
@@ -53,7 +54,6 @@ public:
 
 	virtual void Update(float dt) 
 	{
-
 		float mult = goingBack ? 1.5f : 1.0f;
 		goingBack = false;
 
@@ -74,10 +74,10 @@ public:
 		if (wrapAround) {
 			//going right wraparound
 			if (go->horizontalPosition >= WORLD_WIDTH) {
-				go->horizontalPosition = 0;
+				go->horizontalPosition = -WORLD_WIDTH;
 			}
 			//left wraparound
-			if (go->horizontalPosition < 0) {
+			if (go->horizontalPosition < -WORLD_WIDTH) {
 				go->horizontalPosition = WORLD_WIDTH;
 			}
 		}
