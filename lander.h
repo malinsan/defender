@@ -73,6 +73,7 @@ public:
 	}
 
 	void Move(float move) {
+
 		go->horizontalPosition += move;
 
 		if (wrapAround) {

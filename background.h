@@ -64,15 +64,7 @@ public:
 			Move(dt); //to fix wrapping
 		}
 
-		//decrease velocity if buttons are released. i.e go towards 0
-		if (!moveLeft && !moveRight) {
-			if (go->velocity.x > 1) {
-				go->velocity.x -= 1.0f;
-			}
-			else if (go->velocity.x < -1) {
-				go->velocity.x += 1.0f;
-			}
-		}
+		
 
 		if (goingBack) {
 			goingBack = false;
@@ -80,27 +72,16 @@ public:
 			go->horizontalPosition += movement;
 		}
 
-		if (moveLeft) {
-			moveLeft = false;
-			if (go->velocity.x < PLAYER_MAX_VELOCITY) {
-				go->velocity.x += PLAYER_ACCELERATION * dt;
-			}
-			//Move(dt * PLAYER_SPEED * mult);
+		if (moveLeft || moveRight) {
+			moveLeft = false; moveRight = false;
+			Move(dt);
+			
 		}
-		if (moveRight) {
-			moveRight = false;
-
-			if (go->velocity.x > -PLAYER_MAX_VELOCITY) {
-				go->velocity.x -= PLAYER_ACCELERATION * dt;
-			}
-			//Move(- dt * PLAYER_SPEED * mult);
-		}
-		Move(dt);
 	}
 
 	void Move(float move) {
 
-		go->horizontalPosition += go->velocity.x * move;
+		go->horizontalPosition += player->velocity.x * move;
 
 		//going right wraparound
 		if (go->horizontalPosition < -(WORLD_WIDTH / 2)) {

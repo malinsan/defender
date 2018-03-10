@@ -80,7 +80,6 @@ public:
 		Component::Create(system, go, game_objects);
 		this->rockets_pool = rockets_pool;
 		thisPlayer = (Player *)go;
-
 	}
 
 	virtual void Init()
@@ -110,6 +109,16 @@ public:
 			}
 		}
 
+		//decrease velocity if buttons are released. i.e go towards 0
+		if (!keys.left && !keys.right) {
+			if (go->velocity.x > 1) {
+				go->velocity.x -= 1.0f;
+			}
+			else if (go->velocity.x < -1) {
+				go->velocity.x += 1.0f;
+			}
+		}
+
 		if (keys.down) {
 			movingHorizontally = false;
 			if (go->velocity.y < PLAYER_MAX_VELOCITY) {
@@ -126,6 +135,9 @@ public:
 		if (keys.right) {
 			movingHorizontally = true;
 			thisPlayer->leftFacing = false;
+			if (go->velocity.x > -PLAYER_MAX_VELOCITY) {
+				go->velocity.x -= PLAYER_ACCELERATION * dt;
+			}
 			Send(GOING_RIGHT); //tell rendering to change sprite
 
 		}
@@ -133,6 +145,9 @@ public:
 		if (keys.left) {
 			movingHorizontally = true;
 			thisPlayer->leftFacing = true;
+			if (go->velocity.x < PLAYER_MAX_VELOCITY) {
+				go->velocity.x += PLAYER_ACCELERATION * dt;
+			}
 			Send(GOING_LEFT);
 
 		}
@@ -204,6 +219,10 @@ public:
 				go->horizontalPosition += move * PLAYER_MAX_VELOCITY * 0.5;
 			}
 		}
+		else {
+			go->horizontalPosition -= move * go->velocity.x * 0.5;
+		}
+
 
 		if (go->verticalPosition < 0) {
 			go->verticalPosition = 0;

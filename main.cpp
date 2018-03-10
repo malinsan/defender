@@ -25,11 +25,11 @@ int PLAYER_WIDTH = 64;
 int PLAYER_HEIGHT = 25;
 int NUM_SMARTBOMBS = 3;
 
-const float PLAYER_ACCELERATION = 500.0f;
-const float PLAYER_MAX_VELOCITY = 400.0f;
+const float PLAYER_MAX_VELOCITY = 700.0f;
+const float PLAYER_ACCELERATION = 800.0f;
 
 const unsigned int	NUM_HUMANS = 0;
-int NUM_ALIENS = 0;
+int NUM_ALIENS = 5;
 
 const unsigned int	MAX_NUM_ROCKETS = 32;
 const unsigned int	MAX_NUM_BOMBS = 32;

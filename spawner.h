@@ -17,6 +17,8 @@ class SpawnerComponent : public Component
 	float humanSpawnTime = 0.05f;
 	ObjectPool<Lander> * lander_pool;
 	ObjectPool<Human> * human_pool;
+
+	int numberOfLandersSpawned = 0;
 	int numberOfHumansSpawned = 0;
 
 public:
@@ -40,7 +42,10 @@ public:
 
 	virtual void Update(float dt) 
 	{
-		SpawnLander();
+		//SpawnLander();
+		if (numberOfLandersSpawned < NUM_ALIENS) {
+			SpawnLander();
+		}
 	}
 
 	void SpawnLander() {
@@ -52,12 +57,14 @@ public:
 		if (lander != NULL && (system->getElapsedTime() - startTime) > spawnTime) {
 			//random location
 			int rX = rand() % WORLD_WIDTH;
-			int rY = rand() % (HEIGHT-200);
+			int rY = rand() % (HEIGHT-400) + 100;
 			float xPos = (float)rX;
 			float yPos = (float)rY;
 
 			lander->Init(xPos, yPos);
 			game_objects->insert(lander);
+
+			numberOfLandersSpawned++;
 			startTime = system->getElapsedTime();
 		}
 
