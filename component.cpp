@@ -91,10 +91,10 @@ void BumbCollideComponent::Update(float dt)
 		GameObject * go0 = coll_objects->pool[i];
 		if (go0->enabled)
 		{
-			if ((go0->horizontalPosition > go->horizontalPosition - 30) &&
-				(go0->horizontalPosition < go->horizontalPosition + 30) &&
-				(go0->verticalPosition   > go->verticalPosition - 30) &&
-				(go0->verticalPosition   < go->verticalPosition + 30))
+			if ((go0->horizontalPosition > go->horizontalPosition - 32) &&
+				(go0->horizontalPosition < go->horizontalPosition + 64) &&
+				(go0->verticalPosition   > go->verticalPosition - 32) &&
+				(go0->verticalPosition   < go->verticalPosition + 32))
 			{
 				go->Receive(BUMP_HIT);
 				go0->Receive(BUMP_HIT);

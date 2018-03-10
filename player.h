@@ -193,15 +193,12 @@ public:
 	void Move(float move)
 	{
 
-		if (thisPlayer->bumped && thisPlayer->bumpFrames < 200) {
-			if (thisPlayer->leftFacing) {
-				Send(GOING_LEFT);
-				thisPlayer->bumpFrames++;
-			}
-			else {
-				Send(GOING_RIGHT);
-				thisPlayer->bumpFrames++;
-			}
+		if (thisPlayer->bumped) {
+			thisPlayer->bumped = false;
+				//go->horizontalPosition -= go->velocity.x * move;
+			go->velocity.x *= -1;
+			go->velocity.y *= -1;
+			movingHorizontally = false;
 		}
 
 
@@ -224,8 +221,8 @@ public:
 		}
 
 
-		if (go->verticalPosition < 0) {
-			go->verticalPosition = 0;
+		if (go->verticalPosition < 100) {
+			go->verticalPosition = 100;
 			go->velocity.y *= -1;
 		}
 		else if (go->verticalPosition > 670) {
