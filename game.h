@@ -80,10 +80,14 @@ public:
 			"data/shipRTeleport1.bmp", "data/shipRTeleport2.bmp");
 		player_behaviour->AddReceiver(player_render);
 
+		//collision with landers
+		BumbCollideComponent* player_lander_collide = new BumbCollideComponent();
+		player_lander_collide->Create(system, player, &game_objects, (ObjectPool<GameObject>*)&lander_pool);
+
 		player->Create();
 		player->AddComponent(player_behaviour);
 		player->AddComponent(player_render);
-		//player->AddComponent(player_shoot);
+		player->AddComponent(player_lander_collide);
 		player->AddReceiver(this);
 		game_objects.insert(player);
 
@@ -194,7 +198,7 @@ public:
 
 	virtual void Init()
 	{
-		//init background
+		//init background first
 		background->Init();
 
 		for (auto go = game_objects.begin(); go != game_objects.end(); go++)
@@ -213,7 +217,6 @@ public:
 		background->Update(dt); 
 
 		for (auto go = game_objects.begin(); go != game_objects.end(); go++) {
-			//except for background 
 			(*go)->Update(dt);
 			
 		}

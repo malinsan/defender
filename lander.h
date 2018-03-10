@@ -5,6 +5,7 @@ class Lander : public GameObject
 public:
 
 	Human * abductedHuman;
+	bool bumped = false;
 
 	virtual ~Lander() { SDL_Log("Lander::Lander"); }
 
@@ -26,6 +27,9 @@ public:
 			}
 			Send(ALIEN_HIT);
 			enabled = false;
+		}
+		if (m == BUMP_HIT) {
+			bumped = true;
 		}
 	}
 

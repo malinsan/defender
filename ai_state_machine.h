@@ -253,6 +253,45 @@ class AIStateMachine : public Component
 
 	};
 
+	class BumpedState : public State
+	{
+	public:
+		int n;
+		float movement;
+
+		BumpedState(AvancezLib* system)
+		{
+			this->system = system;
+		}
+
+		virtual void Enter(AIStateMachine &state_machine)
+		{
+			state_machine.current_state = this;
+			if (state_machine.lander->abductedHuman != NULL) {
+				state_machine.lander->abductedHuman->Receive(DROPPED);
+			}
+			state_machine.lander->bumped = false;
+			movement = state_machine.lander->horizontalPosition > state_machine.player->horizontalPosition ? LANDER_SPEED * 2 : -LANDER_SPEED * 2;
+			n = 0;
+		}
+		
+		virtual void Update(AIStateMachine& state_machine, float dt) {
+			//fly away a bit
+			//position compared to player?
+			
+			if (n < 500) {
+				state_machine.lander->horizontalPosition += movement * dt;
+				n++;
+			}
+			else {
+				//go back to aggressive state
+				state_machine.state_aggressive->Enter(state_machine);
+
+			}
+
+		}
+
+	};
 
 public:
 	float last_attack_time = 0.0f;
@@ -279,6 +318,7 @@ public:
 	AttackState *		state_attack;
 	
 	ApproachState *		state_approach;
+	BumpedState *		state_bumped;
 	
 	virtual ~AIStateMachine() {}
 
@@ -302,6 +342,7 @@ public:
 		state_approach = new ApproachState(system);
 		state_humanAggressive = new HumanAggressiveState(system);
 		state_abductor = new AbductorState(system);
+		state_bumped = new BumpedState(system);
 		
 		current_state = state_idle;
 	}
@@ -309,6 +350,9 @@ public:
 	// Main loop
 	virtual void Update(float dt)
 	{
+		if (lander->bumped) {
+			state_bumped->Enter(*this);
+		}
 		// No need for input
 		current_state->Update(*this, dt);
 	}

@@ -11,6 +11,10 @@ public:
 
 	bool leftFacing = true;
 	
+	//bumping
+	bool bumped = false;
+	int bumpFrames;
+	
 	virtual ~Player() { SDL_Log("Player::~Player"); }
 
 	virtual void Init()
@@ -23,7 +27,7 @@ public:
 		smartBombs = NUM_SMARTBOMBS;
 
 		carriedHumans = 0;
-		
+		bumpFrames = 0;
 	}
 
 	virtual void Receive(Message m)
@@ -38,6 +42,10 @@ public:
 		}
 		if (m == ALIEN_HIT) {
 			score += POINTS_PER_ALIEN;
+		}
+		if (m == BUMP_HIT) {
+			bumped = true;
+			bumpFrames = 0;
 		}
 	}
 
@@ -62,6 +70,7 @@ class PlayerBehaviourComponent : public Component
 
 	bool movingHorizontally = true;
 	//bool leftFacing = true;
+	int n = 0;
 	
 public:
 	virtual ~PlayerBehaviourComponent() {}
@@ -89,8 +98,6 @@ public:
 	{
 		AvancezLib::KeyStatus keys;
 		system->getKeyStatus(keys);
-		
-
 		
 		if (keys.down) {
 			movingHorizontally = false;
@@ -151,6 +158,19 @@ public:
 	// param move depends on the time, so the player moves always at the same speed on any computer
 	void Move(float move)
 	{
+
+		if (thisPlayer->bumped && thisPlayer->bumpFrames < 200) {
+			if (thisPlayer->leftFacing) {
+				Send(GOING_LEFT);
+				thisPlayer->bumpFrames++;
+			}
+			else {
+				Send(GOING_RIGHT);
+				thisPlayer->bumpFrames++;
+			}
+		}
+
+
 		if (movingHorizontally) {
 			
 			//going to the right
