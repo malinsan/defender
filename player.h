@@ -68,7 +68,7 @@ class PlayerBehaviourComponent : public Component
 	float time_teleported;
 	float teleport_cooldown = 3.0f;
 
-	bool movingHorizontally = true;
+	bool movingHorizontally = false;
 	//bool leftFacing = true;
 	int n = 0;
 	
@@ -99,28 +99,47 @@ public:
 		AvancezLib::KeyStatus keys;
 		system->getKeyStatus(keys);
 		
+
+		//decrease velocity if buttons are released. i.e go towards 0
+		if (!keys.up && !keys.down) {
+			if (go->velocity.y > 1) {
+				go->velocity.y -= 1.0f;
+			}
+			else if (go->velocity.y < -1) {
+				go->velocity.y += 1.0f;
+			}
+		}
+
 		if (keys.down) {
 			movingHorizontally = false;
-			Move(dt * PLAYER_SPEED);
+			if (go->velocity.y < PLAYER_MAX_VELOCITY) {
+				go->velocity.y += PLAYER_ACCELERATION * dt;
+			}
 		}
 
 		if (keys.up) {
 			movingHorizontally = false;
-			Move(-dt * PLAYER_SPEED);
+			if (go->velocity.y > -PLAYER_MAX_VELOCITY) {
+				go->velocity.y -= PLAYER_ACCELERATION * dt;
+			}
 		}
 		if (keys.right) {
 			movingHorizontally = true;
 			thisPlayer->leftFacing = false;
 			Send(GOING_RIGHT); //tell rendering to change sprite
-			Move(dt * PLAYER_SPEED);
+
 		}
 
 		if (keys.left) {
 			movingHorizontally = true;
 			thisPlayer->leftFacing = true;
 			Send(GOING_LEFT);
-			Move(-dt * PLAYER_SPEED);
+
 		}
+
+		//move every timestep
+		Move(dt);
+
 		if (keys.fire)
 		{
 			if (CanFire())
@@ -172,29 +191,31 @@ public:
 
 
 		if (movingHorizontally) {
-			
+			movingHorizontally = false;
 			//going to the right
-			//move the ship backwards and the background forwards
 			if (go->horizontalPosition > 400 && !thisPlayer->leftFacing) {
 				Send(GOING_BACK); //send to rocket 
-				go->horizontalPosition -= move * 0.5; // *0.5 to offset the background moving the other way 
+				go->horizontalPosition -= move * PLAYER_MAX_VELOCITY * 0.5; // *0.5 to offset the background moving the other way 
 			}
 
 			//going to the left
 			if (go->horizontalPosition < 800 && thisPlayer->leftFacing) {
 				Send(GOING_BACK);
-				go->horizontalPosition -= move * 0.5;
+				go->horizontalPosition += move * PLAYER_MAX_VELOCITY * 0.5;
 			}
 		}
-		else { //moving vertically
-			go->verticalPosition += move;
-			if (go->verticalPosition < 0) {
-				go->verticalPosition = 0 + PLAYER_HEIGHT;
-			}
-			if (go->verticalPosition > 670) {
-				go->verticalPosition = 670 - PLAYER_HEIGHT;
-			}
+
+		if (go->verticalPosition < 0) {
+			go->verticalPosition = 0;
+			go->velocity.y *= -1;
 		}
+		else if (go->verticalPosition > 670) {
+			go->verticalPosition = 670;
+			go->velocity.y *= -1;
+		}
+		
+
+		go->verticalPosition += go->velocity.y * move;
 	}
 
 	// return true if enough time has passed from the previous rocket
@@ -224,7 +245,7 @@ class PlayerRenderComponent : public Component
 	Sprite * currentInactiveSprite;
 	Sprite * currentSprite;
 
-	bool active = false;
+	bool active = false; //different sprites when pushing left or right and not
 
 	//teleportation
 	Sprite* oldSprite;

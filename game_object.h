@@ -5,6 +5,12 @@
 
 enum Message {TELEPORTED, DROPPED, ABDUCTED, GOING_BACK, GOING_LEFT, GOING_RIGHT, SHOOT, HIT, BUMP_HIT, ALIEN_HIT, GAME_OVER, LEVEL_WIN, NO_MSG };
 
+struct Vector2
+{
+	double x;
+	double y;
+};
+
 class Component;
 
 class GameObject
@@ -16,6 +22,7 @@ protected:
 public:
 	double horizontalPosition;
 	double verticalPosition;
+	Vector2 velocity;
 	double horizontalVelocity, verticalVelocity; //"physics"
 
 	float angle; // angle of rotation in degrees
@@ -33,3 +40,4 @@ public:
 	virtual void Receive(Message m) {}
 	void Send(Message m);
 };
+

@@ -56,40 +56,59 @@ public:
 
 	virtual void Update(float dt) 
 	{
-		float mult = goingBack ? 1.5f : 1.0f;
-		goingBack = false;
 
 		if (playerTeleported) { //move so that player is in the middle
+			playerTeleported = false;
+
 			go->horizontalPosition -= (rand() % ((WORLD_WIDTH/2)-WIDTH)) + WIDTH;
 			Move(dt); //to fix wrapping
+		}
 
-			//SDL_Log(player->horizontalPosition);
-			playerTeleported = false;
+		//decrease velocity if buttons are released. i.e go towards 0
+		if (!moveLeft && !moveRight) {
+			if (go->velocity.x > 1) {
+				go->velocity.x -= 1.0f;
+			}
+			else if (go->velocity.x < -1) {
+				go->velocity.x += 1.0f;
+			}
+		}
+
+		if (goingBack) {
+			goingBack = false;
+			float movement = PLAYER_MAX_VELOCITY * dt * 0.5f * (moveLeft ? 1 : -1);
+			go->horizontalPosition += movement;
 		}
 
 		if (moveLeft) {
 			moveLeft = false;
-			Move(dt * PLAYER_SPEED * mult);
+			if (go->velocity.x < PLAYER_MAX_VELOCITY) {
+				go->velocity.x += PLAYER_ACCELERATION * dt;
+			}
+			//Move(dt * PLAYER_SPEED * mult);
 		}
 		if (moveRight) {
 			moveRight = false;
-			Move(- dt * PLAYER_SPEED * mult);
-		}
 
+			if (go->velocity.x > -PLAYER_MAX_VELOCITY) {
+				go->velocity.x -= PLAYER_ACCELERATION * dt;
+			}
+			//Move(- dt * PLAYER_SPEED * mult);
+		}
+		Move(dt);
 	}
 
 	void Move(float move) {
 
-		go->horizontalPosition += move;
+		go->horizontalPosition += go->velocity.x * move;
 
 		//going right wraparound
 		if (go->horizontalPosition < -(WORLD_WIDTH / 2)) {
-			go->horizontalPosition = 0 + move;
+			go->horizontalPosition = 0 - move;
 		}
 		//left wraparound
 		if (go->horizontalPosition > 0) {
 			go->horizontalPosition = -(WORLD_WIDTH / 2) + move;
 		}
-
 	}
 };

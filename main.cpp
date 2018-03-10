@@ -18,14 +18,18 @@ using namespace std;
 const int WORLD_WIDTH = 3600;
 const unsigned int WIDTH = 1200;
 const unsigned int HEIGHT = 670;
-const unsigned int LEVEL_CHUNKS = 7;
 const unsigned int	MAX_NUM_GAME_OBJECTS = 10000;
+
 const unsigned int	NUM_LIVES = 3;
 int PLAYER_WIDTH = 64;
 int PLAYER_HEIGHT = 25;
-const unsigned int	NUM_HUMANS = 10;
-int NUM_ALIENS = 5;
 int NUM_SMARTBOMBS = 3;
+
+const float PLAYER_ACCELERATION = 500.0f;
+const float PLAYER_MAX_VELOCITY = 400.0f;
+
+const unsigned int	NUM_HUMANS = 0;
+int NUM_ALIENS = 0;
 
 const unsigned int	MAX_NUM_ROCKETS = 32;
 const unsigned int	MAX_NUM_BOMBS = 32;
