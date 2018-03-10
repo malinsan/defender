@@ -28,7 +28,7 @@ int NUM_SMARTBOMBS = 3;
 const float PLAYER_MAX_VELOCITY = 700.0f;
 const float PLAYER_ACCELERATION = 800.0f;
 
-const unsigned int	NUM_HUMANS = 0;
+const unsigned int	NUM_HUMANS = 10;
 int NUM_ALIENS = 5;
 
 const unsigned int	MAX_NUM_ROCKETS = 32;

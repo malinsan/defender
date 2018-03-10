@@ -96,7 +96,7 @@ public:
 		for (auto rocket = rockets_pool.pool.begin(); rocket != rockets_pool.pool.end(); rocket++)
 		{
 			MoveAccordingToPlayerComponent * main_move_behaviour = new MoveAccordingToPlayerComponent();
-			main_move_behaviour->Create(system, *rocket, &game_objects, 0, 0, false);
+			main_move_behaviour->Create(system, *rocket, &game_objects, player, false);
 			player_behaviour->AddReceiver(main_move_behaviour);
 
 			RocketBehaviourComponent * behaviour = new RocketBehaviourComponent();
@@ -114,7 +114,7 @@ public:
 		for (auto human = human_pool.pool.begin(); human != human_pool.pool.end(); human ++) 
 		{
 			MoveAccordingToPlayerComponent * main_move_behaviour = new MoveAccordingToPlayerComponent();
-			main_move_behaviour->Create(system, *human, &game_objects, 0, 0, true);
+			main_move_behaviour->Create(system, *human, &game_objects, player, true);
 			player_behaviour->AddReceiver(main_move_behaviour);
 
 			HumanStateMachine * behaviour = new HumanStateMachine();
@@ -145,7 +145,7 @@ public:
 		for (auto lander = lander_pool.pool.begin(); lander != lander_pool.pool.end(); lander++) {
 			//movement according to player
 			MoveAccordingToPlayerComponent* lander_behaviour = new MoveAccordingToPlayerComponent();
-			lander_behaviour->Create(system, *lander, &game_objects, 400, 400, true);
+			lander_behaviour->Create(system, *lander, &game_objects, player, true);
 			//listen to player behaviour
 			player_behaviour->AddReceiver(lander_behaviour);
 			//AI behaviour
@@ -174,7 +174,7 @@ public:
 		for (auto bomb = bomb_pool.pool.begin(); bomb != bomb_pool.pool.end(); bomb++)
 		{
 			MoveAccordingToPlayerComponent * main_move_behaviour = new MoveAccordingToPlayerComponent();
-			main_move_behaviour->Create(system, *bomb, &game_objects, 0, 0, false);
+			main_move_behaviour->Create(system, *bomb, &game_objects, player, false);
 			player_behaviour->AddReceiver(main_move_behaviour);
 
 			BombBehaviourComponent * behaviour = new BombBehaviourComponent();

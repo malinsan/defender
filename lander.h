@@ -43,38 +43,38 @@ class MoveAccordingToPlayerComponent : public Component
 	bool moveRight = false;
 	bool goingBack = false;
 	bool wrapAround = false;	
+	Player * player;
 
 	
 public:
 
-	virtual void Create(AvancezLib* system, GameObject * go, std::set<GameObject*> * game_objects, float xPos, float yPos, bool wrapAround)
+	virtual void Create(AvancezLib* system, GameObject * go, std::set<GameObject*> * game_objects, Player * player, bool wrapAround)
 	{
 		Component::Create(system, go, game_objects);
-		go->horizontalPosition = xPos;
-		go->verticalPosition = yPos;
 		this->wrapAround = wrapAround;
-		
+		this->player = player;
 	}
 
 	virtual void Update(float dt) 
 	{
-		float mult = goingBack ? 1.5f : 1.0f;
-		goingBack = false;
 
-		if (moveLeft) {
-			moveLeft = false;
-			Move(dt * PLAYER_SPEED * mult);
+		if (goingBack) {
+			goingBack = false;
+			float movement = PLAYER_MAX_VELOCITY * dt * 0.5f * (moveLeft ? 1 : -1);
+			go->horizontalPosition += movement;
 		}
-		if (moveRight) {
-			moveRight = false;
-			Move(-dt * PLAYER_SPEED * mult);
+
+		if (moveLeft || moveRight) {
+			moveLeft = false; moveRight = false;
+			Move(dt);
 		}
 
 	}
 
 	void Move(float move) {
 
-		go->horizontalPosition += move;
+		go->horizontalPosition += player->velocity.x * move;
+
 
 		if (wrapAround) {
 			//going right wraparound
