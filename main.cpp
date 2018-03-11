@@ -45,7 +45,7 @@ const float			ALIEN_SPEED = 40.0f;
 
 const float			LANDER_MAX_SPEED = 50.0f;
 const float			LANDER_ACCELERATION = 100.0f;
-const float			BOMB_SPEED = 220.0f;
+const float			BOMB_SPEED = 170.0f;
 const float			HUMAN_SPEED = 40.0f;
 
 float game_speed = 1.f;
