@@ -80,10 +80,14 @@ public:
 			"data/shipRTeleport1.bmp", "data/shipRTeleport2.bmp");
 		player_behaviour->AddReceiver(player_render);
 
+		//collision with landers
+		BumbCollideComponent* player_lander_collide = new BumbCollideComponent();
+		player_lander_collide->Create(system, player, &game_objects, (ObjectPool<GameObject>*)&lander_pool);
+
 		player->Create();
 		player->AddComponent(player_behaviour);
 		player->AddComponent(player_render);
-		//player->AddComponent(player_shoot);
+		player->AddComponent(player_lander_collide);
 		player->AddReceiver(this);
 		game_objects.insert(player);
 
@@ -92,7 +96,7 @@ public:
 		for (auto rocket = rockets_pool.pool.begin(); rocket != rockets_pool.pool.end(); rocket++)
 		{
 			MoveAccordingToPlayerComponent * main_move_behaviour = new MoveAccordingToPlayerComponent();
-			main_move_behaviour->Create(system, *rocket, &game_objects, 0, 0, false);
+			main_move_behaviour->Create(system, *rocket, &game_objects, player, false);
 			player_behaviour->AddReceiver(main_move_behaviour);
 
 			RocketBehaviourComponent * behaviour = new RocketBehaviourComponent();
@@ -110,7 +114,7 @@ public:
 		for (auto human = human_pool.pool.begin(); human != human_pool.pool.end(); human ++) 
 		{
 			MoveAccordingToPlayerComponent * main_move_behaviour = new MoveAccordingToPlayerComponent();
-			main_move_behaviour->Create(system, *human, &game_objects, 0, 0, true);
+			main_move_behaviour->Create(system, *human, &game_objects, player, true);
 			player_behaviour->AddReceiver(main_move_behaviour);
 
 			HumanStateMachine * behaviour = new HumanStateMachine();
@@ -141,7 +145,7 @@ public:
 		for (auto lander = lander_pool.pool.begin(); lander != lander_pool.pool.end(); lander++) {
 			//movement according to player
 			MoveAccordingToPlayerComponent* lander_behaviour = new MoveAccordingToPlayerComponent();
-			lander_behaviour->Create(system, *lander, &game_objects, 400, 400, true);
+			lander_behaviour->Create(system, *lander, &game_objects, player, true);
 			//listen to player behaviour
 			player_behaviour->AddReceiver(lander_behaviour);
 			//AI behaviour
@@ -170,11 +174,11 @@ public:
 		for (auto bomb = bomb_pool.pool.begin(); bomb != bomb_pool.pool.end(); bomb++)
 		{
 			MoveAccordingToPlayerComponent * main_move_behaviour = new MoveAccordingToPlayerComponent();
-			main_move_behaviour->Create(system, *bomb, &game_objects, 0, 0, false);
+			main_move_behaviour->Create(system, *bomb, &game_objects, player, false);
 			player_behaviour->AddReceiver(main_move_behaviour);
 
 			BombBehaviourComponent * behaviour = new BombBehaviourComponent();
-			behaviour->Create(system, *bomb, &game_objects);
+			behaviour->Create(system, *bomb, &game_objects, player);
 			RenderComponent * render = new RenderComponent();
 			render->Create(system, *bomb, &game_objects, "data/bomb.bmp");
 			(*bomb)->Create();
@@ -194,7 +198,7 @@ public:
 
 	virtual void Init()
 	{
-		//init background
+		//init background first
 		background->Init();
 
 		for (auto go = game_objects.begin(); go != game_objects.end(); go++)
@@ -213,7 +217,6 @@ public:
 		background->Update(dt); 
 
 		for (auto go = game_objects.begin(); go != game_objects.end(); go++) {
-			//except for background 
 			(*go)->Update(dt);
 			
 		}

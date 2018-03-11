@@ -56,40 +56,39 @@ public:
 
 	virtual void Update(float dt) 
 	{
-		float mult = goingBack ? 1.5f : 1.0f;
-		goingBack = false;
 
 		if (playerTeleported) { //move so that player is in the middle
+			playerTeleported = false;
+
 			go->horizontalPosition -= (rand() % ((WORLD_WIDTH/2)-WIDTH)) + WIDTH;
 			Move(dt); //to fix wrapping
-
-			//SDL_Log(player->horizontalPosition);
-			playerTeleported = false;
 		}
 
-		if (moveLeft) {
-			moveLeft = false;
-			Move(dt * PLAYER_SPEED * mult);
-		}
-		if (moveRight) {
-			moveRight = false;
-			Move(- dt * PLAYER_SPEED * mult);
+		
+
+		if (goingBack) {
+			goingBack = false;
+			float movement = PLAYER_MAX_VELOCITY * dt * 0.5f * (moveLeft ? 1 : -1);
+			go->horizontalPosition += movement;
 		}
 
+		if (moveLeft || moveRight) {
+			moveLeft = false; moveRight = false;
+			Move(dt);
+			
+		}
 	}
 
 	void Move(float move) {
-
-		go->horizontalPosition += move;
+		go->horizontalPosition -= player->velocity.x * move;
 
 		//going right wraparound
 		if (go->horizontalPosition < -(WORLD_WIDTH / 2)) {
-			go->horizontalPosition = 0 + move;
+			go->horizontalPosition = 0 - move;
 		}
 		//left wraparound
 		if (go->horizontalPosition > 0) {
 			go->horizontalPosition = -(WORLD_WIDTH / 2) + move;
 		}
-
 	}
 };

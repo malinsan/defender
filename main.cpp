@@ -18,14 +18,18 @@ using namespace std;
 const int WORLD_WIDTH = 3600;
 const unsigned int WIDTH = 1200;
 const unsigned int HEIGHT = 670;
-const unsigned int LEVEL_CHUNKS = 7;
 const unsigned int	MAX_NUM_GAME_OBJECTS = 10000;
+
 const unsigned int	NUM_LIVES = 3;
 int PLAYER_WIDTH = 64;
 int PLAYER_HEIGHT = 25;
+int NUM_SMARTBOMBS = 3;
+
+const float PLAYER_MAX_VELOCITY = 700.0f;
+const float PLAYER_ACCELERATION = 800.0f;
+
 const unsigned int	NUM_HUMANS = 10;
 int NUM_ALIENS = 5;
-int NUM_SMARTBOMBS = 3;
 
 const unsigned int	MAX_NUM_ROCKETS = 32;
 const unsigned int	MAX_NUM_BOMBS = 32;
@@ -38,8 +42,10 @@ const float			PLAYER_SPEED = 400.0f;
 const float			ROCKET_SPEED = 600.0f;
 
 const float			ALIEN_SPEED = 40.0f;
-const float			LANDER_SPEED = 40.0f;
-const float			BOMB_SPEED = 120.0f;
+
+const float			LANDER_MAX_SPEED = 50.0f;
+const float			LANDER_ACCELERATION = 100.0f;
+const float			BOMB_SPEED = 170.0f;
 const float			HUMAN_SPEED = 40.0f;
 
 float game_speed = 1.f;
@@ -52,9 +58,9 @@ float game_speed = 1.f;
 //game objects to include
 
 #include "soundmaker.h"
-#include "bomb.h"
 #include "rocket.h"
 #include "player.h"
+#include "bomb.h"
 #include "background.h"
 #include "box.h"
 #include "human.h"

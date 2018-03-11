@@ -68,7 +68,7 @@ class HumanStateMachine : public Component
 			}
 
 			//when idle move side to side 
-			float movement = goingRight ? LANDER_SPEED * dt : -LANDER_SPEED * dt;
+			float movement = goingRight ? LANDER_MAX_SPEED * dt : -LANDER_MAX_SPEED * dt;
 			state_machine.human->horizontalPosition += movement;
 
 			if ((system->getElapsedTime() - startTime) >= changeDirectionTime) {
@@ -97,7 +97,7 @@ class HumanStateMachine : public Component
 			if (state_machine.human->dropped) {
 				state_machine.state_dropped->Enter(state_machine);
 			}
-			state_machine.human->verticalPosition -= dt * LANDER_SPEED;
+			state_machine.human->verticalPosition -= dt * LANDER_MAX_SPEED;
 		}
 	};
 
@@ -136,7 +136,7 @@ class HumanStateMachine : public Component
 				}
 			}
 
-			state_machine.human->verticalPosition += dt * LANDER_SPEED * intensity;
+			state_machine.human->verticalPosition += dt * LANDER_MAX_SPEED * intensity;
 			intensity += 0.01f;
 		}
 	};

@@ -63,6 +63,8 @@ public:
 	// Returns the keyboard status. If a flag is set, the corresponding key is being held down.
 	void getKeyStatus(KeyStatus& keys);
 
+	float Distance(float posX, float posY, float targetX, float targetY);
+
 private:
 	SDL_Window * window;
 	SDL_Renderer * renderer;

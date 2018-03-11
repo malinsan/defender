@@ -58,7 +58,7 @@ public:
 			}
 		}
 		else {
-			go->verticalPosition -= LANDER_SPEED * dt;
+			go->verticalPosition -= LANDER_MAX_SPEED * dt;
 		}
 	}
 

@@ -27,7 +27,7 @@ public:
 		if (m == HIT)
 		{
 			enabled = false;
-			SDL_Log("Rocket::Hit");
+			SDL_Log("Bomb::Hit");
 		}
 	}
 };
@@ -36,31 +36,43 @@ public:
 class BombBehaviourComponent : public Component
 {
 	float startTime;
+	float time_to_exist = 2.0f;
+
+	//homing missiles
+	Player * player;
+	Vector2 movement;
+
+	
 public:
 
+	virtual void Create(AvancezLib* system, GameObject * go, std::set<GameObject*> * game_objects, Player * player)
+	{
+		Component::Create(system, go, game_objects);
+		this->player = player;
+	}
+
 	virtual void Init() {
+		Bomb * bomb = (Bomb*)go;
+
+		movement.x =  bomb->leftFacing? -BOMB_SPEED : BOMB_SPEED;
 		startTime = system->getElapsedTime();
 	}
 
 	void Update(float dt)
 	{
-	
-		Bomb* bomb = (Bomb*)go;
-		if (bomb->leftFacing) { //bomb going left
-			go->horizontalPosition -= BOMB_SPEED * dt;
-		}
-		else { // rocket going right
-			go->horizontalPosition += BOMB_SPEED * dt;
+		if ((system->getElapsedTime() - startTime) > time_to_exist) {
+			go->enabled = false;
 		}
 
-		//first go up
-		if (system->getElapsedTime() - startTime < 1.5f) {
-			go->verticalPosition -= BOMB_SPEED * 0.3 * dt;
-		}
-		else {
-			//then go downwards
-			go->verticalPosition += BOMB_SPEED * 0.5 * dt;
-		}
+		
+		//homing missiles
+		movement.y = player->verticalPosition > go->verticalPosition ? BOMB_SPEED : -BOMB_SPEED;
+
+		
+		go->horizontalPosition += movement.x * dt;
+		go->verticalPosition += movement.y * dt;
+
+
 
 		if (go->horizontalPosition < 0 || go->horizontalPosition > WORLD_WIDTH) // When the rocket reaches the ends of the screen, it disappears.
 			go->enabled = false;

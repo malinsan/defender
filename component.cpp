@@ -78,6 +78,42 @@ void CollideComponent::Update(float dt)
 	}
 }
 
+void BumbCollideComponent::Create(AvancezLib * system, GameObject * go, std::set<GameObject*>* game_objects, ObjectPool<GameObject>* coll_objects)
+{
+	Component::Create(system, go, game_objects);
+	this->coll_objects = coll_objects;
+}
+
+void BumbCollideComponent::Update(float dt)
+{
+	for (auto i = 0; i < coll_objects->pool.size(); i++)
+	{
+		GameObject * go0 = coll_objects->pool[i];
+		if (go0->enabled)
+		{
+			if (//time_since_bump > 3.0f &&
+				(go0->horizontalPosition > go->horizontalPosition - 32) &&
+				(go0->horizontalPosition < go->horizontalPosition + 64) &&
+				(go0->verticalPosition   > go->verticalPosition - 32) &&
+				(go0->verticalPosition   < go->verticalPosition + 32))
+			{
+				go0->Receive(BUMP_HIT);
+				
+				//move lander and player away from each other
+				go0->horizontalPosition -= go0->velocity.x * dt;
+				go0->verticalPosition -= go0->velocity.y * dt;
+				go->horizontalPosition -= go->velocity.x * dt;
+				go->verticalPosition -= go->velocity.y * dt;
 
 
+				go0->velocity.x = go->velocity.x * 0.5; //send lander in the direction player is going
+				go0->velocity.y = go->velocity.y * 0.5;
 
+				go->velocity.x *= -1; //send player the other way
+				go->velocity.y *= -1;
+							
+			}
+		}
+	}
+
+}
