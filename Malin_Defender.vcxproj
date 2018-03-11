@@ -25,13 +25,15 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ai_state_machine.h" />
+    <ClInclude Include="lander_state_machine.h" />
     <ClInclude Include="avancezlib.h" />
     <ClInclude Include="background.h" />
     <ClInclude Include="bomb.h" />
     <ClInclude Include="box.h" />
     <ClInclude Include="component.h" />
     <ClInclude Include="human_state_machine.h" />
+    <ClInclude Include="mutant.h" />
+    <ClInclude Include="mutant_state_machine.h" />
     <ClInclude Include="spawner.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="game_object.h" />

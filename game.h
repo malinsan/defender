@@ -25,6 +25,7 @@ class Game : public GameObject
 	//enemy
 	Spawner * enemy_spawner;
 	ObjectPool<Lander> lander_pool;
+	ObjectPool<Mutant> mutant_pool;
 	//Lander * lander;
 	ObjectPool<Bomb> bomb_pool;
 	ObjectPool<Human> human_pool;
@@ -110,7 +111,7 @@ public:
 		}
 
 		//HUMANS
-		human_pool.Create(10);
+		human_pool.Create(NUM_HUMANS);
 		for (auto human = human_pool.pool.begin(); human != human_pool.pool.end(); human ++) 
 		{
 			MoveAccordingToPlayerComponent * main_move_behaviour = new MoveAccordingToPlayerComponent();
@@ -141,7 +142,7 @@ public:
 		enemy_spawner->AddComponent(spawn_enemies_component);
 		game_objects.insert(enemy_spawner);
 
-		lander_pool.Create(5);
+		lander_pool.Create(NUM_ALIENS);
 		for (auto lander = lander_pool.pool.begin(); lander != lander_pool.pool.end(); lander++) {
 			//movement according to player
 			MoveAccordingToPlayerComponent* lander_behaviour = new MoveAccordingToPlayerComponent();
@@ -149,8 +150,8 @@ public:
 			//listen to player behaviour
 			player_behaviour->AddReceiver(lander_behaviour);
 			//AI behaviour
-			AIStateMachine * landerAI = new AIStateMachine();
-			landerAI->Create(system, *lander, &game_objects, player, &bomb_pool, &human_pool);
+			LanderStateMachine * landerAI = new LanderStateMachine();
+			landerAI->Create(system, *lander, &game_objects, player, &bomb_pool, &human_pool, &mutant_pool);
 			//render component
 			RenderComponent * landerRender = new RenderComponent();
 			landerRender->Create(system, *lander, &game_objects, "data/lander.bmp");
@@ -167,7 +168,33 @@ public:
 			(*lander)->AddReceiver(player);
 		}
 
-		
+		//mutants
+		mutant_pool.Create(NUM_ALIENS);
+		for (auto mutant = mutant_pool.pool.begin(); mutant != mutant_pool.pool.end(); mutant++) {
+			//movement according to player
+			MoveAccordingToPlayerComponent* main_move_behaviour = new MoveAccordingToPlayerComponent();
+			main_move_behaviour->Create(system, *mutant, &game_objects, player, true);
+			//listen to player behaviour
+			player_behaviour->AddReceiver(main_move_behaviour);
+			//AI behaviour
+			MutantStateMachine * mutantAI = new MutantStateMachine();
+			mutantAI->Create(system, *mutant, &game_objects, player, &bomb_pool);
+			//render component
+			RenderComponent * mutantRender = new RenderComponent();
+			mutantRender->Create(system, *mutant, &game_objects, "data/mutant.bmp");
+
+			//collision with rockets
+			CollideComponent* collision = new CollideComponent();
+			collision->Create(system, *mutant, &game_objects, (ObjectPool<GameObject>*)&rockets_pool);
+
+			(*mutant)->Create();
+			(*mutant)->AddComponent(main_move_behaviour);
+			(*mutant)->AddComponent(mutantAI);
+			(*mutant)->AddComponent(mutantRender);
+			(*mutant)->AddComponent(collision);
+			(*mutant)->AddReceiver(player);
+		}
+
 
 		//alien bombs
 		bomb_pool.Create(30);
