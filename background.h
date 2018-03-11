@@ -80,8 +80,8 @@ public:
 	}
 
 	void Move(float move) {
-
-		go->horizontalPosition += player->velocity.x * move;
+		cout << player->velocity.x << "\n";
+		go->horizontalPosition -= player->velocity.x * move;
 
 		//going right wraparound
 		if (go->horizontalPosition < -(WORLD_WIDTH / 2)) {

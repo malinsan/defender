@@ -91,13 +91,22 @@ void BumbCollideComponent::Update(float dt)
 		GameObject * go0 = coll_objects->pool[i];
 		if (go0->enabled)
 		{
-			if ((go0->horizontalPosition > go->horizontalPosition - 32) &&
+			if (//time_since_bump > 3.0f &&
+				(go0->horizontalPosition > go->horizontalPosition - 32) &&
 				(go0->horizontalPosition < go->horizontalPosition + 64) &&
 				(go0->verticalPosition   > go->verticalPosition - 32) &&
 				(go0->verticalPosition   < go->verticalPosition + 32))
 			{
-				go->Receive(BUMP_HIT);
 				go0->Receive(BUMP_HIT);
+				
+				go0->horizontalPosition -= go0->velocity.x * dt;
+				go->horizontalPosition += go->velocity.x * dt;
+
+				go0->velocity.x = go->velocity.x * 0.5; //send lander in the direction player is going
+				
+				go->velocity.x *= -1; //send player the other way
+				go->velocity.y *= -1;
+							
 			}
 		}
 	}

@@ -135,8 +135,8 @@ public:
 		if (keys.right) {
 			movingHorizontally = true;
 			thisPlayer->leftFacing = false;
-			if (go->velocity.x > -PLAYER_MAX_VELOCITY) {
-				go->velocity.x -= PLAYER_ACCELERATION * dt;
+			if (go->velocity.x < PLAYER_MAX_VELOCITY) {
+				go->velocity.x += PLAYER_ACCELERATION * dt;
 			}
 			Send(GOING_RIGHT); //tell rendering to change sprite
 
@@ -145,8 +145,8 @@ public:
 		if (keys.left) {
 			movingHorizontally = true;
 			thisPlayer->leftFacing = true;
-			if (go->velocity.x < PLAYER_MAX_VELOCITY) {
-				go->velocity.x += PLAYER_ACCELERATION * dt;
+			if (go->velocity.x > -PLAYER_MAX_VELOCITY) {
+				go->velocity.x -= PLAYER_ACCELERATION * dt;
 			}
 			Send(GOING_LEFT);
 
@@ -192,16 +192,6 @@ public:
 	// param move depends on the time, so the player moves always at the same speed on any computer
 	void Move(float move)
 	{
-
-		if (thisPlayer->bumped) {
-			thisPlayer->bumped = false;
-				//go->horizontalPosition -= go->velocity.x * move;
-			go->velocity.x *= -1;
-			go->velocity.y *= -1;
-			movingHorizontally = false;
-		}
-
-
 		if (movingHorizontally) {
 			movingHorizontally = false;
 			//going to the right
@@ -217,7 +207,7 @@ public:
 			}
 		}
 		else {
-			go->horizontalPosition -= move * go->velocity.x * 0.5;
+			go->horizontalPosition += move * go->velocity.x * 0.5;
 		}
 
 

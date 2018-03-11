@@ -73,8 +73,7 @@ public:
 
 	void Move(float move) {
 
-		go->horizontalPosition += player->velocity.x * move;
-
+		go->horizontalPosition -= player->velocity.x * move;
 
 		if (wrapAround) {
 			//going right wraparound

@@ -51,6 +51,13 @@ class AIStateMachine : public Component
 		float startTime;
 		float changeDirectionTime = 3.0f;
 		bool goingRight = true; 
+
+		float distanceToTravel = 200.0f;
+		float startPos;
+
+		float clicksToMove = 1500;
+		float clicksMoved;
+
 	public:
 		IdleState(AvancezLib* system) 
 		{
@@ -61,16 +68,21 @@ class AIStateMachine : public Component
 		{
 			state_machine.current_state = this;
 			startTime = system->getElapsedTime();
+
+			startPos = state_machine.lander->horizontalPosition;
+			clicksMoved = 0;
 		}
 		virtual void Update(AIStateMachine& state_machine, float dt) {
-
+			
 			//when idle move side to side 
-			float movement = goingRight ? LANDER_SPEED * dt : -LANDER_SPEED * dt;
-			state_machine.lander->horizontalPosition += movement;
-
-			if ((system->getElapsedTime() - startTime) >= changeDirectionTime) {
+			float movement = goingRight ? LANDER_ACCELERATION * dt : -LANDER_ACCELERATION * dt;				
+			state_machine.lander->velocity.x += movement;
+			
+			if (goingRight && state_machine.lander->velocity.x >= LANDER_MAX_SPEED*3) {
 				goingRight = (goingRight == false); //flip bool
-				startTime = system->getElapsedTime(); //reset time
+			}
+			else if (!goingRight && state_machine.lander->velocity.x <= -LANDER_MAX_SPEED*3) {
+				goingRight = (goingRight == false); //flip bool
 			}
 
 			//have chance of going for player 
@@ -82,7 +94,6 @@ class AIStateMachine : public Component
 			if (Chance(1)) {
 				state_machine.state_humanAggressive->Enter(state_machine);
 			}
-			
 		}
 	};
 
@@ -152,13 +163,12 @@ class AIStateMachine : public Component
 					cameFromState->Enter(state_machine);
 				}
 			}
-
 			//move towards target
-			float horizontalMovement = target->horizontalPosition > state_machine.lander->horizontalPosition ? dt * LANDER_SPEED : -dt * LANDER_SPEED;
-			float verticalMovement = target->verticalPosition > state_machine.lander->verticalPosition ? dt * LANDER_SPEED : -dt * LANDER_SPEED;
-			
-			state_machine.lander->horizontalPosition += horizontalMovement;
-			state_machine.lander->verticalPosition += verticalMovement;
+			float horizontalMovement = target->horizontalPosition > state_machine.lander->horizontalPosition ? LANDER_MAX_SPEED : -LANDER_MAX_SPEED;
+			float verticalMovement = target->verticalPosition > state_machine.lander->verticalPosition ? LANDER_MAX_SPEED : -LANDER_MAX_SPEED;
+
+			state_machine.lander->velocity.x = horizontalMovement;
+			state_machine.lander->velocity.y = verticalMovement;
 
 
 			if (InProximityTo(state_machine, target, range)) {
@@ -216,8 +226,9 @@ class AIStateMachine : public Component
 		}
 		virtual void Update(AIStateMachine& state_machine, float dt) {
 			//move upwards 
-			state_machine.lander->verticalPosition -= LANDER_SPEED * dt;
-
+//			state_machine.lander->verticalPosition -= LANDER_MAX_SPEED * dt;
+			state_machine.lander->velocity.y = -LANDER_MAX_SPEED;
+			state_machine.lander->velocity.x = 0;
 		}
 	};
 
@@ -234,13 +245,12 @@ class AIStateMachine : public Component
 			state_machine.current_state = this;
 
 			//send an attack towards the player
-			// fetches a rocket from the pool and use it in game_objects
 			Bomb * bomb = state_machine.bomb_pool->FirstAvailable();
-			if (bomb != NULL && (system->getElapsedTime() - state_machine.last_attack_time) > 1.0f)	// rocket is NULL if the object pool can not provide an object
+			if (bomb != NULL && (system->getElapsedTime() - state_machine.last_attack_time) > 1.0f)
 			{
 				state_machine.last_attack_time = system->getElapsedTime();
 				int x = 10;
-				bool shootLeft = state_machine.player->horizontalPosition < state_machine.lander->horizontalPosition ? true : false;
+				bool shootLeft = state_machine.player->horizontalPosition < state_machine.lander->horizontalPosition;
 				bomb->Init(state_machine.lander->horizontalPosition + x, state_machine.lander->verticalPosition, shootLeft);
 				state_machine.game_objects->insert(bomb);
 			}
@@ -270,24 +280,15 @@ class AIStateMachine : public Component
 			if (state_machine.lander->abductedHuman != NULL) {
 				state_machine.lander->abductedHuman->Receive(DROPPED);
 			}
-			state_machine.lander->bumped = false;
-			movement = state_machine.lander->horizontalPosition > state_machine.player->horizontalPosition ? LANDER_SPEED * 2 : -LANDER_SPEED * 2;
-			n = 0;
+			
+//			state_machine.lander->horizontalPosition += state_machine.player->leftFacing ? -50 : 50;
+			//state_machine.lander->velocity.x = state_machine.player->velocity.x;
 		}
 		
 		virtual void Update(AIStateMachine& state_machine, float dt) {
 			//fly away a bit
-			//position compared to player?
-			
-			if (n < 500) {
-				state_machine.lander->horizontalPosition += movement * dt;
-				n++;
-			}
-			else {
-				//go back to aggressive state
-				state_machine.state_aggressive->Enter(state_machine);
-
-			}
+			//go back to aggressive state
+			state_machine.state_aggressive->Enter(state_machine);
 
 		}
 
@@ -350,7 +351,23 @@ public:
 	// Main loop
 	virtual void Update(float dt)
 	{
+
+		if (go->verticalPosition < 100) {
+			go->verticalPosition = 100;
+			go->velocity.y *= -1;
+		}
+		else if (go->verticalPosition > 670) {
+			go->verticalPosition = 670;
+			go->velocity.y *= -1;
+		}
+
+
+		lander->horizontalPosition += lander->velocity.x * dt;
+		lander->verticalPosition += lander->velocity.y * dt;
+
+
 		if (lander->bumped) {
+			lander->bumped = false;
 			state_bumped->Enter(*this);
 		}
 		// No need for input
