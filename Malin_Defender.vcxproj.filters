@@ -80,5 +80,8 @@
     <ClInclude Include="mutant.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="mutant_state_machine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

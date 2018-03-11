@@ -177,8 +177,8 @@ public:
 			//listen to player behaviour
 			player_behaviour->AddReceiver(main_move_behaviour);
 			//AI behaviour
-			LanderStateMachine * landerAI = new LanderStateMachine();
-			landerAI->Create(system, *mutant, &game_objects, player, &bomb_pool, &human_pool, &mutant_pool);
+			MutantStateMachine * mutantAI = new MutantStateMachine();
+			mutantAI->Create(system, *mutant, &game_objects, player, &bomb_pool);
 			//render component
 			RenderComponent * mutantRender = new RenderComponent();
 			mutantRender->Create(system, *mutant, &game_objects, "data/mutant.bmp");
@@ -189,7 +189,7 @@ public:
 
 			(*mutant)->Create();
 			(*mutant)->AddComponent(main_move_behaviour);
-			(*mutant)->AddComponent(landerAI);
+			(*mutant)->AddComponent(mutantAI);
 			(*mutant)->AddComponent(mutantRender);
 			(*mutant)->AddComponent(collision);
 			(*mutant)->AddReceiver(player);

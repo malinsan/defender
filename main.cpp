@@ -25,6 +25,9 @@ int PLAYER_WIDTH = 64;
 int PLAYER_HEIGHT = 25;
 int NUM_SMARTBOMBS = 3;
 
+const float PLAYER_RANGE = 400.0f;
+const float HUMAN_RANGE = 35.0f;
+
 const float PLAYER_MAX_VELOCITY = 700.0f;
 const float PLAYER_ACCELERATION = 800.0f;
 
@@ -45,6 +48,10 @@ const float			ALIEN_SPEED = 40.0f;
 
 const float			LANDER_MAX_SPEED = 50.0f;
 const float			LANDER_ACCELERATION = 100.0f;
+const float			MUTANT_MAX_SPEED = 1.6 * LANDER_MAX_SPEED;
+const float			MUTANT_ACCELERATION = 1.6 * LANDER_ACCELERATION;
+
+
 const float			BOMB_SPEED = 170.0f;
 const float			HUMAN_SPEED = 40.0f;
 
@@ -66,6 +73,7 @@ float game_speed = 1.f;
 #include "human.h"
 #include "lander.h"
 #include "mutant.h"
+#include "mutant_state_machine.h"
 #include "lander_state_machine.h"
 #include "human_state_machine.h"
 #include "spawner.h"

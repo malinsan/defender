@@ -48,15 +48,7 @@ class LanderStateMachine : public Component
 
 	class IdleState : public State 
 	{
-		float startTime;
-		float changeDirectionTime = 3.0f;
 		bool goingRight = true; 
-
-		float distanceToTravel = 200.0f;
-		float startPos;
-
-		float clicksToMove = 1500;
-		float clicksMoved;
 
 	public:
 		IdleState(AvancezLib* system) 
@@ -67,10 +59,6 @@ class LanderStateMachine : public Component
 		virtual void Enter(LanderStateMachine &state_machine) 
 		{
 			state_machine.current_state = this;
-			startTime = system->getElapsedTime();
-
-			startPos = state_machine.lander->horizontalPosition;
-			clicksMoved = 0;
 		}
 		virtual void Update(LanderStateMachine& state_machine, float dt) {
 			
@@ -116,7 +104,7 @@ class LanderStateMachine : public Component
 		virtual void Update(LanderStateMachine& state_machine, float dt) 
 		{
 			//if close to player, attack
-			if (InProximityTo(state_machine, state_machine.player, 400)) {
+			if (InProximityTo(state_machine, state_machine.player, PLAYER_RANGE)) {
 				state_machine.state_attack->Enter(state_machine);
 			}
 			else { //approach player
@@ -144,12 +132,12 @@ class LanderStateMachine : public Component
 			this->isPlayerTarget = isPlayerTarget;
 
 			if (isPlayerTarget) {
-				range = state_machine.PLAYER_RANGE; //shoot player
+				range = PLAYER_RANGE; //shoot player
 				cameFromState = state_machine.state_aggressive;
 				target = state_machine.player;
 			}
 			else {
-				range = state_machine.HUMAN_RANGE; //pickup humans
+				range = HUMAN_RANGE; //pickup humans
 				cameFromState = state_machine.state_humanAggressive;
 				target = state_machine.closestHuman;
 			}
@@ -198,7 +186,7 @@ class LanderStateMachine : public Component
 		virtual void Update(LanderStateMachine& state_machine, float dt) {
 
 			//if close to human, abduct
-			if (InProximityTo(state_machine, state_machine.closestHuman, state_machine.HUMAN_RANGE)) 
+			if (InProximityTo(state_machine, state_machine.closestHuman, HUMAN_RANGE)) 
 			{
 				state_machine.state_abductor->Enter(state_machine);
 			}
@@ -226,20 +214,21 @@ class LanderStateMachine : public Component
 		}
 		virtual void Update(LanderStateMachine& state_machine, float dt) {
 			
-			//if at top and still carrying a human : turn into a mutant
-			if (state_machine.lander->verticalPosition <= 100.0f) {
+			//if at top and carrying a human : turn into a mutant
+			if (state_machine.go->verticalPosition <= 100.0f) {
 				Mutant * mutant = state_machine.mutant_pool->FirstAvailable();
 				if (mutant != NULL) {
-					mutant->Init(state_machine.lander->horizontalPosition, state_machine.lander->verticalPosition + 2.0f);
-					state_machine.lander->enabled = false;
+					mutant->Init(state_machine.go->horizontalPosition, state_machine.go->verticalPosition);
+					state_machine.go->enabled = false;
+					state_machine.lander->abductedHuman->enabled = false;
 					state_machine.game_objects->insert(mutant);
 				}
 	
 			}
 
 			//move upwards 
-			state_machine.lander->velocity.y = -LANDER_MAX_SPEED;
-			state_machine.lander->velocity.x = 0;
+			state_machine.go->velocity.y = -LANDER_MAX_SPEED;
+			state_machine.go->velocity.x = 0;
 		}
 	};
 
@@ -277,9 +266,7 @@ class LanderStateMachine : public Component
 	class BumpedState : public State
 	{
 	public:
-		int n;
-		float movement;
-
+		
 		BumpedState(AvancezLib* system)
 		{
 			this->system = system;
@@ -291,13 +278,9 @@ class LanderStateMachine : public Component
 			if (state_machine.lander->abductedHuman != NULL) {
 				state_machine.lander->abductedHuman->Receive(DROPPED);
 			}
-			
-//			state_machine.lander->horizontalPosition += state_machine.player->leftFacing ? -50 : 50;
-			//state_machine.lander->velocity.x = state_machine.player->velocity.x;
 		}
 		
 		virtual void Update(LanderStateMachine& state_machine, float dt) {
-			//fly away a bit
 			//go back to aggressive state
 			state_machine.state_aggressive->Enter(state_machine);
 
@@ -308,9 +291,7 @@ class LanderStateMachine : public Component
 public:
 	float last_attack_time = 0.0f;
 
-	const float PLAYER_RANGE = 200.0f;
-	const float HUMAN_RANGE = 35.0f;
-
+	
 	AvancezLib  * system;
 	Player		* player;
 	Lander		* lander;
