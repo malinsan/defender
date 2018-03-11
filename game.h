@@ -84,6 +84,9 @@ public:
 		//collision with landers
 		BumbCollideComponent* player_lander_collide = new BumbCollideComponent();
 		player_lander_collide->Create(system, player, &game_objects, (ObjectPool<GameObject>*)&lander_pool);
+		//collision with mutants
+		BumbCollideComponent* player_mutant_collide = new BumbCollideComponent();
+		player_mutant_collide->Create(system, player, &game_objects, (ObjectPool<GameObject>*)&mutant_pool);
 
 		player->Create();
 		player->AddComponent(player_behaviour);
@@ -152,6 +155,8 @@ public:
 			//AI behaviour
 			LanderStateMachine * landerAI = new LanderStateMachine();
 			landerAI->Create(system, *lander, &game_objects, player, &bomb_pool, &human_pool, &mutant_pool);
+			//ai listens to player behaviour
+			player_behaviour->AddReceiver(landerAI);
 			//render component
 			RenderComponent * landerRender = new RenderComponent();
 			landerRender->Create(system, *lander, &game_objects, "data/lander.bmp");
@@ -179,6 +184,7 @@ public:
 			//AI behaviour
 			MutantStateMachine * mutantAI = new MutantStateMachine();
 			mutantAI->Create(system, *mutant, &game_objects, player, &bomb_pool);
+			player_behaviour->AddReceiver(mutantAI);
 			//render component
 			RenderComponent * mutantRender = new RenderComponent();
 			mutantRender->Create(system, *mutant, &game_objects, "data/mutant.bmp");

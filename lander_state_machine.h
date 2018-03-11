@@ -383,4 +383,12 @@ public:
 			}
 		}
 	}
+
+	void Receive(Message m) {
+		if (m == SMARTBOMB_DROPPED) {
+			if (go->horizontalPosition < 1200 && go->horizontalPosition > 0) {
+				go->Receive(HIT);
+			}
+		}
+	}
 };
