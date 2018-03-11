@@ -65,6 +65,7 @@ float game_speed = 1.f;
 #include "box.h"
 #include "human.h"
 #include "lander.h"
+#include "mutant.h"
 #include "lander_state_machine.h"
 #include "human_state_machine.h"
 #include "spawner.h"

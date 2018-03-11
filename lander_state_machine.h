@@ -225,8 +225,19 @@ class LanderStateMachine : public Component
 			state_machine.closestHuman->abducted = true;
 		}
 		virtual void Update(LanderStateMachine& state_machine, float dt) {
+			
+			//if at top and still carrying a human : turn into a mutant
+			if (state_machine.lander->verticalPosition <= 100.0f) {
+				Mutant * mutant = state_machine.mutant_pool->FirstAvailable();
+				if (mutant != NULL) {
+					mutant->Init(state_machine.lander->horizontalPosition, state_machine.lander->verticalPosition + 2.0f);
+					state_machine.lander->enabled = false;
+					state_machine.game_objects->insert(mutant);
+				}
+	
+			}
+
 			//move upwards 
-//			state_machine.lander->verticalPosition -= LANDER_MAX_SPEED * dt;
 			state_machine.lander->velocity.y = -LANDER_MAX_SPEED;
 			state_machine.lander->velocity.x = 0;
 		}
@@ -297,8 +308,6 @@ class LanderStateMachine : public Component
 public:
 	float last_attack_time = 0.0f;
 
-	const float	ATTACK_TIME = 0.2f;
-	const float	ATTACK_COOLDOWN_TIME = 0.05f;
 	const float PLAYER_RANGE = 200.0f;
 	const float HUMAN_RANGE = 35.0f;
 
@@ -306,7 +315,8 @@ public:
 	Player		* player;
 	Lander		* lander;
 	ObjectPool<Bomb>* bomb_pool;
-	ObjectPool<Human> human_pool;
+	ObjectPool<Human>* human_pool;
+	ObjectPool<Mutant>* mutant_pool;
 	Human		* closestHuman;
 
 	State *				current_state;
@@ -323,15 +333,17 @@ public:
 	
 	virtual ~LanderStateMachine() {}
 
-	virtual void Create(AvancezLib* system, GameObject * go, std::set<GameObject*> * game_objects, Player* player, ObjectPool<Bomb> * bomb_pool, ObjectPool<Human> * human_pool)
+	virtual void Create(AvancezLib* system, GameObject * go, std::set<GameObject*> * game_objects, 
+		Player* player, ObjectPool<Bomb> * bomb_pool, ObjectPool<Human> * human_pool, ObjectPool<Mutant>* mutant_pool)
 	{
 		Component::Create(system, go, game_objects);
-
 		this->system = system;
+
 		lander = (Lander*)go;
 		this->player = player;
 		this->bomb_pool = bomb_pool;
-		this->human_pool = *human_pool;
+		this->human_pool = human_pool;
+		this->mutant_pool = mutant_pool;
 	}
 
 	virtual void Init()
@@ -376,9 +388,9 @@ public:
 
 	void FindClosestHuman() 
 	{
-		closestHuman = human_pool.FirstAvailable();
+		closestHuman = human_pool->FirstAvailable();
 		float distance = 100000.0f;
-		for (auto human = human_pool.pool.begin(); human != human_pool.pool.end(); human++)
+		for (auto human = human_pool->pool.begin(); human != human_pool->pool.end(); human++)
 		{
 			Human* castHuman = *human;
 			if (castHuman->enabled && !castHuman->abducted && !castHuman->carried) {

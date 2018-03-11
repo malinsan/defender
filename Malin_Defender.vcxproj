@@ -32,6 +32,7 @@
     <ClInclude Include="box.h" />
     <ClInclude Include="component.h" />
     <ClInclude Include="human_state_machine.h" />
+    <ClInclude Include="mutant.h" />
     <ClInclude Include="spawner.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="game_object.h" />
