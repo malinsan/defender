@@ -80,7 +80,6 @@ public:
 	}
 
 	void Move(float move) {
-		cout << player->velocity.x << "\n";
 		go->horizontalPosition -= player->velocity.x * move;
 
 		//going right wraparound

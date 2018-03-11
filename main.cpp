@@ -45,7 +45,7 @@ const float			ALIEN_SPEED = 40.0f;
 
 const float			LANDER_MAX_SPEED = 50.0f;
 const float			LANDER_ACCELERATION = 100.0f;
-const float			BOMB_SPEED = 120.0f;
+const float			BOMB_SPEED = 220.0f;
 const float			HUMAN_SPEED = 40.0f;
 
 float game_speed = 1.f;
@@ -58,9 +58,9 @@ float game_speed = 1.f;
 //game objects to include
 
 #include "soundmaker.h"
-#include "bomb.h"
 #include "rocket.h"
 #include "player.h"
+#include "bomb.h"
 #include "background.h"
 #include "box.h"
 #include "human.h"

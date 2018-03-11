@@ -99,11 +99,16 @@ void BumbCollideComponent::Update(float dt)
 			{
 				go0->Receive(BUMP_HIT);
 				
+				//move lander and player away from each other
 				go0->horizontalPosition -= go0->velocity.x * dt;
-				go->horizontalPosition += go->velocity.x * dt;
+				go0->verticalPosition -= go0->velocity.y * dt;
+				go->horizontalPosition -= go->velocity.x * dt;
+				go->verticalPosition -= go->velocity.y * dt;
+
 
 				go0->velocity.x = go->velocity.x * 0.5; //send lander in the direction player is going
-				
+				go0->velocity.y = go->velocity.y * 0.5;
+
 				go->velocity.x *= -1; //send player the other way
 				go->velocity.y *= -1;
 							

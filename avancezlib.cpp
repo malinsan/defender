@@ -250,3 +250,12 @@ void Sprite::destroy()
 	SDL_DestroyTexture(texture);
 }
 
+
+//returns distance between point a and b using pythagorean theorem
+float AvancezLib::Distance(float posX, float posY, float targetX, float targetY) {
+	float lengthA = (float)pow(fabsf(posX - targetX), 2);
+	float lengthB = (float)pow(fabsf(posY - targetY), 2);
+	float distance = (float)sqrt(lengthA + lengthB);
+	return distance;
+}
+

@@ -178,7 +178,7 @@ public:
 			player_behaviour->AddReceiver(main_move_behaviour);
 
 			BombBehaviourComponent * behaviour = new BombBehaviourComponent();
-			behaviour->Create(system, *bomb, &game_objects);
+			behaviour->Create(system, *bomb, &game_objects, player);
 			RenderComponent * render = new RenderComponent();
 			render->Create(system, *bomb, &game_objects, "data/bomb.bmp");
 			(*bomb)->Create();
