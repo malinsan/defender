@@ -149,7 +149,7 @@ public:
 			//listen to player behaviour
 			player_behaviour->AddReceiver(lander_behaviour);
 			//AI behaviour
-			AIStateMachine * landerAI = new AIStateMachine();
+			LanderStateMachine * landerAI = new LanderStateMachine();
 			landerAI->Create(system, *lander, &game_objects, player, &bomb_pool, &human_pool);
 			//render component
 			RenderComponent * landerRender = new RenderComponent();

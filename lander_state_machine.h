@@ -1,5 +1,5 @@
 #pragma once
-class AIStateMachine : public Component
+class LanderStateMachine : public Component
 {
 	// The state interface
 	class State
@@ -10,8 +10,8 @@ class AIStateMachine : public Component
 		Sprite * sprite_right;
 	public:
 		virtual ~State() {}
-		virtual void Enter(AIStateMachine& state_machine) {}
-		virtual void Update(AIStateMachine& state_machine, float dt) {}
+		virtual void Enter(LanderStateMachine& state_machine) {}
+		virtual void Update(LanderStateMachine& state_machine, float dt) {}
 
 		//parameter chance is the 1/5000 percent chance of getting a true
 		bool Chance(int chance) 
@@ -21,7 +21,7 @@ class AIStateMachine : public Component
 		}
 
 		//proximity to player or humans, parameter isPlayerTarget should be true if checking proximity to player and false otherwise
-		bool InProximityTo(AIStateMachine& state_machine, GameObject* target, float range) {
+		bool InProximityTo(LanderStateMachine& state_machine, GameObject* target, float range) {
 			//where are we?
 			float posX = state_machine.lander->horizontalPosition;
 			float posY = state_machine.lander->verticalPosition;
@@ -64,7 +64,7 @@ class AIStateMachine : public Component
 			this->system = system;
 		}
 
-		virtual void Enter(AIStateMachine &state_machine) 
+		virtual void Enter(LanderStateMachine &state_machine) 
 		{
 			state_machine.current_state = this;
 			startTime = system->getElapsedTime();
@@ -72,7 +72,7 @@ class AIStateMachine : public Component
 			startPos = state_machine.lander->horizontalPosition;
 			clicksMoved = 0;
 		}
-		virtual void Update(AIStateMachine& state_machine, float dt) {
+		virtual void Update(LanderStateMachine& state_machine, float dt) {
 			
 			//when idle move side to side 
 			float movement = goingRight ? LANDER_ACCELERATION * dt : -LANDER_ACCELERATION * dt;				
@@ -105,7 +105,7 @@ class AIStateMachine : public Component
 			this->system = system;
 		}
 
-		virtual void Enter(AIStateMachine &state_machine)
+		virtual void Enter(LanderStateMachine &state_machine)
 		{
 			state_machine.current_state = this;
 			//have chance of going back to idle
@@ -113,7 +113,7 @@ class AIStateMachine : public Component
 				state_machine.state_idle->Enter(state_machine);
 			}
 		}
-		virtual void Update(AIStateMachine& state_machine, float dt) 
+		virtual void Update(LanderStateMachine& state_machine, float dt) 
 		{
 			//if close to player, attack
 			if (InProximityTo(state_machine, state_machine.player, 400)) {
@@ -138,7 +138,7 @@ class AIStateMachine : public Component
 			this->system = system;
 		}
 
-		virtual void Enter(AIStateMachine &state_machine, bool isPlayerTarget)
+		virtual void Enter(LanderStateMachine &state_machine, bool isPlayerTarget)
 		{
 			state_machine.current_state = this;
 			this->isPlayerTarget = isPlayerTarget;
@@ -155,7 +155,7 @@ class AIStateMachine : public Component
 			}
 		}
 
-		virtual void Update(AIStateMachine& state_machine, float dt) {
+		virtual void Update(LanderStateMachine& state_machine, float dt) {
 			//still go for target?
 			if (!isPlayerTarget) {
 				Human * h = (Human*)target;
@@ -189,13 +189,13 @@ class AIStateMachine : public Component
 			this->system = system;
 		}
 
-		virtual void Enter(AIStateMachine &state_machine)
+		virtual void Enter(LanderStateMachine &state_machine)
 		{
 			state_machine.current_state = this;
 			state_machine.FindClosestHuman();
 		//	startTime = system->getElapsedTime();
 		}
-		virtual void Update(AIStateMachine& state_machine, float dt) {
+		virtual void Update(LanderStateMachine& state_machine, float dt) {
 
 			//if close to human, abduct
 			if (InProximityTo(state_machine, state_machine.closestHuman, state_machine.HUMAN_RANGE)) 
@@ -217,14 +217,14 @@ class AIStateMachine : public Component
 		{
 			this->system = system;
 		}
-		virtual void Enter(AIStateMachine &state_machine)
+		virtual void Enter(LanderStateMachine &state_machine)
 		{
 			state_machine.current_state = this;
 			//pick up the human
 			state_machine.lander->abductedHuman = state_machine.closestHuman;
 			state_machine.closestHuman->abducted = true;
 		}
-		virtual void Update(AIStateMachine& state_machine, float dt) {
+		virtual void Update(LanderStateMachine& state_machine, float dt) {
 			//move upwards 
 //			state_machine.lander->verticalPosition -= LANDER_MAX_SPEED * dt;
 			state_machine.lander->velocity.y = -LANDER_MAX_SPEED;
@@ -240,7 +240,7 @@ class AIStateMachine : public Component
 			this->system = system;
 		}
 
-		virtual void Enter(AIStateMachine &state_machine)
+		virtual void Enter(LanderStateMachine &state_machine)
 		{
 			state_machine.current_state = this;
 
@@ -255,7 +255,7 @@ class AIStateMachine : public Component
 				state_machine.game_objects->insert(bomb);
 			}
 		}
-		virtual void Update(AIStateMachine& state_machine, float dt) {
+		virtual void Update(LanderStateMachine& state_machine, float dt) {
 			//go back to aggressive state
 			state_machine.state_aggressive->Enter(state_machine);
 		}
@@ -274,7 +274,7 @@ class AIStateMachine : public Component
 			this->system = system;
 		}
 
-		virtual void Enter(AIStateMachine &state_machine)
+		virtual void Enter(LanderStateMachine &state_machine)
 		{
 			state_machine.current_state = this;
 			if (state_machine.lander->abductedHuman != NULL) {
@@ -285,7 +285,7 @@ class AIStateMachine : public Component
 			//state_machine.lander->velocity.x = state_machine.player->velocity.x;
 		}
 		
-		virtual void Update(AIStateMachine& state_machine, float dt) {
+		virtual void Update(LanderStateMachine& state_machine, float dt) {
 			//fly away a bit
 			//go back to aggressive state
 			state_machine.state_aggressive->Enter(state_machine);
@@ -321,7 +321,7 @@ public:
 	ApproachState *		state_approach;
 	BumpedState *		state_bumped;
 	
-	virtual ~AIStateMachine() {}
+	virtual ~LanderStateMachine() {}
 
 	virtual void Create(AvancezLib* system, GameObject * go, std::set<GameObject*> * game_objects, Player* player, ObjectPool<Bomb> * bomb_pool, ObjectPool<Human> * human_pool)
 	{

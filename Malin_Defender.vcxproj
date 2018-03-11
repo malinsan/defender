@@ -25,7 +25,7 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ai_state_machine.h" />
+    <ClInclude Include="lander_state_machine.h" />
     <ClInclude Include="avancezlib.h" />
     <ClInclude Include="background.h" />
     <ClInclude Include="bomb.h" />

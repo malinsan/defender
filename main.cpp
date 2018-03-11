@@ -65,7 +65,7 @@ float game_speed = 1.f;
 #include "box.h"
 #include "human.h"
 #include "lander.h"
-#include "ai_state_machine.h"
+#include "lander_state_machine.h"
 #include "human_state_machine.h"
 #include "spawner.h"
 
@@ -85,8 +85,6 @@ int main(int argc, char** argv)
 	float lastTime = system.getElapsedTime();
 	while (system.update())
 	{
-		//fmodSystem->update();
-
 		float newTime = system.getElapsedTime();
 		float dt = newTime - lastTime;
 		dt = dt * game_speed;
