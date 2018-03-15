@@ -196,6 +196,15 @@ void AvancezLib::drawText(int x, int y, const char * msg)
 	SDL_FreeSurface(surf);
 }
 
+void AvancezLib::drawRect(float startX, float startY, float w, float h, int R, int G, int B) 
+{
+	SDL_SetRenderDrawColor(renderer, R, G , B, 0);
+	//SDL_RenderDrawLine(renderer, startX, startY, endX, endY);
+	SDL_Rect rect = {startX, startY, w, h};
+	SDL_RenderFillRect(renderer, &rect);
+	SDL_RenderDrawRect(renderer, &rect);
+}
+
 float AvancezLib::getElapsedTime()
 {
 	return SDL_GetTicks() / 1000.f;

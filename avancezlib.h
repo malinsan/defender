@@ -63,6 +63,8 @@ public:
 	// Returns the keyboard status. If a flag is set, the corresponding key is being held down.
 	void getKeyStatus(KeyStatus& keys);
 
+	void drawRect(float startX, float startY, float w, float h, int R, int G, int B);
+
 	float Distance(float posX, float posY, float targetX, float targetY);
 
 private:
