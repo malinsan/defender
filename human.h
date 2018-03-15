@@ -27,6 +27,9 @@ public:
 			abducted = false;
 			dropped = true;
 		}
+		if (m == HIT) { //get hit by a player rocket
+			enabled = false;
+		}
 	}
 };
 

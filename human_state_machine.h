@@ -105,7 +105,7 @@ class HumanStateMachine : public Component
 	{
 
 	public:
-		float intensity = 0.0f;
+		float intensity;
 		DroppedState(AvancezLib* system)
 		{
 			this->system = system;
@@ -113,20 +113,19 @@ class HumanStateMachine : public Component
 
 		virtual void Enter(HumanStateMachine &state_machine)
 		{
+			intensity = 0.0f;
 			state_machine.current_state = this;
 		}
 		virtual void Update(HumanStateMachine& state_machine, float dt) {
 
 			//get picked up by the player if they are close
 			if (InProximityTo(state_machine, state_machine.player, 35)) {
-				intensity = 0.0f;
 				state_machine.human->dropped = false;
 				state_machine.state_carried->Enter(state_machine);
 			}
 
 			//either die or go to idle when you get to bottom
 			if (state_machine.human->verticalPosition >= 620) {
-				intensity = 0.0f;
 				state_machine.human->dropped = false;
 				if (intensity >= 7.0f) {
 					state_machine.human->enabled = false;

@@ -125,12 +125,17 @@ public:
 			HumanStateMachine * behaviour = new HumanStateMachine();
 			behaviour->Create(system, *human, &game_objects, player);
 
+			//collision with rockets
+			CollideComponent* collision = new CollideComponent();
+			collision->Create(system, *human, &game_objects, (ObjectPool<GameObject>*)&rockets_pool);
+
 			RenderComponent * render = new RenderComponent();
 			render->Create(system, *human, &game_objects, "data/human.bmp");
 
 			(*human)->Create();
 			(*human)->AddComponent(main_move_behaviour);
 			(*human)->AddComponent(behaviour);
+			(*human)->AddComponent(collision);
 			(*human)->AddComponent(render);
 		}
 
