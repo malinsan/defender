@@ -49,8 +49,6 @@ public:
 	{
 		Rocket* rocket = (Rocket*)go;
 
-		float height = 4; 
-
 		//color
 		int R = rand() % 255 + 100;
 		int G = rand() % 255 + 100;
@@ -65,11 +63,11 @@ public:
 
 		if (rocket->leftFacing) {
 			rocket->startPoint = go->horizontalPosition;
-			system->drawRect(rocket->startPoint, rocket->verticalPosition, rocket->width, height, R, G, B);
+			system->drawRect(rocket->startPoint, rocket->verticalPosition, rocket->width, ROCKET_HEIGHT, R, G, B);
 		}
 		else {
 			rocket->startPoint = go->horizontalPosition - rocket->width;
-			system->drawRect(rocket->startPoint, rocket->verticalPosition, rocket->width, height, R, G, B);
+			system->drawRect(rocket->startPoint, rocket->verticalPosition, rocket->width, ROCKET_HEIGHT, R, G, B);
 		}
 
 	}

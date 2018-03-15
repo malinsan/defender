@@ -44,6 +44,7 @@ const unsigned int	POINTS_PER_HUMAN = 500;
 const float			FIRE_TIME_INTERVAL = .2f;
 const float			BOMB_TIME_INTERVAL = 1.25f;
 const float			ROCKET_SPEED = 1000.0f;
+const int			ROCKET_HEIGHT = 4;
 
 const float			ALIEN_SPEED = 40.0f;
 
