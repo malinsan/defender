@@ -91,6 +91,10 @@ public:
 			"data/shipRTeleport1.bmp", "data/shipRTeleport2.bmp");
 		player_behaviour->AddReceiver(player_render);
 
+		//collision with bombs
+		PlayerBombCollision* bomb_collision = new PlayerBombCollision();
+		bomb_collision->Create(system, player, &game_objects, (ObjectPool<GameObject>*)&bomb_pool);
+
 		//collision with landers
 		BumbCollideComponent* player_lander_collide = new BumbCollideComponent();
 		player_lander_collide->Create(system, player, &game_objects, (ObjectPool<GameObject>*)&lander_pool);
@@ -101,6 +105,7 @@ public:
 		player->Create();
 		player->AddComponent(player_behaviour);
 		player->AddComponent(player_render);
+		player->AddComponent(bomb_collision);
 		player->AddComponent(player_lander_collide);
 		player->AddComponent(player_mutant_collide);
 		player->AddReceiver(this);
