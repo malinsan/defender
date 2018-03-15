@@ -41,6 +41,23 @@ public:
 	
 	void Update(float dt) 
 	{
+		Rocket* rocket = (Rocket*)go;
+
+		rocket->endPoint += 0.7f;
+		float h = 4;
+		float w = rocket->endPoint;
+
+		//color
+		int R = rand() % 255 + 100;
+		int G = rand() % 255 + 100;
+		int B = rand() % 255 + 100;
+
+		if (rocket->leftFacing) {
+			system->drawRect(go->horizontalPosition + rocket->endPoint, go->verticalPosition, -w, h, R, G, B);
+		}
+		else {
+			system->drawRect(go->horizontalPosition - rocket->endPoint, go->verticalPosition, w, h, R, G, B);
+		}
 
 	}
 
@@ -53,9 +70,9 @@ class RocketBehaviourComponent : public Component
 	bool goingLeft = true;
 	bool goingBack = false;
 
-	float endPoint = 0;
 	float startTime;
 	float time = 1.0f;
+
 public:
 
 	void Init() {
@@ -70,23 +87,13 @@ public:
 			rocket->endPoint = 0;
 			go->enabled = false;
 		}
-		rocket->endPoint += 0.7f;
-		float h = 4;
-		float w = rocket->endPoint;
-		
-		//color
-		int R = rand() % 255 + 100;
-		int G = rand() % 255 + 100;
-		int B = rand() % 255 + 100;
 		
 
 		if (rocket->leftFacing) { //rocket going left
 			go->horizontalPosition -= dt * ROCKET_SPEED;
-			system->drawRect(go->horizontalPosition + rocket->endPoint, go->verticalPosition, -w, h, R, G, B);
 		}
 		else { // rocket going right
-			go->horizontalPosition += dt * ROCKET_SPEED;
-			system->drawRect(go->horizontalPosition - rocket->endPoint, go->verticalPosition, w, h, R, G, B);		
+			go->horizontalPosition += dt * ROCKET_SPEED;	
 		}
 	}
 

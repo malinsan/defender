@@ -106,12 +106,14 @@ public:
 
 			RocketBehaviourComponent * behaviour = new RocketBehaviourComponent();
 			behaviour->Create(system, *rocket, &game_objects);
-			RenderComponent * render = new RenderComponent();
-			render->Create(system, *rocket, &game_objects, "data/rocket.bmp");
+
+			RocketRender * render = new RocketRender();
+			render->Create(system, *rocket, &game_objects);
+
 			(*rocket)->Create();
 			(*rocket)->AddComponent(main_move_behaviour);
 			(*rocket)->AddComponent(behaviour);
-			//(*rocket)->AddComponent(render);
+			(*rocket)->AddComponent(render);
 		}
 
 		//HUMANS
