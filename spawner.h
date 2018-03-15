@@ -1,16 +1,31 @@
 #pragma once
 class Spawner : public GameObject 
 {
+public:
+	bool spawn;
+	int NUM_ALIENS_TO_SPAWN = NUM_ALIENS;
+	float waveMultiplier = 0.6666f;
+
 	virtual ~Spawner() {}
 
 	virtual void Init() 
 	{
 		GameObject::Init();
+		spawn = true;
+	}
+
+	void Receive(Message m) {
+		if (m == NEW_WAVE) {
+			NUM_ALIENS_TO_SPAWN += NUM_ALIENS_TO_SPAWN * waveMultiplier;
+			spawn = true;
+		}
 	}
 };
 
 class SpawnerComponent : public Component 
 {
+	Spawner * spawner;
+
 	float startTime;
 	float humanStartTime;
 	float spawnTime; //time between spawning of new enemies
@@ -28,6 +43,7 @@ public:
 		Component::Create(system, go, game_objects);
 		this->lander_pool = lander_pool;
 		this->human_pool = human_pool;
+		spawner = (Spawner*)go;
 	}
 
 	virtual void Init() 
@@ -42,10 +58,20 @@ public:
 
 	virtual void Update(float dt) 
 	{
-		//SpawnLander();
-		if (numberOfLandersSpawned < NUM_ALIENS) {
-			SpawnLander();
+
+		if (spawner->spawn) {
+			if (numberOfLandersSpawned < spawner->NUM_ALIENS_TO_SPAWN) {
+				SpawnLander();
+				Send(ALIEN_SPAWNED);
+			}
+			else {
+				spawner->spawn = false;
+				numberOfLandersSpawned = 0;
+			}
 		}
+
+		//SpawnLander();
+		
 	}
 
 	void SpawnLander() {
