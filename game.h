@@ -273,8 +273,8 @@ public:
 		if ((system->getElapsedTime() - pauseStartTime) < pauseTime) {
 			system->drawRect(0,0, WIDTH, HEIGHT, 0,0,0);
 			char msg[48];
-			sprintf_s(msg, "WAVE %d CLEARED", waveNumber-1);
-			system->drawText(WIDTH/2 - 110, HEIGHT/2, msg, 255, 255, 255);
+			sprintf_s(msg, "WAVE  %d  CLEARED", waveNumber-1);
+			system->drawText(WIDTH/2 - 110, HEIGHT/2 - 100, msg, 255, 255, 255);
 		}
 		else {
 			//first component should be background
@@ -302,6 +302,12 @@ public:
 		sprintf_s(msg, "%07d", player->score);
 		system->drawText(30, 50, msg, 129, 54, 255);
 
+		//wave and current aliens
+		sprintf_s(msg, "WAVE  %d", waveNumber);
+		system->drawText(WIDTH-150, 50, msg, 255, 255, 255);
+
+		sprintf_s(msg, "ALIENS: %d", current_aliens);
+		system->drawText(WIDTH-150, 20, msg, 255, 255, 255);
 
 
 		if (IsGameOver())

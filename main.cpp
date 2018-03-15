@@ -41,7 +41,7 @@ const unsigned int	MAX_NUM_BOMBS = 32;
 const unsigned int	POINTS_PER_ALIEN = 100;
 const unsigned int	POINTS_PER_HUMAN = 500;
 
-const float			FIRE_TIME_INTERVAL = .5f;
+const float			FIRE_TIME_INTERVAL = .2f;
 const float			BOMB_TIME_INTERVAL = 1.25f;
 const float			ROCKET_SPEED = 1000.0f;
 
