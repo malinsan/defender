@@ -34,6 +34,7 @@ class Game : public GameObject
 	Sprite * lifeSprite;
 	Sprite * bombSprite;
 
+	bool startScreen = true;
 	bool paused;
 	float pauseStartTime = -1000.0f;
 	float pauseTime = 2.5f;
@@ -277,22 +278,31 @@ public:
 
 	virtual void Update(float dt)
 	{
-		if (IsGameOver())
-			dt = 0.f;
-		if ((system->getElapsedTime() - pauseStartTime) < pauseTime) {
-			system->drawRect(0,0, WIDTH, HEIGHT, 0,0,0);
-			char msg[48];
-			sprintf_s(msg, "WAVE  %d  CLEARED", waveNumber-1);
-			system->drawText(WIDTH/2 - 110, HEIGHT/2 - 100, msg, 255, 255, 255);
+
+		if (startScreen) {
+			ShowStartScreen();
+		}
+		else if(IsGameOver()){
+			ShowEndScreen();
 		}
 		else {
-			//first component should be background
-			background->Update(dt);
 
-			for (auto go = game_objects.begin(); go != game_objects.end(); go++) {
-				(*go)->Update(dt);
-
+			if ((system->getElapsedTime() - pauseStartTime) < pauseTime) {
+				system->drawRect(0, 0, WIDTH, HEIGHT, 0, 0, 0);
+				char msg[48];
+				sprintf_s(msg, "WAVE  %d  CLEARED", waveNumber - 1);
+				system->drawText(WIDTH / 2 - 110, HEIGHT / 2 - 100, msg, 255, 255, 255);
 			}
+			else {
+				//first component should be background
+				background->Update(dt);
+
+				for (auto go = game_objects.begin(); go != game_objects.end(); go++) {
+					(*go)->Update(dt);
+
+				}
+			}
+
 		}
 	}
 
@@ -308,6 +318,7 @@ public:
 			bombSprite->draw(250, 15 + (i * 20), 0);
 		}
 
+		//player score
 		sprintf_s(msg, "%07d", player->score);
 		system->drawText(30, 50, msg, 129, 54, 255);
 
@@ -318,12 +329,6 @@ public:
 		sprintf_s(msg, "ALIENS: %d", current_aliens);
 		system->drawText(WIDTH-150, 20, msg, 255, 255, 255);
 
-
-		if (IsGameOver())
-		{
-			sprintf_s(msg, "*** G A M E  O V E R ***");
-			system->drawText(250, 8, msg, 255, 255, 255);
-		}
 	}
 
 	virtual void Receive(Message m)
@@ -361,6 +366,31 @@ public:
 		}
 		current_aliens = spawner->NUM_ALIENS_TO_SPAWN;
 	}
+
+	void ShowStartScreen() {
+		AvancezLib::KeyStatus keys;
+		system->getKeyStatus(keys);
+
+		system->drawRect(0, 0, WIDTH, HEIGHT, 0, 0, 0);
+		char msg[48];
+		sprintf_s(msg, "DEFENDER");
+		system->drawText(WIDTH / 2 - 110, HEIGHT / 2 - 100, msg, 255, 255, 255);
+		sprintf_s(msg, "START BY PRESSING SPACE");
+		system->drawText(WIDTH / 2 - 210, HEIGHT / 2 - 50, msg, 255, 255, 255);
+		if (keys.fire) {
+			startScreen = false;
+		}
+	}
+
+	void ShowEndScreen() {
+		system->drawRect(0, 0, WIDTH, HEIGHT, 0, 0, 0);
+		char msg[48];
+		sprintf_s(msg, "GAME OVER");
+		system->drawText(WIDTH / 2 - 110, HEIGHT / 2 - 100, msg, 255, 255, 255);
+		sprintf_s(msg, "SCORE: %d", player->score);
+		system->drawText(WIDTH / 2 - 110, HEIGHT / 2 - 50, msg, 255, 255, 255);
+	}
+
 
 	bool IsGameOver()
 	{
