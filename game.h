@@ -111,7 +111,7 @@ public:
 			(*rocket)->Create();
 			(*rocket)->AddComponent(main_move_behaviour);
 			(*rocket)->AddComponent(behaviour);
-			(*rocket)->AddComponent(render);
+			//(*rocket)->AddComponent(render);
 		}
 
 		//HUMANS
