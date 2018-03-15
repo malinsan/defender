@@ -23,7 +23,7 @@ class Game : public GameObject
 	ObjectPool<Rocket> rockets_pool;	// used to instantiate rockets
 
 	//enemy
-	Spawner * enemy_spawner;
+	Spawner * spawner;
 	ObjectPool<Lander> lander_pool;
 	ObjectPool<Mutant> mutant_pool;
 	//Lander * lander;
@@ -34,11 +34,16 @@ class Game : public GameObject
 	Sprite * lifeSprite;
 	Sprite * bombSprite;
 
-
+	bool paused;
+	float pauseStartTime = -1000.0f;
+	float pauseTime = 2.5f;
 	bool game_over;
 
-	unsigned int score = 0;
-	unsigned int smartbombScore = 0;
+	unsigned int waveNumber = 1;
+	unsigned int current_aliens = 0;
+	unsigned int current_humans = NUM_HUMANS;
+	bool mutant_wave = false;
+	int mutant_waves = 0;
 
 public:
 
@@ -86,6 +91,10 @@ public:
 			"data/shipRTeleport1.bmp", "data/shipRTeleport2.bmp");
 		player_behaviour->AddReceiver(player_render);
 
+		//collision with bombs
+		PlayerBombCollision* bomb_collision = new PlayerBombCollision();
+		bomb_collision->Create(system, player, &game_objects, (ObjectPool<GameObject>*)&bomb_pool);
+
 		//collision with landers
 		BumbCollideComponent* player_lander_collide = new BumbCollideComponent();
 		player_lander_collide->Create(system, player, &game_objects, (ObjectPool<GameObject>*)&lander_pool);
@@ -96,6 +105,7 @@ public:
 		player->Create();
 		player->AddComponent(player_behaviour);
 		player->AddComponent(player_render);
+		player->AddComponent(bomb_collision);
 		player->AddComponent(player_lander_collide);
 		player->AddComponent(player_mutant_collide);
 		player->AddReceiver(this);
@@ -144,6 +154,7 @@ public:
 			(*human)->AddComponent(behaviour);
 			(*human)->AddComponent(collision);
 			(*human)->AddComponent(render);
+			(*human)->AddReceiver(this);
 		}
 
 		//#################################################//
@@ -151,14 +162,17 @@ public:
 		//#################################################//
 
 		//enemy spawner
-		enemy_spawner = new Spawner();
-		SpawnerComponent * spawn_enemies_component = new SpawnerComponent();
-		spawn_enemies_component->Create(system, enemy_spawner, &game_objects, &lander_pool, &human_pool);
-		enemy_spawner->Create();
-		enemy_spawner->AddComponent(spawn_enemies_component);
-		game_objects.insert(enemy_spawner);
+		spawner = new Spawner();
+		SpawnerComponent * spawn_component = new SpawnerComponent();
+		spawn_component->Create(system, spawner, &game_objects, &lander_pool, &mutant_pool, &human_pool);
+		spawner->Create();
+		spawner->AddComponent(spawn_component);
+		this->AddReceiver(spawner); //listen for new wave
+		current_aliens = spawner->NUM_ALIENS_TO_SPAWN;
 
-		lander_pool.Create(NUM_ALIENS);
+		game_objects.insert(spawner);
+
+		lander_pool.Create(30);
 		for (auto lander = lander_pool.pool.begin(); lander != lander_pool.pool.end(); lander++) {
 			
 			//movement according to player
@@ -189,10 +203,11 @@ public:
 			(*lander)->AddComponent(landerRender);
 			(*lander)->AddComponent(collision);
 			(*lander)->AddReceiver(player);
+			(*lander)->AddReceiver(this); //listen for alien dying
 		}
 
 		//mutants
-		mutant_pool.Create(NUM_ALIENS);
+		mutant_pool.Create(30);
 		for (auto mutant = mutant_pool.pool.begin(); mutant != mutant_pool.pool.end(); mutant++) {
 			//movement according to player
 			MoveAccordingToPlayerComponent* main_move_behaviour = new MoveAccordingToPlayerComponent();
@@ -217,6 +232,7 @@ public:
 			(*mutant)->AddComponent(mutantRender);
 			(*mutant)->AddComponent(collision);
 			(*mutant)->AddReceiver(player);
+			(*mutant)->AddReceiver(this); //listen for alien dying
 		}
 
 
@@ -244,7 +260,6 @@ public:
 		lifeSprite = system->createSprite("data/shipR.bmp");
 		bombSprite = system->createSprite("data/smartbomb.bmp");
 
-		score = 0;
 	}
 
 	virtual void Init()
@@ -256,6 +271,7 @@ public:
 			(*go)->Init();
 
 		enabled = true;
+		paused = false;
 		game_over = false;
 	}
 
@@ -263,13 +279,20 @@ public:
 	{
 		if (IsGameOver())
 			dt = 0.f;
+		if ((system->getElapsedTime() - pauseStartTime) < pauseTime) {
+			system->drawRect(0,0, WIDTH, HEIGHT, 0,0,0);
+			char msg[48];
+			sprintf_s(msg, "WAVE  %d  CLEARED", waveNumber-1);
+			system->drawText(WIDTH/2 - 110, HEIGHT/2 - 100, msg, 255, 255, 255);
+		}
+		else {
+			//first component should be background
+			background->Update(dt);
 
-		//first component should be background
-		background->Update(dt); 
+			for (auto go = game_objects.begin(); go != game_objects.end(); go++) {
+				(*go)->Update(dt);
 
-		for (auto go = game_objects.begin(); go != game_objects.end(); go++) {
-			(*go)->Update(dt);
-			
+			}
 		}
 	}
 
@@ -286,12 +309,20 @@ public:
 		}
 
 		sprintf_s(msg, "%07d", player->score);
-		system->drawText(30, 50, msg);
+		system->drawText(30, 50, msg, 129, 54, 255);
+
+		//wave and current aliens
+		sprintf_s(msg, "WAVE  %d", waveNumber);
+		system->drawText(WIDTH-150, 50, msg, 255, 255, 255);
+
+		sprintf_s(msg, "ALIENS: %d", current_aliens);
+		system->drawText(WIDTH-150, 20, msg, 255, 255, 255);
+
 
 		if (IsGameOver())
 		{
 			sprintf_s(msg, "*** G A M E  O V E R ***");
-			system->drawText(250, 8, msg);
+			system->drawText(250, 8, msg, 255, 255, 255);
 		}
 	}
 
@@ -299,19 +330,43 @@ public:
 	{
 		if (m == GAME_OVER)
 			game_over = true;
+
+		if (m == ALIEN_HIT) {
+			current_aliens--;
+			if (current_aliens == 0) { //wave cleared
+				NextWave();
+			}
+		}
+
+		if (m == HUMAN_HIT) {
+			current_humans--;
+			if (current_humans == 0) {
+				mutant_wave = true;
+			}
+		}
 		
 	}
 
+	void NextWave() {
+		pauseStartTime = system->getElapsedTime();
+		waveNumber++;
+		if (mutant_wave && mutant_waves < 2) {
+			Send(NEW_MUTANT_WAVE);
+			mutant_waves++;
+		}
+		else {
+			mutant_wave = false;
+			mutant_waves = 0;
+			Send(NEW_WAVE);
+		}
+		current_aliens = spawner->NUM_ALIENS_TO_SPAWN;
+	}
 
 	bool IsGameOver()
 	{
 		return game_over;
 	}
 
-	unsigned int Score()
-	{
-		return score;
-	}
 
 	virtual void Destroy()
 	{

@@ -79,4 +79,43 @@ public:
 	}
 
 };
-#pragma once
+
+
+
+class PlayerBombCollision : public Component
+{
+
+	ObjectPool<GameObject>* coll_objects;
+
+public:
+	virtual void Create(AvancezLib* system, GameObject * go, std::set<GameObject*> * game_objects, ObjectPool<GameObject> * coll_objects)
+	{
+		Component::Create(system, go, game_objects);
+		this->coll_objects = coll_objects;
+	}
+
+	virtual void Update(float dt)
+	{
+		Player * p = (Player *)go;
+
+		int x = 60 + (p->leftFacing ? 0 : 20);
+		int y = 24;
+		for (auto i = 0; i < coll_objects->pool.size(); i++)
+		{
+			GameObject * go0 = coll_objects->pool[i];
+			if (go0->enabled)
+			{
+				if ((go0->horizontalPosition > p->horizontalPosition) &&
+					(go0->horizontalPosition < p->horizontalPosition + x) &&
+					(go0->verticalPosition   > p->verticalPosition) &&
+					(go0->verticalPosition   < p->verticalPosition + y))
+				{
+					p->Receive(HIT);
+					go0->Receive(HIT);
+				}
+			}
+		}
+	}
+};
+
+
