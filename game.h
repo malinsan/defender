@@ -38,6 +38,7 @@ class Game : public GameObject
 	bool game_over;
 
 	unsigned int score = 0;
+	unsigned int smartbombScore = 0;
 
 public:
 

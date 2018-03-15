@@ -4,7 +4,8 @@ class Player : public GameObject
 public:
 
 	int lives;	// it's game over when goes below zero 
-	int score;
+	unsigned int score;
+	int smartBombScore;
 	int smartBombs;
 
 	int carriedHumans;
@@ -13,7 +14,6 @@ public:
 	
 	//bumping
 	bool bumped = false;
-	int bumpFrames;
 	
 	virtual ~Player() { SDL_Log("Player::~Player"); }
 
@@ -27,7 +27,6 @@ public:
 		smartBombs = NUM_SMARTBOMBS;
 
 		carriedHumans = 0;
-		bumpFrames = 0;
 	}
 
 	virtual void Receive(Message m)
@@ -42,10 +41,18 @@ public:
 		}
 		if (m == ALIEN_HIT) {
 			score += POINTS_PER_ALIEN;
+			CheckSmartBombScore();
 		}
 		if (m == BUMP_HIT) {
 			bumped = true;
-			bumpFrames = 0;
+		}
+	}
+
+	//check if we should receive a smartbomb due to our score, should be checked each time score is given to the player
+	void CheckSmartBombScore() {
+		if (smartBombs < 3 && (score - smartBombScore) >= GET_SMARTBOMB_SCORE) {
+			smartBombScore = score;
+			smartBombs++;
 		}
 	}
 

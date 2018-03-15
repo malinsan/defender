@@ -24,6 +24,7 @@ const unsigned int	NUM_LIVES = 3;
 int PLAYER_WIDTH = 64;
 int PLAYER_HEIGHT = 25;
 int NUM_SMARTBOMBS = 3;
+const int GET_SMARTBOMB_SCORE = 1000; //gain a smartbomb if you reach 1000 points
 const int TOTAL_TP_FRAMES = 200;
 
 const float PLAYER_RANGE = 400.0f;

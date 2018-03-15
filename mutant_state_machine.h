@@ -240,7 +240,7 @@ public:
 
 	void Receive(Message m) {
 		if (m == SMARTBOMB_DROPPED) {
-			if (go->horizontalPosition < 1200 && go->horizontalPosition > 0) {
+			if (go->horizontalPosition < 1200 && go->horizontalPosition > 0) { //if in screen space get killed
 				go->Receive(HIT);
 			}
 		}

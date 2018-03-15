@@ -158,13 +158,17 @@ class HumanStateMachine : public Component
 		}
 		virtual void Update(HumanStateMachine& state_machine, float dt) {
 
+			//put the human on the ground if close to it
 			if (state_machine.human->verticalPosition >= 620) {
 				state_machine.player->carriedHumans--;
 				state_machine.human->carried = false;
 				state_machine.player->score += POINTS_PER_HUMAN;
+				state_machine.player->CheckSmartBombScore();
+
 				state_machine.state_idle->Enter(state_machine);
 			}
 
+			//otherwise the human follows the movements of the player
 			state_machine.human->verticalPosition = state_machine.player->verticalPosition + (34 * state_machine.carryNumber);
 			state_machine.human->horizontalPosition = state_machine.player->leftFacing ? state_machine.player->horizontalPosition + 45 : state_machine.player->horizontalPosition;
 		}
