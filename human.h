@@ -28,6 +28,7 @@ public:
 			dropped = true;
 		}
 		if (m == HIT) { //get hit by a player rocket
+			Send(HUMAN_HIT);
 			enabled = false;
 		}
 	}

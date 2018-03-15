@@ -41,6 +41,9 @@ class Game : public GameObject
 
 	unsigned int waveNumber = 1;
 	unsigned int current_aliens = 0;
+	unsigned int current_humans = NUM_HUMANS;
+	bool mutant_wave = false;
+	int mutant_waves = 0;
 
 public:
 
@@ -146,6 +149,7 @@ public:
 			(*human)->AddComponent(behaviour);
 			(*human)->AddComponent(collision);
 			(*human)->AddComponent(render);
+			(*human)->AddReceiver(this);
 		}
 
 		//#################################################//
@@ -155,7 +159,7 @@ public:
 		//enemy spawner
 		spawner = new Spawner();
 		SpawnerComponent * spawn_component = new SpawnerComponent();
-		spawn_component->Create(system, spawner, &game_objects, &lander_pool, &human_pool);
+		spawn_component->Create(system, spawner, &game_objects, &lander_pool, &mutant_pool, &human_pool);
 		spawner->Create();
 		spawner->AddComponent(spawn_component);
 		this->AddReceiver(spawner); //listen for new wave
@@ -324,10 +328,15 @@ public:
 
 		if (m == ALIEN_HIT) {
 			current_aliens--;
-			SDL_Log("current aliens %d ", current_aliens);
-			if (current_aliens == 0) {
-				SDL_Log("hejhej");
+			if (current_aliens == 0) { //wave cleared
 				NextWave();
+			}
+		}
+
+		if (m == HUMAN_HIT) {
+			current_humans--;
+			if (current_humans == 0) {
+				mutant_wave = true;
 			}
 		}
 		
@@ -336,7 +345,15 @@ public:
 	void NextWave() {
 		pauseStartTime = system->getElapsedTime();
 		waveNumber++;
-		Send(NEW_WAVE);
+		if (mutant_wave && mutant_waves < 2) {
+			Send(NEW_MUTANT_WAVE);
+			mutant_waves++;
+		}
+		else {
+			mutant_wave = false;
+			mutant_waves = 0;
+			Send(NEW_WAVE);
+		}
 		current_aliens = spawner->NUM_ALIENS_TO_SPAWN;
 	}
 
