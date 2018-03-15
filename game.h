@@ -72,10 +72,14 @@ public:
 
 		PlayerBehaviourComponent * player_behaviour = new PlayerBehaviourComponent();
 		player_behaviour->Create(system, player, &game_objects, &rockets_pool);
+		
 		//sound component listens to players actions
 		player_behaviour->AddReceiver(sound_component);
+		
 		//background listens to player movement
 		player_behaviour->AddReceiver(background_component);
+		
+		//player renderering
 		PlayerRenderComponent * player_render = new PlayerRenderComponent();
 		player_render->Create(system, player, &game_objects, "data/shipL.bmp", "data/shipR.bmp",
 			"data/shipLActive.bmp", "data/shipRActive.bmp",
@@ -93,6 +97,7 @@ public:
 		player->AddComponent(player_behaviour);
 		player->AddComponent(player_render);
 		player->AddComponent(player_lander_collide);
+		player->AddComponent(player_mutant_collide);
 		player->AddReceiver(this);
 		game_objects.insert(player);
 
@@ -155,16 +160,21 @@ public:
 
 		lander_pool.Create(NUM_ALIENS);
 		for (auto lander = lander_pool.pool.begin(); lander != lander_pool.pool.end(); lander++) {
+			
 			//movement according to player
 			MoveAccordingToPlayerComponent* lander_behaviour = new MoveAccordingToPlayerComponent();
 			lander_behaviour->Create(system, *lander, &game_objects, player, true);
+			
 			//listen to player behaviour
 			player_behaviour->AddReceiver(lander_behaviour);
+			
 			//AI behaviour
 			LanderStateMachine * landerAI = new LanderStateMachine();
 			landerAI->Create(system, *lander, &game_objects, player, &bomb_pool, &human_pool, &mutant_pool);
+			
 			//ai listens to player behaviour
 			player_behaviour->AddReceiver(landerAI);
+			
 			//render component
 			RenderComponent * landerRender = new RenderComponent();
 			landerRender->Create(system, *lander, &game_objects, "data/lander.bmp");

@@ -12,9 +12,6 @@ public:
 
 	bool leftFacing = true;
 	
-	//bumping
-	bool bumped = false;
-	
 	virtual ~Player() { SDL_Log("Player::~Player"); }
 
 	virtual void Init()
@@ -43,12 +40,10 @@ public:
 			score += POINTS_PER_ALIEN;
 			CheckSmartBombScore();
 		}
-		if (m == BUMP_HIT) {
-			bumped = true;
-		}
 	}
 
-	//check if we should receive a smartbomb due to our score, should be checked each time score is given to the player
+	//check if we should receive a smartbomb due to our score, 
+	//should be checked each time score is given to the player
 	void CheckSmartBombScore() {
 		if (smartBombs < 3 && (score - smartBombScore) >= GET_SMARTBOMB_SCORE) {
 			smartBombScore = score;
