@@ -7,7 +7,8 @@ class Rocket : public GameObject
 public:
 
 	bool leftFacing;
-	float endPoint;
+	float startPoint;
+	float width;
 
 	virtual void Init(double xPos, double yPos, bool leftFacing)
 	{
@@ -17,7 +18,8 @@ public:
 		horizontalPosition = xPos;
 		verticalPosition = yPos + 13;
 		this->leftFacing = leftFacing;
-		endPoint = 0;
+		startPoint = horizontalPosition;
+		width = 0;
 
 	}
 
@@ -36,27 +38,38 @@ public:
 
 class RocketRenderComponent : public Component
 {
+	float startTime;
 public:
 	
+	void Init() {
+		startTime = system->getElapsedTime();
+	}
 	
 	void Update(float dt) 
 	{
 		Rocket* rocket = (Rocket*)go;
 
-		rocket->endPoint += 0.7f;
-		float h = 4;
-		float w = rocket->endPoint;
+		float height = 4; 
 
 		//color
 		int R = rand() % 255 + 100;
 		int G = rand() % 255 + 100;
 		int B = rand() % 255 + 100;
 
-		if (rocket->leftFacing) {
-			system->drawRect(go->horizontalPosition + rocket->endPoint, go->verticalPosition, -w, h, R, G, B);
+		if (system->getElapsedTime() - startTime < 0.5f) {
+			rocket->width += 315 * dt;
 		}
 		else {
-			system->drawRect(go->horizontalPosition - rocket->endPoint, go->verticalPosition, w, h, R, G, B);
+			rocket->width -= 315 * dt;
+		}
+
+		if (rocket->leftFacing) {
+			rocket->startPoint = go->horizontalPosition;
+			system->drawRect(rocket->startPoint, rocket->verticalPosition, rocket->width, height, R, G, B);
+		}
+		else {
+			rocket->startPoint = go->horizontalPosition - rocket->width;
+			system->drawRect(rocket->startPoint, rocket->verticalPosition, rocket->width, height, R, G, B);
 		}
 
 	}
@@ -84,7 +97,6 @@ public:
 		Rocket* rocket = (Rocket*)go;
 
 		if (system->getElapsedTime() - startTime >= time) { //disappear after a certain amount of param time
-			rocket->endPoint = 0;
 			go->enabled = false;
 		}
 		

@@ -61,15 +61,16 @@ void CollideComponent::Create(AvancezLib* system, GameObject * go, std::set<Game
 
 void CollideComponent::Update(float dt)
 {
+	int x = 15;
 	for (auto i = 0; i < coll_objects->pool.size(); i++)
 	{
 		GameObject * go0 = coll_objects->pool[i];
 		if (go0->enabled)
 		{
-			if ((go0->horizontalPosition > go->horizontalPosition - 10) &&
-				(go0->horizontalPosition < go->horizontalPosition + 10) &&
-				(go0->verticalPosition   > go->verticalPosition - 10) &&
-				(go0->verticalPosition   < go->verticalPosition + 10))
+			if ((go0->horizontalPosition > go->horizontalPosition - x) &&
+				(go0->horizontalPosition < go->horizontalPosition + x) &&
+				(go0->verticalPosition   > go->verticalPosition - x) &&
+				(go0->verticalPosition   < go->verticalPosition + x))
 			{
 				go->Receive(HIT);
 				go0->Receive(HIT);
