@@ -4,7 +4,8 @@ class Player : public GameObject
 public:
 
 	int lives;	// it's game over when goes below zero 
-	int score;
+	unsigned int score;
+	int smartBombScore;
 	int smartBombs;
 
 	int carriedHumans;
@@ -13,7 +14,6 @@ public:
 	
 	//bumping
 	bool bumped = false;
-	int bumpFrames;
 	
 	virtual ~Player() { SDL_Log("Player::~Player"); }
 
@@ -27,7 +27,6 @@ public:
 		smartBombs = NUM_SMARTBOMBS;
 
 		carriedHumans = 0;
-		bumpFrames = 0;
 	}
 
 	virtual void Receive(Message m)
@@ -42,10 +41,18 @@ public:
 		}
 		if (m == ALIEN_HIT) {
 			score += POINTS_PER_ALIEN;
+			CheckSmartBombScore();
 		}
 		if (m == BUMP_HIT) {
 			bumped = true;
-			bumpFrames = 0;
+		}
+	}
+
+	//check if we should receive a smartbomb due to our score, should be checked each time score is given to the player
+	void CheckSmartBombScore() {
+		if (smartBombs < 3 && (score - smartBombScore) >= GET_SMARTBOMB_SCORE) {
+			smartBombScore = score;
+			smartBombs++;
 		}
 	}
 
@@ -67,6 +74,10 @@ class PlayerBehaviourComponent : public Component
 	//teleport stuff
 	float time_teleported;
 	float teleport_cooldown = 3.0f;
+
+	//smartbomb
+	float time_smartbomb_dropped;
+	float smartbomb_cooldown = 1.0f;
 
 	bool movingHorizontally = false;
 	//bool leftFacing = true;
@@ -91,6 +102,8 @@ public:
 		go->verticalVelocity = 0.0f;
 
 		time_fire_pressed = -10000.f;
+		time_smartbomb_dropped = -1000.f;
+		time_teleported = -1000.f;
 	}
 
 	virtual void Update(float dt)
@@ -98,7 +111,7 @@ public:
 		AvancezLib::KeyStatus keys;
 		system->getKeyStatus(keys);
 		
-
+#pragma region Movement
 		//decrease velocity if buttons are released. i.e go towards 0
 		if (!keys.up && !keys.down) {
 			if (go->velocity.y > 1) {
@@ -155,6 +168,10 @@ public:
 		//move every timestep
 		Move(dt);
 
+#pragma endregion
+
+
+#pragma region Fire, Teleport, Smartbomb
 		if (keys.fire)
 		{
 			if (CanFire())
@@ -169,7 +186,7 @@ public:
 				}
 
 				Send(SHOOT); //for playing sound
-				
+
 			}
 		}
 		//teleportation
@@ -179,6 +196,18 @@ public:
 				time_teleported = system->getElapsedTime();
 			}
 		}
+
+		//smartbomb
+		if (keys.smartbomb) {
+			if (thisPlayer->smartBombs > 0 && (system->getElapsedTime() - time_smartbomb_dropped) > smartbomb_cooldown) {
+				Send(SMARTBOMB_DROPPED);
+				thisPlayer->smartBombs--;
+				time_smartbomb_dropped = system->getElapsedTime();
+			}
+		}
+
+#pragma endregion
+
 	}
 
 	//teleport the player to a random position on the screen 
@@ -259,7 +288,6 @@ class PlayerRenderComponent : public Component
 	Sprite* secondTPSprite;
 	bool teleporting = false;
 	int tpFrames = 0;
-	const int TOTAL_TP_FRAMES = 200;
 
 public:
 	virtual ~PlayerRenderComponent() {}
