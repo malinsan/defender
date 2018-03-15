@@ -34,7 +34,7 @@ public:
 	}
 };
 
-class RocketRender : public Component
+class RocketRenderComponent : public Component
 {
 public:
 	

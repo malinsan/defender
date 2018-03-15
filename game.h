@@ -107,7 +107,7 @@ public:
 			RocketBehaviourComponent * behaviour = new RocketBehaviourComponent();
 			behaviour->Create(system, *rocket, &game_objects);
 
-			RocketRender * render = new RocketRender();
+			RocketRenderComponent * render = new RocketRenderComponent();
 			render->Create(system, *rocket, &game_objects);
 
 			(*rocket)->Create();
