@@ -6,12 +6,6 @@ class Game : public GameObject
 
 	AvancezLib* system;
 	
-
-	//define the timestep
-	float32 timeStep = 1.0f / 60.0f;
-	int32 velocityIterations = 6;
-	int32 positionIterations = 2;
-
 	//soundmaker
 	SoundMaker* soundMaker;
 
@@ -145,7 +139,7 @@ public:
 
 			//collision with rockets
 			CollideComponent* collision = new CollideComponent();
-			collision->Create(system, *human, &game_objects, (ObjectPool<GameObject>*)&rockets_pool);
+			collision->Create(system, *human, &game_objects, (ObjectPool<GameObject>*)&rockets_pool, 32, 32);
 
 			RenderComponent * render = new RenderComponent();
 			render->Create(system, *human, &game_objects, "data/human.bmp");
@@ -196,7 +190,7 @@ public:
 
 			//collision with rockets
 			CollideComponent* collision = new CollideComponent();
-			collision->Create(system, *lander, &game_objects, (ObjectPool<GameObject>*)&rockets_pool);
+			collision->Create(system, *lander, &game_objects, (ObjectPool<GameObject>*)&rockets_pool, 28, 32);
 
 			(*lander)->Create();
 			(*lander)->AddComponent(lander_behaviour);
@@ -225,7 +219,7 @@ public:
 
 			//collision with rockets
 			CollideComponent* collision = new CollideComponent();
-			collision->Create(system, *mutant, &game_objects, (ObjectPool<GameObject>*)&rockets_pool);
+			collision->Create(system, *mutant, &game_objects, (ObjectPool<GameObject>*)&rockets_pool, 28, 32);
 
 			(*mutant)->Create();
 			(*mutant)->AddComponent(main_move_behaviour);
@@ -288,10 +282,7 @@ public:
 		else {
 
 			if ((system->getElapsedTime() - pauseStartTime) < pauseTime) {
-				system->drawRect(0, 0, WIDTH, HEIGHT, 0, 0, 0);
-				char msg[48];
-				sprintf_s(msg, "WAVE  %d  CLEARED", waveNumber - 1);
-				system->drawText(WIDTH / 2 - 110, HEIGHT / 2 - 100, msg, 255, 255, 255);
+				ShowWaveScreen();
 			}
 			else {
 				//first component should be background
@@ -311,11 +302,11 @@ public:
 		char msg[1024];
 		
 		for (int i = 0; i < player->lives; i++) {
-			lifeSprite->draw(10 + (PLAYER_WIDTH + 10) * i, 15, 0);
+			lifeSprite->draw(10 + (PLAYER_WIDTH + 10) * i, 15);
 		}
 
 		for (int i = 0; i < player->smartBombs; i++) {
-			bombSprite->draw(250, 15 + (i * 20), 0);
+			bombSprite->draw(250, 15 + (i * 20));
 		}
 
 		//player score
@@ -367,6 +358,13 @@ public:
 		current_aliens = spawner->NUM_ALIENS_TO_SPAWN;
 	}
 
+	void ShowWaveScreen() {
+		system->drawRect(0, 0, WIDTH, HEIGHT, 0, 0, 0);
+		char msg[48];
+		sprintf_s(msg, "WAVE  %d  CLEARED", waveNumber - 1);
+		system->drawText(WIDTH / 2 - 110, HEIGHT / 2 - 100, msg, 255, 255, 255);
+	}
+
 	void ShowStartScreen() {
 		AvancezLib::KeyStatus keys;
 		system->getKeyStatus(keys);
@@ -409,7 +407,5 @@ public:
 
 		
 	}
-
-
 
 };

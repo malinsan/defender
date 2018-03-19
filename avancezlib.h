@@ -21,7 +21,7 @@ public:
 	// Valid coordinates are between (0,0) (upper left) and (width-32, height-32) (lower right).
 	// angle: angle in radians around the center of the sprite
 	// (All sprites are 32*32 pixels, clipping is not supported)
-	void draw(int x, int y, float angle);
+	void draw(int x, int y);
 };
 
 

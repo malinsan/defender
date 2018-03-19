@@ -11,12 +11,6 @@ class HumanStateMachine : public Component
 		virtual void Enter(HumanStateMachine& state_machine) {}
 		virtual void Update(HumanStateMachine& state_machine, float dt) {}
 
-		//parameter chance is the 1/5000 percent chance of getting a true
-		bool Chance(int chance)
-		{
-			//0-4999
-			return rand() % 5000 <= chance;
-		}
 		//proximity to player or humans, parameter isPlayerTarget should be true if checking proximity to player and false otherwise
 		bool InProximityTo(HumanStateMachine& state_machine, GameObject* target, float range) {
 			//where are we?

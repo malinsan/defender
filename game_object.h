@@ -23,9 +23,7 @@ public:
 	double horizontalPosition;
 	double verticalPosition;
 	Vector2 velocity;
-	double horizontalVelocity, verticalVelocity; //"physics"
 
-	float angle; // angle of rotation in degrees
 	bool enabled;
 
 	virtual ~GameObject();

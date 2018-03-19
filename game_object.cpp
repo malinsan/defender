@@ -5,7 +5,6 @@
 void GameObject::Create()
 {
 	enabled = false;
-	angle = 0;
 }
 
 void GameObject::AddComponent(Component * component)

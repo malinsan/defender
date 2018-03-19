@@ -50,9 +50,11 @@ public:
 class CollideComponent : public Component
 {
 	ObjectPool<GameObject> * coll_objects; // collision will be tested with these objects
+	int x; //offset to check in x direction
+	int y; //offset to check in y direction
 
 public:
-	virtual void Create(AvancezLib* system, GameObject * go, std::set<GameObject*> * game_objects, ObjectPool<GameObject> * coll_objects);
+	virtual void Create(AvancezLib* system, GameObject * go, std::set<GameObject*> * game_objects, ObjectPool<GameObject> * coll_objects, int x, int y);
 	virtual void Update(float dt);
 };
 
