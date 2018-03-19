@@ -4,6 +4,7 @@
 #include "SDL.h"
 #include "SDL_ttf.h"
 
+
 class Sprite
 {
 	SDL_Renderer * renderer;
@@ -20,7 +21,7 @@ public:
 	// Valid coordinates are between (0,0) (upper left) and (width-32, height-32) (lower right).
 	// angle: angle in radians around the center of the sprite
 	// (All sprites are 32*32 pixels, clipping is not supported)
-	void draw(int x, int y, float angle);
+	void draw(int x, int y);
 };
 
 
@@ -43,7 +44,7 @@ public:
 	Sprite* createSprite(const char* name);
 
 	// Draws the given text.
-	void drawText(int x, int y, const char* msg);
+	void drawText(int x, int y, const char* msg, int R, int G, int B);
 
 	// Return the total time spent in the game, in seconds.
 	float getElapsedTime();
@@ -55,10 +56,16 @@ public:
 		bool right; // right arrow
 		bool up;
 		bool down;
+		bool teleport; //Z
+		bool smartbomb; //X
 	};
 
 	// Returns the keyboard status. If a flag is set, the corresponding key is being held down.
 	void getKeyStatus(KeyStatus& keys);
+
+	void drawRect(float startX, float startY, float w, float h, int R, int G, int B);
+
+	float Distance(float posX, float posY, float targetX, float targetY);
 
 private:
 	SDL_Window * window;

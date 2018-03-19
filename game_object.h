@@ -1,7 +1,15 @@
+#pragma once
 // GameObject represents objects which moves are drawn
 #include <vector>
 
-enum Message { HIT, ALIEN_HIT, GAME_OVER, LEVEL_WIN, NO_MSG };
+
+enum Message {NEW_MUTANT_WAVE, NEW_WAVE, SMARTBOMB_DROPPED, TELEPORTED, DROPPED, ABDUCTED, GOING_BACK, GOING_LEFT, GOING_RIGHT, SHOOT, HIT, HUMAN_HIT, BUMP_HIT, ALIEN_SPAWNED, ALIEN_HIT, GAME_OVER, LEVEL_WIN, NO_MSG };
+
+struct Vector2
+{
+	double x;
+	double y;
+};
 
 class Component;
 
@@ -14,7 +22,8 @@ protected:
 public:
 	double horizontalPosition;
 	double verticalPosition;
-	float angle; // angle of rotation in degrees
+	Vector2 velocity;
+
 	bool enabled;
 
 	virtual ~GameObject();
@@ -29,3 +38,4 @@ public:
 	virtual void Receive(Message m) {}
 	void Send(Message m);
 };
+

@@ -1,17 +1,4 @@
 
-class RocketBehaviourComponent : public Component
-{
-public:
-
-	void Update(float dt)
-	{
-		go->verticalPosition -= ROCKET_SPEED * dt; // rocket_speed * time
-
-		if (go->verticalPosition < 0) // When the rocket reaches the top of the screen, it disappears.
-			go->enabled = false;
-	}
-};
-
 
 // rockets are shot by the player towards the aliens
 class Rocket : public GameObject
@@ -19,13 +6,23 @@ class Rocket : public GameObject
 
 public:
 
-	virtual void Init(double xPos)
+	bool leftFacing;
+	float startPoint;
+	float width;
+	
+	virtual ~Rocket() { SDL_Log("Rocket"); }
+
+	virtual void Init(double xPos, double yPos, bool leftFacing)
 	{
 		SDL_Log("Rocket::Init");
 		GameObject::Init();
 
 		horizontalPosition = xPos;
-		verticalPosition = 480 - 52;
+		verticalPosition = yPos + 13;
+		this->leftFacing = leftFacing;
+		startPoint = horizontalPosition;
+		width = 0;
+
 	}
 
 	virtual void Receive(Message m)
@@ -39,4 +36,77 @@ public:
 			SDL_Log("Rocket::Hit");
 		}
 	}
+};
+
+class RocketRenderComponent : public Component
+{
+	float startTime;
+public:
+	
+	void Init() {
+		startTime = system->getElapsedTime();
+	}
+	
+	void Update(float dt) 
+	{
+		Rocket* rocket = (Rocket*)go;
+
+		//color
+		int R = rand() % 255 + 100;
+		int G = rand() % 255 + 100;
+		int B = rand() % 255 + 100;
+
+		if (system->getElapsedTime() - startTime < 0.5f) {
+			rocket->width += 315 * dt; //first get wider
+		}
+		else {
+			rocket->width -= 315 * dt; //then get thinner
+		}
+
+		if (rocket->leftFacing) {
+			rocket->startPoint = go->horizontalPosition;
+			system->drawRect(rocket->startPoint, rocket->verticalPosition, rocket->width, ROCKET_HEIGHT, R, G, B);
+		}
+		else {
+			rocket->startPoint = go->horizontalPosition - rocket->width;
+			system->drawRect(rocket->startPoint, rocket->verticalPosition, rocket->width, ROCKET_HEIGHT, R, G, B);
+		}
+
+	}
+
+};
+
+
+class RocketBehaviourComponent : public Component
+{
+
+	bool goingLeft = true;
+	bool goingBack = false;
+
+	float startTime;
+	float time = 1.0f;
+
+public:
+
+	void Init() {
+		startTime = system->getElapsedTime();
+	}
+
+	void Update(float dt)
+	{
+		Rocket* rocket = (Rocket*)go;
+
+		if (system->getElapsedTime() - startTime >= time) { //disappear after a certain amount of param time
+			go->enabled = false;
+		}
+		
+
+		if (rocket->leftFacing) { //rocket going left
+			go->horizontalPosition -= dt * ROCKET_SPEED;
+		}
+		else { // rocket going right
+			go->horizontalPosition += dt * ROCKET_SPEED;	
+		}
+	}
+
 };
