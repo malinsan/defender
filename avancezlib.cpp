@@ -229,7 +229,7 @@ Sprite::Sprite(SDL_Renderer * renderer, SDL_Texture * texture)
 }
 
 
-void Sprite::draw(int x, int y, float angle)
+void Sprite::draw(int x, int y)
 {
 	SDL_Rect rect;
 
@@ -242,15 +242,14 @@ void Sprite::draw(int x, int y, float angle)
 	center.y = (int)(rect.h / 2.f);
 
 	//Render texture to screen
-//	SDL_RenderCopy(renderer, texture, NULL, &rect);
+	SDL_RenderCopy(renderer, texture, NULL, &rect);
 
-	SDL_RenderCopyEx(renderer,
+	/*SDL_RenderCopyEx(renderer,
 		texture,
 		NULL,
 		&rect,
-		angle,
 		&center,
-		SDL_FLIP_NONE);
+		SDL_FLIP_NONE);*/
 }
 
 

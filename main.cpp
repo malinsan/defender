@@ -2,8 +2,6 @@
 #include <iostream>
 #include <set>
 
-#include "Box2D\Box2D.h"
-
 #include "avancezlib.h"
 
 #include "object_pool.h"
@@ -46,8 +44,6 @@ const float			BOMB_TIME_INTERVAL = 1.25f;
 const float			ROCKET_SPEED = 1000.0f;
 const int			ROCKET_HEIGHT = 4;
 
-const float			ALIEN_SPEED = 40.0f;
-
 const float			LANDER_MAX_SPEED = 50.0f;
 const float			LANDER_ACCELERATION = 100.0f;
 const float			MUTANT_MAX_SPEED = 1.6 * LANDER_MAX_SPEED;
@@ -71,7 +67,6 @@ float game_speed = 1.f;
 #include "player.h"
 #include "bomb.h"
 #include "background.h"
-#include "box.h"
 #include "human.h"
 #include "lander.h"
 #include "mutant.h"
@@ -82,6 +77,7 @@ float game_speed = 1.f;
 
 #include "game.h"
 
+#undef main
 int main(int argc, char** argv)
 {
 

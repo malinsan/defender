@@ -41,7 +41,7 @@ void RenderComponent::Update(float dt)
 		return;
 
 	if (sprite)
-		sprite->draw(int(go->horizontalPosition), int(go->verticalPosition), go->angle);
+		sprite->draw(int(go->horizontalPosition), int(go->verticalPosition));
 }
 
 void RenderComponent::Destroy()
@@ -52,16 +52,17 @@ void RenderComponent::Destroy()
 }
 
 
-void CollideComponent::Create(AvancezLib* system, GameObject * go, std::set<GameObject*> * game_objects, ObjectPool<GameObject> * coll_objects)
+void CollideComponent::Create(AvancezLib* system, GameObject * go, std::set<GameObject*> * game_objects, ObjectPool<GameObject> * coll_objects, int x, int y)
 {
 	Component::Create(system, go, game_objects);
 	this->coll_objects = coll_objects;
+	this->x = x;
+	this->y = y;
 }
 
 
 void CollideComponent::Update(float dt)
 {
-	int x = 32;
 	for (auto i = 0; i < coll_objects->pool.size(); i++)
 	{
 		GameObject * go0 = coll_objects->pool[i];
@@ -70,7 +71,7 @@ void CollideComponent::Update(float dt)
 			if ((go0->horizontalPosition > go->horizontalPosition) &&
 				(go0->horizontalPosition < go->horizontalPosition + x) &&
 				(go0->verticalPosition   > go->verticalPosition) &&
-				(go0->verticalPosition   < go->verticalPosition + x))
+				(go0->verticalPosition   < go->verticalPosition + y))
 			{
 				go->Receive(HIT);
 				go0->Receive(HIT);

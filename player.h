@@ -93,9 +93,6 @@ public:
 		go->horizontalPosition = 320;
 		go->verticalPosition = 480 - 32;
 		
-		go->horizontalVelocity = 0.0f;
-		go->verticalVelocity = 0.0f;
-
 		time_fire_pressed = -10000.f;
 		time_smartbomb_dropped = -1000.f;
 		time_teleported = -1000.f;
@@ -220,7 +217,7 @@ public:
 			movingHorizontally = false;
 			//going to the right
 			if (go->horizontalPosition > 400 && !thisPlayer->leftFacing) {
-				Send(GOING_BACK); //send to rocket 
+				Send(GOING_BACK); //send to bg, and other entities
 				go->horizontalPosition -= move * PLAYER_MAX_VELOCITY * 0.5; // *0.5 to offset the background moving the other way 
 			}
 
@@ -340,7 +337,7 @@ public:
 		}
 
 		if (currentSprite)
-			currentSprite->draw(int(go->horizontalPosition), int(go->verticalPosition), go->angle);
+			currentSprite->draw(int(go->horizontalPosition), int(go->verticalPosition));
 
 		active = false;
 

@@ -9,6 +9,8 @@ public:
 	bool leftFacing;
 	float startPoint;
 	float width;
+	
+	virtual ~Rocket() { SDL_Log("Rocket"); }
 
 	virtual void Init(double xPos, double yPos, bool leftFacing)
 	{
@@ -55,10 +57,10 @@ public:
 		int B = rand() % 255 + 100;
 
 		if (system->getElapsedTime() - startTime < 0.5f) {
-			rocket->width += 315 * dt;
+			rocket->width += 315 * dt; //first get wider
 		}
 		else {
-			rocket->width -= 315 * dt;
+			rocket->width -= 315 * dt; //then get thinner
 		}
 
 		if (rocket->leftFacing) {

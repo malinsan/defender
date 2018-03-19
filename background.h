@@ -60,11 +60,9 @@ public:
 		if (playerTeleported) { //move so that player is in the middle
 			playerTeleported = false;
 
-			go->horizontalPosition -= (rand() % ((WORLD_WIDTH/2)-WIDTH)) + WIDTH;
+			go->horizontalPosition -= rand() % (WORLD_WIDTH/2);
 			Move(dt); //to fix wrapping
 		}
-
-		
 
 		if (goingBack) {
 			goingBack = false;

@@ -6,9 +6,6 @@ class LanderStateMachine : public Component
 	{
 	public:
 		AvancezLib * system;
-		Sprite * sprite_left;
-		Sprite * sprite_right;
-	public:
 		virtual ~State() {}
 		virtual void Enter(LanderStateMachine& state_machine) {}
 		virtual void Update(LanderStateMachine& state_machine, float dt) {}
